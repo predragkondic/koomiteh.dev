@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "build:content": "tsx scripts/build-content.ts",
+    "prebuild": "npm run build:content",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run"
   },
   "repository": {
     "type": "git",
@@ -33,7 +36,14 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "gray-matter": "^4.0.3",
+    "marked": "^18.0.2",
+    "minisearch": "^7.2.0",
+    "shiki": "^4.0.2",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "vitest": "^4.1.5",
+    "zod": "^4.4.1"
   }
 }

@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Post, PostFrontmatter } from '@/types';
+import type { Manifest, Post, PostFrontmatter } from '@/types';
 
 async function fetchJson<T>(url: string): Promise<
   | { data: T }
@@ -28,6 +28,11 @@ export const interviewApi = createApi({
   reducerPath: 'interviewApi',
   baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
+    getManifest: build.query<Manifest, void>({
+      async queryFn() {
+        return fetchJson<Manifest>('/content/manifest.json');
+      },
+    }),
     getIndex: build.query<PostFrontmatter[], string>({
       async queryFn(language) {
         const result = await fetchJson<PostFrontmatter[]>(
@@ -60,4 +65,5 @@ export const interviewApi = createApi({
   }),
 });
 
-export const { useGetIndexQuery, useGetPostQuery } = interviewApi;
+export const { useGetManifestQuery, useGetIndexQuery, useGetPostQuery } =
+  interviewApi;

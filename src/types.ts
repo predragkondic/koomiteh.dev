@@ -15,3 +15,15 @@ export interface Post {
   frontmatter: PostFrontmatter;
   bodyHtml: string;
 }
+
+export interface ManifestLanguage {
+  id: string;
+  displayName: string;
+  count: number;
+}
+
+export interface Manifest {
+  languages: ManifestLanguage[];
+  totalCount: number;
+  builtAt: string;
+}

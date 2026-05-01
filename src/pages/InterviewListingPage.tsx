@@ -30,6 +30,7 @@ const EMPTY_FILTER: FilterState = {
   tags: [],
   sort: 'newest',
   page: 1,
+  q: '',
 };
 
 export function InterviewListingPage() {
@@ -40,6 +41,7 @@ export function InterviewListingPage() {
     pageCount,
     isIndexLoading,
     indexError,
+    searchError,
     filter,
     tagOptions,
   } = useFilteredPosts();
@@ -90,8 +92,20 @@ export function InterviewListingPage() {
   return (
     <Box>
       <FilterBar
-        value={{ level: filter.level, tags: filter.tags, sort: filter.sort }}
+        value={{
+          level: filter.level,
+          tags: filter.tags,
+          sort: filter.sort,
+          q: filter.q,
+        }}
         tagOptions={tagOptions}
+        searchDisabled={Boolean(searchError)}
+        searchDisabledReason={
+          searchError
+            ? 'Suchindex konnte nicht geladen werden. Filter funktionieren weiterhin.'
+            : undefined
+        }
+        relevanceEnabled={Boolean(filter.q)}
         onChange={onFilterChange}
       />
       <ActiveFilterChips
@@ -109,6 +123,7 @@ export function InterviewListingPage() {
         onRemoveSort={() =>
           writeState({ ...filter, sort: 'newest', page: 1 })
         }
+        onRemoveQ={() => writeState({ ...filter, q: '', page: 1 })}
         onResetAll={onResetAll}
       />
 

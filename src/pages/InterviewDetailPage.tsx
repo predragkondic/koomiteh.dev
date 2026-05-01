@@ -4,12 +4,13 @@ import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import Skeleton from '@mui/material/Skeleton';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import { useGetPostQuery } from '@/api/interviewApi';
 import { NotFoundPage } from './NotFoundPage';
 
 export function InterviewDetailPage() {
   const { language = '', slug = '' } = useParams();
-  const { data, isLoading, error } = useGetPostQuery({ language, slug });
+  const { data, isLoading, error, refetch } = useGetPostQuery({ language, slug });
 
   if (isLoading) {
     return (
@@ -24,7 +25,18 @@ export function InterviewDetailPage() {
   if (error) {
     const status = (error as { status?: number }).status;
     if (status === 404) return <NotFoundPage scope="post" />;
-    return <Alert severity="error">Failed to load post.</Alert>;
+    return (
+      <Alert
+        severity="error"
+        action={
+          <Button color="inherit" size="small" onClick={() => refetch()}>
+            Retry
+          </Button>
+        }
+      >
+        Failed to load post.
+      </Alert>
+    );
   }
 
   if (!data) return null;

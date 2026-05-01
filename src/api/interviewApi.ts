@@ -1,20 +1,28 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { Post, PostFrontmatter } from '@/types';
 
-const STUB_POST: Post = {
-  frontmatter: {
-    id: 'typescript-junior-foo',
-    slug: 'foo',
-    question: 'Walking skeleton stub: does the wiring work?',
-    language: 'typescript',
-    level: 'junior',
-    tags: ['skeleton', 'stub'],
-    createdAt: '2026-04-30',
-    updatedAt: '2026-04-30',
-  },
-  bodyHtml:
-    '<p>This stub post is served by the RTK Query <code>getPost</code> endpoint to prove that the route, the store, and the data layer are wired correctly. Real content arrives in slice 2.</p>',
-};
+async function fetchJson<T>(url: string): Promise<
+  | { data: T }
+  | { error: { status: number; message: string } }
+> {
+  let res: Response;
+  try {
+    res = await fetch(url);
+  } catch (e) {
+    return {
+      error: { status: 0, message: e instanceof Error ? e.message : 'Network error' },
+    };
+  }
+  if (!res.ok) {
+    return { error: { status: res.status, message: res.statusText } };
+  }
+  const contentType = res.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    return { error: { status: 404, message: 'Not JSON' } };
+  }
+  const data = (await res.json()) as T;
+  return { data };
+}
 
 export const interviewApi = createApi({
   reducerPath: 'interviewApi',
@@ -22,24 +30,31 @@ export const interviewApi = createApi({
   endpoints: (build) => ({
     getIndex: build.query<PostFrontmatter[], string>({
       async queryFn(language) {
-        const res = await fetch(`/content/indexes/${language}.json`);
-        if (!res.ok) {
-          return { error: { status: res.status, message: res.statusText } };
-        }
-        const contentType = res.headers.get('content-type') ?? '';
-        if (!contentType.includes('application/json')) {
+        const result = await fetchJson<PostFrontmatter[]>(
+          `/content/indexes/${language}.json`,
+        );
+        if ('error' in result && result.error.status === 404) {
           return { error: { status: 404, message: 'Unknown language' } };
         }
-        const data = (await res.json()) as PostFrontmatter[];
-        return { data };
+        return result;
       },
     }),
     getPost: build.query<Post, { language: string; slug: string }>({
       async queryFn({ language, slug }) {
-        if (language === 'typescript' && slug === 'foo') {
-          return { data: STUB_POST };
+        const indexResult = await fetchJson<PostFrontmatter[]>(
+          `/content/indexes/${language}.json`,
+        );
+        if ('error' in indexResult) {
+          if (indexResult.error.status === 404) {
+            return { error: { status: 404, message: 'Unknown language' } };
+          }
+          return indexResult;
         }
-        return { error: { status: 404, message: 'Not found' } };
+        const entry = indexResult.data.find((p) => p.slug === slug);
+        if (!entry) {
+          return { error: { status: 404, message: 'Unknown slug' } };
+        }
+        return fetchJson<Post>(`/content/posts/${entry.id}.json`);
       },
     }),
   }),

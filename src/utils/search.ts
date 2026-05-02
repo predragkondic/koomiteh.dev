@@ -1,5 +1,5 @@
 import MiniSearch, { type SearchResult } from 'minisearch';
-import type { PostFrontmatter, SearchIndexJson } from '@/types';
+import type { Level, PostFrontmatter, SearchIndexJson } from '@/types';
 
 const MINI_OPTIONS = {
   idField: 'id',
@@ -33,6 +33,33 @@ export function runSearch(index: MiniSearch, q: string): SearchHit[] {
   if (!trimmed) return [];
   const results = index.search(trimmed, SEARCH_OPTIONS) as SearchResult[];
   return results.map((r) => ({ id: String(r.id), score: r.score }));
+}
+
+export interface GlobalSearchHit {
+  id: string;
+  slug: string;
+  language: string;
+  level: Level;
+  question: string;
+  score: number;
+}
+
+export function runGlobalSearch(
+  index: MiniSearch,
+  q: string,
+  limit = 20,
+): GlobalSearchHit[] {
+  const trimmed = q.trim();
+  if (!trimmed) return [];
+  const results = index.search(trimmed, SEARCH_OPTIONS) as SearchResult[];
+  return results.slice(0, limit).map((r) => ({
+    id: String(r.id),
+    slug: String(r.slug),
+    language: String(r.language),
+    level: r.level as Level,
+    question: String(r.question),
+    score: r.score,
+  }));
 }
 
 export function mergeHitsWithIndex(

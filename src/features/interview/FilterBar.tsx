@@ -1,6 +1,9 @@
+import { useEffect, useRef, useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -8,22 +11,85 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
 import type { LevelFilter } from '@/hooks/useFilteredPosts';
 import { type Sort } from '@/utils/sort';
+
+const SEARCH_DEBOUNCE_MS = 250;
 
 export interface FilterChange {
   level: LevelFilter;
   tags: string[];
   sort: Sort;
+  q: string;
 }
 
 interface Props {
   value: FilterChange;
   tagOptions: readonly string[];
+  searchDisabled?: boolean;
+  searchDisabledReason?: string;
+  relevanceEnabled?: boolean;
   onChange: (next: FilterChange) => void;
 }
 
-export function FilterBar({ value, tagOptions, onChange }: Props) {
+export function FilterBar({
+  value,
+  tagOptions,
+  searchDisabled = false,
+  searchDisabledReason,
+  relevanceEnabled = false,
+  onChange,
+}: Props) {
+  const [localQ, setLocalQ] = useState(value.q);
+  const lastCommitted = useRef(value.q);
+
+  useEffect(() => {
+    if (value.q !== lastCommitted.current) {
+      lastCommitted.current = value.q;
+      setLocalQ(value.q);
+    }
+  }, [value.q]);
+
+  useEffect(() => {
+    if (localQ === lastCommitted.current) return;
+    const t = window.setTimeout(() => {
+      lastCommitted.current = localQ;
+      onChange({ ...value, q: localQ });
+    }, SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(t);
+  }, [localQ, value, onChange]);
+
+  const searchField = (
+    <TextField
+      size="small"
+      type="search"
+      label="Suche"
+      placeholder="Frage oder Tag…"
+      value={localQ}
+      disabled={searchDisabled}
+      onChange={(e) => setLocalQ(e.target.value)}
+      sx={{ flex: 1, minWidth: 200 }}
+      slotProps={{
+        input: {
+          endAdornment: localQ ? (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="Suche löschen"
+                size="small"
+                edge="end"
+                onClick={() => setLocalQ('')}
+              >
+                ×
+              </IconButton>
+            </InputAdornment>
+          ) : null,
+        },
+        htmlInput: { 'aria-label': 'Suche' },
+      }}
+    />
+  );
+
   return (
     <Box
       sx={{
@@ -39,6 +105,14 @@ export function FilterBar({ value, tagOptions, onChange }: Props) {
         spacing={2}
         alignItems={{ md: 'center' }}
       >
+        {searchDisabled && searchDisabledReason ? (
+          <Tooltip title={searchDisabledReason}>
+            <Box sx={{ flex: 1, minWidth: 200 }}>{searchField}</Box>
+          </Tooltip>
+        ) : (
+          searchField
+        )}
+
         <ToggleButtonGroup
           exclusive
           size="small"
@@ -77,7 +151,7 @@ export function FilterBar({ value, tagOptions, onChange }: Props) {
           >
             <MenuItem value="newest">Neueste</MenuItem>
             <MenuItem value="oldest">Älteste</MenuItem>
-            <MenuItem value="relevance" disabled>
+            <MenuItem value="relevance" disabled={!relevanceEnabled}>
               Relevanz
             </MenuItem>
           </Select>

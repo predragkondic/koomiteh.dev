@@ -9,6 +9,7 @@ interface Props {
   onRemoveLevel: () => void;
   onRemoveTag: (tag: string) => void;
   onRemoveSort: () => void;
+  onRemoveQ: () => void;
   onResetAll: () => void;
 }
 
@@ -17,12 +18,14 @@ export function ActiveFilterChips({
   onRemoveLevel,
   onRemoveTag,
   onRemoveSort,
+  onRemoveQ,
   onResetAll,
 }: Props) {
   const hasLevel = filter.level !== 'both';
   const hasTags = filter.tags.length > 0;
   const hasSort = filter.sort !== DEFAULT_SORT;
-  const anyActive = hasLevel || hasTags || hasSort;
+  const hasQ = filter.q !== '';
+  const anyActive = hasLevel || hasTags || hasSort || hasQ;
 
   if (!anyActive) return null;
 
@@ -36,6 +39,13 @@ export function ActiveFilterChips({
       role="region"
       aria-label="Aktive Filter"
     >
+      {hasQ && (
+        <Chip
+          label={`Suche: ${filter.q}`}
+          size="small"
+          onDelete={onRemoveQ}
+        />
+      )}
       {hasLevel && (
         <Chip
           label={`Level: ${filter.level === 'junior' ? 'Junior' : 'Senior'}`}

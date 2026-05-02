@@ -27,3 +27,5 @@ export interface Manifest {
   totalCount: number;
   builtAt: string;
 }
+
+export type SearchIndexJson = unknown;

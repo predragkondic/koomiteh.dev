@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Manifest, Post, PostFrontmatter } from '@/types';
+import type { Manifest, Post, PostFrontmatter, SearchIndexJson } from '@/types';
 
 async function fetchJson<T>(url: string): Promise<
   | { data: T }
@@ -62,8 +62,17 @@ export const interviewApi = createApi({
         return fetchJson<Post>(`/content/posts/${entry.id}.json`);
       },
     }),
+    getSearchIndex: build.query<SearchIndexJson, void>({
+      async queryFn() {
+        return fetchJson<SearchIndexJson>('/content/search-index.json');
+      },
+    }),
   }),
 });
 
-export const { useGetManifestQuery, useGetIndexQuery, useGetPostQuery } =
-  interviewApi;
+export const {
+  useGetManifestQuery,
+  useGetIndexQuery,
+  useGetPostQuery,
+  useGetSearchIndexQuery,
+} = interviewApi;

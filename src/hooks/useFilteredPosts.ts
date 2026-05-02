@@ -25,6 +25,7 @@ export interface FilterState {
 
 export interface FilteredResult {
   items: PostFrontmatter[];
+  allFiltered: PostFrontmatter[];
   totalFiltered: number;
   page: number;
   pageCount: number;
@@ -58,6 +59,7 @@ export function applyFilterSortPage(
   const start = (page - 1) * pageSize;
   return {
     items: sorted.slice(start, start + pageSize),
+    allFiltered: sorted,
     totalFiltered,
     page,
     pageCount,

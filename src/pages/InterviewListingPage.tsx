@@ -175,12 +175,15 @@ function CardGrid({ children }: { children: React.ReactNode }) {
 function PostCard({ post }: { post: PostFrontmatter }) {
   const visibleTags = post.tags.slice(0, MAX_VISIBLE_TAGS);
   const overflow = post.tags.length - visibleTags.length;
+  const [searchParams] = useSearchParams();
+  const search = searchParams.toString();
+  const to = `/interview/${post.language}/${post.slug}${search ? `?${search}` : ''}`;
 
   return (
     <Card variant="outlined">
       <CardActionArea
         component={RouterLink}
-        to={`/interview/${post.language}/${post.slug}`}
+        to={to}
         sx={{ height: '100%', alignItems: 'flex-start' }}
       >
         <CardContent>

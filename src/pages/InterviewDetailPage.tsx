@@ -5,7 +5,11 @@ import Chip from '@mui/material/Chip';
 import Skeleton from '@mui/material/Skeleton';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import { useGetPostQuery } from '@/api/interviewApi';
+import { DetailBreadcrumb } from '@/features/interview/DetailBreadcrumb';
+import { DetailPrevNext } from '@/features/interview/DetailPrevNext';
+import { RelatedQuestions } from '@/features/interview/RelatedQuestions';
 import { NotFoundPage } from './NotFoundPage';
 
 export function InterviewDetailPage() {
@@ -44,16 +48,16 @@ export function InterviewDetailPage() {
   const { frontmatter, bodyHtml } = data;
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
-      <Stack direction="row" spacing={1}>
-        <Chip label={frontmatter.language} size="small" />
-        <Chip label={frontmatter.level} size="small" variant="outlined" />
-      </Stack>
+    <Stack spacing={3} sx={{ maxWidth: 720, mx: 'auto' }}>
+      <DetailBreadcrumb
+        language={frontmatter.language}
+        level={frontmatter.level}
+      />
       <Typography variant="h3" component="h1">
         {frontmatter.question}
       </Typography>
       <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
-      <Stack direction="row" spacing={1}>
+      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
         {frontmatter.tags.map((t) => (
           <Chip key={t} label={t} size="small" variant="outlined" />
         ))}
@@ -61,6 +65,16 @@ export function InterviewDetailPage() {
       <Typography variant="caption" color="text.secondary">
         Updated {frontmatter.updatedAt}
       </Typography>
+      <Divider />
+      <DetailPrevNext
+        currentId={frontmatter.id}
+        language={frontmatter.language}
+      />
+      <RelatedQuestions
+        currentId={frontmatter.id}
+        language={frontmatter.language}
+        tags={frontmatter.tags}
+      />
     </Stack>
   );
 }

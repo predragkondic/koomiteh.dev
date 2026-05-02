@@ -26,6 +26,7 @@ export function CommandPalette({ open, onClose }: Props) {
   const [q, setQ] = useState('');
   const [highlighted, setHighlighted] = useState(0);
   const listRef = useRef<HTMLUListElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const { data: manifest } = useGetManifestQuery();
   const { data: searchJson, error: searchError } = useGetSearchIndexQuery(
@@ -93,6 +94,9 @@ export function CommandPalette({ open, onClose }: Props) {
       maxWidth="sm"
       onKeyDown={onKeyDown}
       aria-labelledby="command-palette-input"
+      slotProps={{
+        transition: { onEntered: () => inputRef.current?.focus() },
+      }}
     >
       <Box sx={{ p: 2 }}>
         <TextField
@@ -102,6 +106,7 @@ export function CommandPalette({ open, onClose }: Props) {
           placeholder="Frage suchen…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
+          inputRef={inputRef}
           slotProps={{
             htmlInput: {
               id: 'command-palette-input',

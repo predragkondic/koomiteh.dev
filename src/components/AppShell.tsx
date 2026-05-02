@@ -1,12 +1,35 @@
+import { useEffect, useMemo, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import { Link as RouterLink, Outlet } from 'react-router-dom';
+import { CommandPalette } from '@/features/interview/CommandPalette';
 import { ThemeToggle } from './ThemeToggle';
 
+function detectShortcutHint(): string {
+  if (typeof navigator === 'undefined') return 'Ctrl K';
+  const ua = navigator.userAgent;
+  return /Mac|iPhone|iPad|iPod/.test(ua) ? '⌘ K' : 'Ctrl K';
+}
+
 export function AppShell() {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const shortcut = useMemo(detectShortcutHint, []);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen((p) => !p);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppBar position="sticky" color="default" elevation={0}>
@@ -25,12 +48,44 @@ export function AppShell() {
             skillup.dev
           </Typography>
           <Box sx={{ flex: 1 }} />
+          <Button
+            variant="outlined"
+            size="small"
+            color="inherit"
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Suche öffnen"
+            aria-keyshortcuts={shortcut.replace(' ', '+')}
+            sx={{
+              textTransform: 'none',
+              justifyContent: 'space-between',
+              minWidth: 200,
+              color: 'text.secondary',
+              borderColor: 'divider',
+              gap: 2,
+            }}
+          >
+            <span>Suchen…</span>
+            <Box
+              component="span"
+              sx={{
+                fontFamily: 'monospace',
+                fontSize: '0.75rem',
+                color: 'text.disabled',
+              }}
+            >
+              {shortcut}
+            </Box>
+          </Button>
           <ThemeToggle />
         </Toolbar>
       </AppBar>
       <Container component="main" sx={{ py: 4, flex: 1 }}>
         <Outlet />
       </Container>
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+      />
     </Box>
   );
 }

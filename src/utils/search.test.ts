@@ -1,7 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import MiniSearch from 'minisearch';
 import type { Level, PostFrontmatter } from '@/types';
-import { loadSearchIndex, runSearch, mergeHitsWithIndex } from './search';
+import {
+  loadSearchIndex,
+  mergeHitsWithIndex,
+  runGlobalSearch,
+  runSearch,
+} from './search';
 
 function p(
   id: string,
@@ -104,5 +109,31 @@ describe('mergeHitsWithIndex', () => {
     const merged = mergeHitsWithIndex(hits, []);
     expect(merged.items).toEqual([]);
     expect(merged.scoreById.size).toBe(0);
+  });
+});
+
+describe('runGlobalSearch', () => {
+  it('returns hits enriched with stored fields across languages', () => {
+    const idx = loadSearchIndex(buildJson());
+    const hits = runGlobalSearch(idx, 'closure');
+    expect(hits.length).toBeGreaterThan(0);
+    const tsClosure = hits.find((h) => h.id === 'ts-closure');
+    expect(tsClosure).toBeDefined();
+    expect(tsClosure?.language).toBe('typescript');
+    expect(tsClosure?.question).toMatch(/closure/i);
+    const languages = new Set(hits.map((h) => h.language));
+    expect(languages.has('typescript')).toBe(true);
+    expect(languages.has('javascript')).toBe(true);
+  });
+
+  it('respects the limit parameter', () => {
+    const idx = loadSearchIndex(buildJson());
+    const hits = runGlobalSearch(idx, 'closure', 1);
+    expect(hits.length).toBeLessThanOrEqual(1);
+  });
+
+  it('returns empty for blank query', () => {
+    const idx = loadSearchIndex(buildJson());
+    expect(runGlobalSearch(idx, '   ')).toEqual([]);
   });
 });

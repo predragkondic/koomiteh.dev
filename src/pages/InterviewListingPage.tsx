@@ -14,6 +14,7 @@ import Pagination from '@mui/material/Pagination';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 import {
   useFilteredPosts,
   writeFilterState,
@@ -34,6 +35,7 @@ const EMPTY_FILTER: FilterState = {
 };
 
 export function InterviewListingPage() {
+  const { t } = useTranslation(['interview', 'common']);
   const {
     items,
     totalFiltered,
@@ -80,11 +82,11 @@ export function InterviewListingPage() {
         severity="error"
         action={
           <Button color="inherit" size="small" onClick={onResetAll}>
-            Zurücksetzen
+            {t('common:actions.reset')}
           </Button>
         }
       >
-        Fragen konnten nicht geladen werden.
+        {t('common:errors.loadPosts')}
       </Alert>
     );
   }
@@ -101,9 +103,7 @@ export function InterviewListingPage() {
         tagOptions={tagOptions}
         searchDisabled={Boolean(searchError)}
         searchDisabledReason={
-          searchError
-            ? 'Suchindex konnte nicht geladen werden. Filter funktionieren weiterhin.'
-            : undefined
+          searchError ? t('common:search.indexErrorWithFilters') : undefined
         }
         relevanceEnabled={Boolean(filter.q)}
         onChange={onFilterChange}
@@ -128,11 +128,19 @@ export function InterviewListingPage() {
       />
 
       {isIndexLoading ? (
-        <ListingSkeleton />
+        <ListingSkeleton ariaLabel={t('loading.listing')} />
       ) : totalFiltered === 0 ? (
         <EmptyState onReset={onResetAll} />
       ) : (
         <>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ pb: 2 }}
+            aria-live="polite"
+          >
+            {t('results', { count: totalFiltered })}
+          </Typography>
           <CardGrid>
             {items.map((post) => (
               <PostCard key={post.id} post={post} />
@@ -214,27 +222,30 @@ function PostCard({ post }: { post: PostFrontmatter }) {
   );
 }
 
-function ListingSkeleton() {
+function ListingSkeleton({ ariaLabel }: { ariaLabel: string }) {
   return (
-    <CardGrid>
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Skeleton key={i} variant="rounded" height={160} />
-      ))}
-    </CardGrid>
+    <Box role="status" aria-label={ariaLabel} aria-busy>
+      <CardGrid>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} variant="rounded" height={160} />
+        ))}
+      </CardGrid>
+    </Box>
   );
 }
 
 function EmptyState({ onReset }: { onReset: () => void }) {
+  const { t } = useTranslation('interview');
   return (
     <Box sx={{ textAlign: 'center', py: 8 }}>
       <Typography variant="h6" gutterBottom>
-        Keine Fragen gefunden
+        {t('empty.title')}
       </Typography>
       <Typography variant="body2" color="text.secondary" gutterBottom>
-        Mit den aktiven Filtern stimmt nichts überein.
+        {t('empty.body')}
       </Typography>
       <Button onClick={onReset} sx={{ mt: 2 }}>
-        Filter zurücksetzen
+        {t('empty.reset')}
       </Button>
     </Box>
   );

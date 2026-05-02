@@ -1,6 +1,7 @@
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { useTranslation } from 'react-i18next';
 import { useFilteredPosts } from '@/hooks/useFilteredPosts';
 import type { PostFrontmatter } from '@/types';
 
@@ -12,6 +13,7 @@ interface Props {
 const FILTER_KEYS = ['level', 'tag', 'sort', 'q'] as const;
 
 export function DetailPrevNext({ currentId, language }: Props) {
+  const { t } = useTranslation('interview');
   const [searchParams] = useSearchParams();
   const { allFiltered } = useFilteredPosts();
 
@@ -27,8 +29,8 @@ export function DetailPrevNext({ currentId, language }: Props) {
 
   return (
     <Stack direction="row" spacing={1} justifyContent="space-between">
-      <NavButton target={prev} label="← Vorherige" linkFor={linkFor} />
-      <NavButton target={next} label="Nächste →" linkFor={linkFor} />
+      <NavButton target={prev} label={t('detail.prev')} linkFor={linkFor} />
+      <NavButton target={next} label={t('detail.next')} linkFor={linkFor} />
     </Stack>
   );
 }

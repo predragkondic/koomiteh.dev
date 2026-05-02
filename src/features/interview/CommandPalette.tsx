@@ -9,6 +9,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 import { useGetManifestQuery, useGetSearchIndexQuery } from '@/api/interviewApi';
 import {
   loadSearchIndex,
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function CommandPalette({ open, onClose }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [q, setQ] = useState('');
   const [highlighted, setHighlighted] = useState(0);
@@ -103,14 +105,14 @@ export function CommandPalette({ open, onClose }: Props) {
           autoFocus
           fullWidth
           type="search"
-          placeholder="Frage suchen…"
+          placeholder={t('search.globalPlaceholder')}
           value={q}
           onChange={(e) => setQ(e.target.value)}
           inputRef={inputRef}
           slotProps={{
             htmlInput: {
               id: 'command-palette-input',
-              'aria-label': 'Globale Suche',
+              'aria-label': t('search.globalLabel'),
             },
           }}
         />
@@ -150,24 +152,25 @@ function PaletteBody({
   onSelect,
   onHover,
 }: BodyProps) {
+  const { t } = useTranslation(['common', 'interview']);
   if (searchError) {
     return (
       <Typography color="error.main" sx={{ pt: 2, px: 1 }}>
-        Suchindex konnte nicht geladen werden.
+        {t('common:search.indexError')}
       </Typography>
     );
   }
   if (q.trim() === '') {
     return (
       <Typography color="text.secondary" sx={{ pt: 2, px: 1 }}>
-        Tippe, um über alle Sprachen zu suchen.
+        {t('common:search.promptHint')}
       </Typography>
     );
   }
   if (hits.length === 0) {
     return (
       <Typography color="text.secondary" sx={{ pt: 2, px: 1 }}>
-        Keine Treffer.
+        {t('common:search.noHits')}
       </Typography>
     );
   }
@@ -190,7 +193,11 @@ function PaletteBody({
               {hit.question}
             </Typography>
             <Stack direction="row" spacing={1}>
-              <Chip label={hit.level} size="small" variant="outlined" />
+              <Chip
+                label={t(`interview:level.${hit.level}` as const)}
+                size="small"
+                variant="outlined"
+              />
               {showLanguageBadge && (
                 <Chip label={hit.language} size="small" />
               )}

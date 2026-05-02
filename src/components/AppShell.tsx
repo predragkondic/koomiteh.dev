@@ -6,7 +6,9 @@ import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Link as RouterLink, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { CommandPalette } from '@/features/interview/CommandPalette';
+import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 
 function detectShortcutHint(): string {
@@ -16,6 +18,7 @@ function detectShortcutHint(): string {
 }
 
 export function AppShell() {
+  const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const shortcut = useMemo(detectShortcutHint, []);
 
@@ -45,7 +48,7 @@ export function AppShell() {
               letterSpacing: '-0.02em',
             }}
           >
-            skillup.dev
+            {t('appName')}
           </Typography>
           <Box sx={{ flex: 1 }} />
           <Button
@@ -53,7 +56,7 @@ export function AppShell() {
             size="small"
             color="inherit"
             onClick={() => setPaletteOpen(true)}
-            aria-label="Suche öffnen"
+            aria-label={t('search.openLabel')}
             aria-keyshortcuts={shortcut.replace(' ', '+')}
             sx={{
               textTransform: 'none',
@@ -64,7 +67,7 @@ export function AppShell() {
               gap: 2,
             }}
           >
-            <span>Suchen…</span>
+            <span>{t('search.placeholder')}</span>
             <Box
               component="span"
               sx={{
@@ -76,6 +79,7 @@ export function AppShell() {
               {shortcut}
             </Box>
           </Button>
+          <LanguageToggle />
           <ThemeToggle />
         </Toolbar>
       </AppBar>

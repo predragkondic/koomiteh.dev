@@ -1,8 +1,9 @@
 import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
+import { useTranslation } from 'react-i18next';
 import type { FilterState } from '@/hooks/useFilteredPosts';
-import { DEFAULT_SORT } from '@/utils/sort';
+import { DEFAULT_SORT, type Sort } from '@/utils/sort';
 
 interface Props {
   filter: FilterState;
@@ -21,6 +22,7 @@ export function ActiveFilterChips({
   onRemoveQ,
   onResetAll,
 }: Props) {
+  const { t } = useTranslation(['interview', 'common']);
   const hasLevel = filter.level !== 'both';
   const hasTags = filter.tags.length > 0;
   const hasSort = filter.sort !== DEFAULT_SORT;
@@ -28,6 +30,9 @@ export function ActiveFilterChips({
   const anyActive = hasLevel || hasTags || hasSort || hasQ;
 
   if (!anyActive) return null;
+
+  const levelLabel =
+    filter.level === 'junior' ? t('level.junior') : t('level.senior');
 
   return (
     <Stack
@@ -37,33 +42,35 @@ export function ActiveFilterChips({
       useFlexGap
       sx={{ pb: 2 }}
       role="region"
-      aria-label="Aktive Filter"
+      aria-label={t('activeFilters.regionLabel')}
     >
       {hasQ && (
         <Chip
-          label={`Suche: ${filter.q}`}
+          label={t('activeFilters.search', { value: filter.q })}
           size="small"
           onDelete={onRemoveQ}
         />
       )}
       {hasLevel && (
         <Chip
-          label={`Level: ${filter.level === 'junior' ? 'Junior' : 'Senior'}`}
+          label={t('activeFilters.level', { value: levelLabel })}
           size="small"
           onDelete={onRemoveLevel}
         />
       )}
-      {filter.tags.map((t) => (
+      {filter.tags.map((tag) => (
         <Chip
-          key={t}
-          label={t}
+          key={tag}
+          label={tag}
           size="small"
-          onDelete={() => onRemoveTag(t)}
+          onDelete={() => onRemoveTag(tag)}
         />
       ))}
       {hasSort && (
         <Chip
-          label={`Sortierung: ${sortLabel(filter.sort)}`}
+          label={t('activeFilters.sort', {
+            value: t(`sort.${sortKey(filter.sort)}` as const),
+          })}
           size="small"
           onDelete={onRemoveSort}
         />
@@ -75,20 +82,13 @@ export function ActiveFilterChips({
         onClick={onResetAll}
         sx={{ alignSelf: 'center' }}
       >
-        Zurücksetzen
+        {t('common:actions.reset')}
       </Link>
     </Stack>
   );
 }
 
-function sortLabel(sort: FilterState['sort']): string {
-  switch (sort) {
-    case 'oldest':
-      return 'Älteste';
-    case 'relevance':
-      return 'Relevanz';
-    case 'newest':
-    default:
-      return 'Neueste';
-  }
+function sortKey(sort: Sort): 'newest' | 'oldest' | 'relevance' {
+  if (sort === 'oldest' || sort === 'relevance') return sort;
+  return 'newest';
 }

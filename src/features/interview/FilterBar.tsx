@@ -12,6 +12,7 @@ import TextField from '@mui/material/TextField';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
+import { useTranslation } from 'react-i18next';
 import type { LevelFilter } from '@/hooks/useFilteredPosts';
 import { type Sort } from '@/utils/sort';
 
@@ -41,6 +42,7 @@ export function FilterBar({
   relevanceEnabled = false,
   onChange,
 }: Props) {
+  const { t } = useTranslation('interview');
   const [localQ, setLocalQ] = useState(value.q);
   const lastCommitted = useRef(value.q);
 
@@ -60,12 +62,13 @@ export function FilterBar({
     return () => window.clearTimeout(t);
   }, [localQ, value, onChange]);
 
+  const searchLabel = t('filterBar.searchLabel');
   const searchField = (
     <TextField
       size="small"
       type="search"
-      label="Suche"
-      placeholder="Frage oder Tag…"
+      label={searchLabel}
+      placeholder={t('filterBar.searchPlaceholder')}
       value={localQ}
       disabled={searchDisabled}
       onChange={(e) => setLocalQ(e.target.value)}
@@ -75,7 +78,7 @@ export function FilterBar({
           endAdornment: localQ ? (
             <InputAdornment position="end">
               <IconButton
-                aria-label="Suche löschen"
+                aria-label={t('filterBar.clearSearch')}
                 size="small"
                 edge="end"
                 onClick={() => setLocalQ('')}
@@ -85,7 +88,7 @@ export function FilterBar({
             </InputAdornment>
           ) : null,
         },
-        htmlInput: { 'aria-label': 'Suche' },
+        htmlInput: { 'aria-label': searchLabel },
       }}
     />
   );
@@ -120,11 +123,11 @@ export function FilterBar({
           onChange={(_, next: LevelFilter | null) => {
             if (next) onChange({ ...value, level: next });
           }}
-          aria-label="Level"
+          aria-label={t('filterBar.levelGroupLabel')}
         >
-          <ToggleButton value="junior">Junior</ToggleButton>
-          <ToggleButton value="senior">Senior</ToggleButton>
-          <ToggleButton value="both">Beide</ToggleButton>
+          <ToggleButton value="junior">{t('level.junior')}</ToggleButton>
+          <ToggleButton value="senior">{t('level.senior')}</ToggleButton>
+          <ToggleButton value="both">{t('level.both')}</ToggleButton>
         </ToggleButtonGroup>
 
         <Autocomplete
@@ -135,24 +138,28 @@ export function FilterBar({
           onChange={(_, next) => onChange({ ...value, tags: next })}
           sx={{ flex: 1, minWidth: 220 }}
           renderInput={(params) => (
-            <TextField {...params} label="Tags" placeholder="Tag wählen" />
+            <TextField
+              {...params}
+              label={t('filterBar.tagsLabel')}
+              placeholder={t('filterBar.tagsPlaceholder')}
+            />
           )}
         />
 
         <FormControl size="small" sx={{ minWidth: 160 }}>
-          <InputLabel id="sort-label">Sortierung</InputLabel>
+          <InputLabel id="sort-label">{t('filterBar.sortLabel')}</InputLabel>
           <Select
             labelId="sort-label"
-            label="Sortierung"
+            label={t('filterBar.sortLabel')}
             value={value.sort}
             onChange={(e) =>
               onChange({ ...value, sort: e.target.value as Sort })
             }
           >
-            <MenuItem value="newest">Neueste</MenuItem>
-            <MenuItem value="oldest">Älteste</MenuItem>
+            <MenuItem value="newest">{t('sort.newest')}</MenuItem>
+            <MenuItem value="oldest">{t('sort.oldest')}</MenuItem>
             <MenuItem value="relevance" disabled={!relevanceEnabled}>
-              Relevanz
+              {t('sort.relevance')}
             </MenuItem>
           </Select>
         </FormControl>

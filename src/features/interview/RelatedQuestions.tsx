@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 import { useGetIndexQuery } from '@/api/interviewApi';
 import { relatedByTags } from '@/utils/related';
 
@@ -16,6 +17,7 @@ interface Props {
 }
 
 export function RelatedQuestions({ currentId, language, tags }: Props) {
+  const { t } = useTranslation('interview');
   const { data } = useGetIndexQuery(language);
   const related = useMemo(
     () => relatedByTags(data ?? [], currentId, tags),
@@ -25,9 +27,13 @@ export function RelatedQuestions({ currentId, language, tags }: Props) {
   if (related.length === 0) return null;
 
   return (
-    <Stack spacing={1.5} component="section" aria-label="Verwandte Fragen">
+    <Stack
+      spacing={1.5}
+      component="section"
+      aria-label={t('detail.relatedRegionLabel')}
+    >
       <Typography variant="h6" component="h2">
-        Verwandte Fragen
+        {t('detail.relatedHeading')}
       </Typography>
       <Stack spacing={1}>
         {related.map((p) => (

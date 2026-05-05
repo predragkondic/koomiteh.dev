@@ -1,0 +1,34 @@
+{
+  "appName": "skillup.dev",
+  "search": {
+    "placeholder": "Search…",
+    "openLabel": "Open search",
+    "globalLabel": "Global search",
+    "globalPlaceholder": "Search question…",
+    "indexError": "Search index could not be loaded.",
+    "indexErrorWithFilters": "Search index could not be loaded. Filters still work.",
+    "promptHint": "Type to search across all languages.",
+    "noHits": "No hits."
+  },
+  "actions": {
+    "retry": "Retry",
+    "reset": "Reset",
+    "back": "Back home"
+  },
+  "errors": {
+    "loadLanguages": "Languages could not be loaded.",
+    "loadPosts": "Questions could not be loaded.",
+    "loadPost": "Failed to load post."
+  },
+  "notFound": {
+    "title": "404",
+    "app": "Page not found.",
+    "language": "Unknown language.",
+    "post": "This question does not exist."
+  },
+  "language": {
+    "switcherLabel": "Language",
+    "en": "EN",
+    "de": "DE"
+  }
+}

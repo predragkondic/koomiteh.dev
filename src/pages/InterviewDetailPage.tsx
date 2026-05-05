@@ -5,24 +5,35 @@ import Chip from '@mui/material/Chip';
 import Skeleton from '@mui/material/Skeleton';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
+import { useTranslation } from 'react-i18next';
 import { useGetPostQuery } from '@/api/interviewApi';
 import { DetailBreadcrumb } from '@/features/interview/DetailBreadcrumb';
 import { DetailPrevNext } from '@/features/interview/DetailPrevNext';
 import { RelatedQuestions } from '@/features/interview/RelatedQuestions';
 import { NotFoundPage } from './NotFoundPage';
 
+function formatDate(value: string, locale: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date);
+}
+
 export function InterviewDetailPage() {
+  const { t, i18n } = useTranslation(['interview', 'common']);
   const { language = '', slug = '' } = useParams();
   const { data, isLoading, error, refetch } = useGetPostQuery({ language, slug });
 
   if (isLoading) {
     return (
-      <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
-        <Skeleton variant="text" height={48} width="80%" />
-        <Skeleton variant="rounded" height={120} />
-        <Skeleton variant="rounded" height={200} />
-      </Stack>
+      <Box role="status" aria-label={t('loading.detail')} aria-busy>
+        <Stack spacing={2} sx={{ maxWidth: 720, mx: 'auto' }}>
+          <Skeleton variant="text" height={48} width="80%" />
+          <Skeleton variant="rounded" height={120} />
+          <Skeleton variant="rounded" height={200} />
+        </Stack>
+      </Box>
     );
   }
 
@@ -34,11 +45,11 @@ export function InterviewDetailPage() {
         severity="error"
         action={
           <Button color="inherit" size="small" onClick={() => refetch()}>
-            Retry
+            {t('common:actions.retry')}
           </Button>
         }
       >
-        Failed to load post.
+        {t('common:errors.loadPost')}
       </Alert>
     );
   }
@@ -46,6 +57,7 @@ export function InterviewDetailPage() {
   if (!data) return null;
 
   const { frontmatter, bodyHtml } = data;
+  const locale = i18n.resolvedLanguage ?? i18n.language;
 
   return (
     <Stack spacing={3} sx={{ maxWidth: 720, mx: 'auto' }}>
@@ -58,12 +70,12 @@ export function InterviewDetailPage() {
       </Typography>
       <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-        {frontmatter.tags.map((t) => (
-          <Chip key={t} label={t} size="small" variant="outlined" />
+        {frontmatter.tags.map((tag) => (
+          <Chip key={tag} label={tag} size="small" variant="outlined" />
         ))}
       </Stack>
       <Typography variant="caption" color="text.secondary">
-        Updated {frontmatter.updatedAt}
+        {t('detail.updated', { date: formatDate(frontmatter.updatedAt, locale) })}
       </Typography>
       <Divider />
       <DetailPrevNext

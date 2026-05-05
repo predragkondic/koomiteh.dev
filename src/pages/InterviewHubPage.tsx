@@ -8,13 +8,15 @@ import CardContent from '@mui/material/CardContent';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useTranslation } from 'react-i18next';
 import { useGetManifestQuery } from '@/api/interviewApi';
 import type { ManifestLanguage } from '@/types';
 
 export function InterviewHubPage() {
+  const { t } = useTranslation(['interview', 'common']);
   const { data, isLoading, error, refetch } = useGetManifestQuery();
 
-  if (isLoading) return <HubSkeleton />;
+  if (isLoading) return <HubSkeleton ariaLabel={t('loading.hub')} />;
 
   if (error) {
     return (
@@ -22,11 +24,11 @@ export function InterviewHubPage() {
         severity="error"
         action={
           <Button color="inherit" size="small" onClick={() => refetch()}>
-            Erneut versuchen
+            {t('common:actions.retry')}
           </Button>
         }
       >
-        Sprachen konnten nicht geladen werden.
+        {t('common:errors.loadLanguages')}
       </Alert>
     );
   }
@@ -40,10 +42,10 @@ export function InterviewHubPage() {
   return (
     <Box>
       <Typography variant="h4" component="h1" gutterBottom>
-        Interview
+        {t('hub.title')}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ pb: 3 }}>
-        Wähle eine Sprache, um Fragen zu durchstöbern.
+        {t('hub.subtitle')}
       </Typography>
       <Box
         sx={{
@@ -65,6 +67,7 @@ export function InterviewHubPage() {
 }
 
 function LanguageTile({ lang }: { lang: ManifestLanguage }) {
+  const { t } = useTranslation('interview');
   return (
     <Card variant="outlined">
       <CardActionArea
@@ -78,7 +81,7 @@ function LanguageTile({ lang }: { lang: ManifestLanguage }) {
               {lang.displayName}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {lang.count === 1 ? '1 Frage' : `${lang.count} Fragen`}
+              {t('questions', { count: lang.count })}
             </Typography>
           </Stack>
         </CardContent>
@@ -87,9 +90,12 @@ function LanguageTile({ lang }: { lang: ManifestLanguage }) {
   );
 }
 
-function HubSkeleton() {
+function HubSkeleton({ ariaLabel }: { ariaLabel: string }) {
   return (
     <Box
+      role="status"
+      aria-label={ariaLabel}
+      aria-busy
       sx={{
         display: 'grid',
         gap: 2,

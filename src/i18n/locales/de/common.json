@@ -1,0 +1,34 @@
+{
+  "appName": "skillup.dev",
+  "search": {
+    "placeholder": "Suchen…",
+    "openLabel": "Suche öffnen",
+    "globalLabel": "Globale Suche",
+    "globalPlaceholder": "Frage suchen…",
+    "indexError": "Suchindex konnte nicht geladen werden.",
+    "indexErrorWithFilters": "Suchindex konnte nicht geladen werden. Filter funktionieren weiterhin.",
+    "promptHint": "Tippe, um über alle Sprachen zu suchen.",
+    "noHits": "Keine Treffer."
+  },
+  "actions": {
+    "retry": "Erneut versuchen",
+    "reset": "Zurücksetzen",
+    "back": "Zur Startseite"
+  },
+  "errors": {
+    "loadLanguages": "Sprachen konnten nicht geladen werden.",
+    "loadPosts": "Fragen konnten nicht geladen werden.",
+    "loadPost": "Beitrag konnte nicht geladen werden."
+  },
+  "notFound": {
+    "title": "404",
+    "app": "Seite nicht gefunden.",
+    "language": "Unbekannte Sprache.",
+    "post": "Diese Frage existiert nicht."
+  },
+  "language": {
+    "switcherLabel": "Sprache",
+    "en": "EN",
+    "de": "DE"
+  }
+}

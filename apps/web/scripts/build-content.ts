@@ -1,11 +1,12 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import matter from 'gray-matter';
 import { z } from 'zod';
 import { Marked } from 'marked';
 import { createHighlighter, type Highlighter } from 'shiki';
 import MiniSearch from 'minisearch';
-import { LANGUAGES } from '../content/languages.config.js';
+import { LANGUAGES } from '../../../content/languages.config.js';
 
 const TAG_RE = /^[a-z0-9-]+$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -197,10 +198,12 @@ export async function buildContent(opts: BuildOptions): Promise<BuildResult> {
 }
 
 async function main(): Promise<void> {
-  const root = process.cwd();
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  const repoRoot = path.resolve(here, '..', '..', '..');
+  const webRoot = path.resolve(here, '..');
   const result = await buildContent({
-    contentDir: path.join(root, 'content', 'interview'),
-    outDir: path.join(root, 'public', 'content'),
+    contentDir: path.join(repoRoot, 'content', 'interview'),
+    outDir: path.join(webRoot, 'public', 'content'),
     languages: LANGUAGES,
   });
   const summary = Object.entries(result.perLanguage)

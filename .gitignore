@@ -1,7 +1,7 @@
 node_modules
 dist
 dist-ssr
-public/content
+apps/web/public/content
 *.local
 .vite
 .env

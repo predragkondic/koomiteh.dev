@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build:content": "tsx scripts/build-content.ts",
-    "prebuild": "npm run build:content",
+    "prebuild": "pnpm run build:content",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
@@ -18,7 +18,8 @@
     "@fontsource/roboto": "^5.2.10",
     "@mui/material": "^6.5.0",
     "@reduxjs/toolkit": "^2.11.2",
-    "@skillup/shared": "*",
+    "@sentry/react": "^10.51.0",
+    "@skillup/shared": "workspace:*",
     "i18next": "^26.0.8",
     "i18next-browser-languagedetector": "^8.2.1",
     "react": "^18.3.1",

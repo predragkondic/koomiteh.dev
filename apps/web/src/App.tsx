@@ -1,6 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppShell } from '@/components/AppShell';
+import { DevHealthBanner } from '@/components/DevHealthBanner';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { config } from '@/config';
 import { InterviewDetailPage } from '@/pages/InterviewDetailPage';
 import { InterviewHubPage } from '@/pages/InterviewHubPage';
 import { InterviewLayout } from '@/pages/InterviewLayout';
@@ -26,6 +28,7 @@ export function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      {config.isDev && <DevHealthBanner />}
     </ErrorBoundary>
   );
 }

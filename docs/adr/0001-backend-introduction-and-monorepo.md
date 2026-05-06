@@ -1,6 +1,6 @@
 # ADR-0001: Backend-Einführung und Monorepo-Layout
 
-- **Status:** Accepted
+- **Status:** Accepted (amended 2026-05-06: Workspace-Manager npm → pnpm)
 - **Date:** 2026-05-06
 - **Deciders:** Peko (solo)
 
@@ -14,7 +14,7 @@ User-generated Content (Login, Favoriten, Kommentare, Reactions) ist nicht stati
 
 **Backend einführen. Inhalte und User-Daten leben in PostgreSQL.** Static-Content-Pipeline wird abgeschafft.
 
-**Monorepo via npm workspaces:**
+**Monorepo via pnpm workspaces:**
 
 ```
 apps/
@@ -36,7 +36,7 @@ packages/
 ### Positive
 
 - Schema-as-TS-Code: Frontend und Backend importieren dieselben Zod-Validatoren aus `packages/shared`. Drift unmöglich.
-- npm workspaces: niedrigste Friction-Migration vom existierenden npm-Setup. Keine neuen Tools (kein pnpm, kein Turborepo).
+- pnpm workspaces: strict-hoisting per-Symlink-Tree verhindert Phantom-Deps und das im npm-Setup beobachtete Cross-Workspace-Resolution-Loch (siehe Amendment unten). Keine schweren Tools (kein Turborepo).
 - Hono läuft auf Node — TCP-Postgres frei verfügbar, ORM-Auswahl uneingeschränkt. Edge-Migration (Cloudflare Workers, Neon HTTP-Driver) bleibt als Backout-Pfad offen.
 - Drizzle ist leichtgewichtig (kein Codegen-Engine wie Prisma), SQL-nah, schnell zu lernen.
 
@@ -56,5 +56,20 @@ packages/
 - **NestJS:** Verworfen. Schwer, DI-Container, opinionated. Massiv overkill für skillup.dev.
 - **Prisma als ORM:** Verworfen. Eigene Schema-DSL, separate Codegen-Engine, schwerer Runtime-Footprint (Engine-Binary). Drizzle's TS-natives Schema passt besser zu `packages/shared`.
 - **Kysely als Query-Builder:** Brutal type-safe, aber kein eingebautes Migrations-Tool, mehr Boilerplate für CRUD. Drizzle bietet beides.
-- **pnpm workspaces:** Schneller als npm, strenger mit hoisting. Migration-Aufwand nicht gerechtfertigt für Solo-Projekt mit 2 Apps + 1 Package.
+- **npm workspaces:** Initial gewählt aufgrund niedrigster Friction. Im Verlauf von Slice 2 nicht mehr tragbar — siehe Amendment unten.
 - **Turborepo:** Build-Cache wertvoll ab 4-5+ Packages. Premature für jetzt, später nachrüstbar.
+
+## Amendment 2026-05-06: npm → pnpm
+
+**Trigger:** Beim Setup von Drizzle in Slice 2 (Issue #21) brach `drizzle-kit generate` mit `Please install latest version of drizzle-orm`, obwohl drizzle-orm korrekt in `apps/api/package.json` deklariert war. Root cause: npm hoisted drizzle-kit auf `/node_modules/`, drizzle-orm aber nicht (lag nested in `apps/api/node_modules/`). drizzle-kit's runtime-Lookup auf drizzle-orm via Self-Relative-Resolution scheiterte.
+
+**Bewertung:** Das ist ein generelles Problem von npm's flat-hoist-Heuristik in Workspaces. Selbst der Workaround "drizzle-orm zusätzlich an Root pinnen" ist symptomatisch — andere Tools mit ähnlicher Self-Resolution-Logik werden früher oder später dasselbe brechen.
+
+**Entscheidung:** Wechsel zu pnpm workspaces. pnpm baut pro Workspace einen isolierten `node_modules`-Symlink-Tree (Strict-Hoisting). Jedes Package sieht ausschließlich seine deklarierten Deps und deren transitive Deps — Phantom-Deps und Cross-Workspace-Resolution-Löcher sind strukturell ausgeschlossen.
+
+**Trade-offs vs. ursprüngliche Begründung:**
+
+- "Migration-Aufwand nicht gerechtfertigt" — widerlegt. Der Wechsel ist ~30 Minuten mechanisch (Lockfile, `pnpm-workspace.yaml`, Script-Syntax `npm run X -w Y` → `pnpm -F Y X`). Cloudflare Pages und Fly.io unterstützen pnpm out-of-the-box.
+- "Keine neuen Tools" — gilt nicht mehr. Aber pnpm ist ein Drop-in-Replacement, kein zusätzliches Tool mit eigener Disziplin.
+
+**Pinned via `packageManager`-Field** in Root-`package.json` (Corepack-aktivierbar).

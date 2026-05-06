@@ -20,12 +20,17 @@ function read(key: string, fallback?: string): string {
   throw new Error(`Missing required env var: ${key}`);
 }
 
+const webOriginsRaw = read(
+  'WEB_ORIGIN',
+  'https://skillup.dev,http://localhost:5173',
+);
+
 export const env = {
   databaseUrl: read('DATABASE_URL'),
   sentryDsn: process.env.SENTRY_DSN ?? '',
   nodeEnv: read('NODE_ENV', 'development'),
   port: Number(read('PORT', '3000')),
-  webOrigin: read('WEB_ORIGIN', 'https://skillup.dev'),
+  webOrigins: webOriginsRaw.split(',').map((s) => s.trim()).filter(Boolean),
   logLevel: read('LOG_LEVEL', 'info'),
   builtAt: read('BUILT_AT', new Date().toISOString()),
 };

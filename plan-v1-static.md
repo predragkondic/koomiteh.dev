@@ -1,4 +1,12 @@
-# skillup.dev — Plan
+# skillup.dev — Plan v1 (Static-Content-Phase)
+
+> **Historisches Dokument.** Beschreibt die erste Iteration mit statischer JSON-basierter Content-Pipeline. Architektur wurde am 2026-05-06 erweitert um Backend, Auth und User-generated Content.
+>
+> **Superseded by:** ADR-0001 bis ADR-0008 in `docs/adr/`. Aktueller Architektur-Snapshot in `CONTEXT.md`.
+>
+> Dieses File bleibt als Snapshot der initialen Design-Entscheidungen erhalten — viele davon (Routing, MUI, RTK-Query-Endpoint-Symmetrie, i18n, Theme-Layer) gelten unverändert weiter.
+
+---
 
 SPA, die Programmierern beim Weiterbilden hilft. Erstes Feature: **Interview** — kuratierte Beiträge nach dem Schema `Frage → kurze klare Antwort → Beispiel-Code`, differenziert nach Programmiersprache und Level (junior / senior).
 

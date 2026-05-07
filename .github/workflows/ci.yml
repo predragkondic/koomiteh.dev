@@ -63,7 +63,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Run migrations
-        run: pnpm -F @skillup/api db:migrate
+        run: pnpm -F @koomiteh/api db:migrate
         env:
           DATABASE_URL: ${{ steps.create_neon_branch.outputs.db_url }}
 

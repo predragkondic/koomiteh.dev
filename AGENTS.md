@@ -2,7 +2,7 @@
 
 ### Issue tracker
 
-Issues live in GitHub Issues for `predragkondic/skillup.dev`, accessed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+Issues live in GitHub Issues for `predragkondic/koomiteh.dev`, accessed via the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

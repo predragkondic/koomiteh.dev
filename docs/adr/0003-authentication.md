@@ -5,7 +5,7 @@
 
 ## Context
 
-Mit User-generated Content (Favoriten, Kommentare, Reactions) braucht skillup.dev Auth. Zielgruppe sind Programmier-Lernende — Devs sind in der Regel auf GitHub. Außerdem braucht es eine Admin-Rolle für Content-Pflege via UI.
+Mit User-generated Content (Favoriten, Kommentare, Reactions) braucht koomiteh.dev Auth. Zielgruppe sind Programmier-Lernende — Devs sind in der Regel auf GitHub. Außerdem braucht es eine Admin-Rolle für Content-Pflege via UI.
 
 Drei Achsen-Entscheidungen: **Identity-Source**, **Session-Mechanik**, **Authorization-Modell**.
 
@@ -20,7 +20,7 @@ Drei Achsen-Entscheidungen: **Identity-Source**, **Session-Mechanik**, **Authori
 ### Session-Mechanik: Server-Sessions in Postgres + httpOnly-Cookie
 
 - **`sessions`-Tabelle:** `id` (random opaque), `user_id`, `expires_at`, `created_at`.
-- **Cookie:** Session-ID, `HttpOnly; Secure; SameSite=Lax; Domain=.skillup.dev` (in Prod). In Dev: `Domain` weglassen, lockerer.
+- **Cookie:** Session-ID, `HttpOnly; Secure; SameSite=Lax; Domain=.koomiteh.dev` (in Prod). In Dev: `Domain` weglassen, lockerer.
 - **Logout:** `POST /api/auth/logout` — DELETE Session-Row, Cookie clear.
 - **Auto-Expire:** TTL via `expires_at`. Background-Job optional zum periodischen Aufräumen abgelaufener Rows.
 
@@ -57,7 +57,7 @@ Drei Achsen-Entscheidungen: **Identity-Source**, **Session-Mechanik**, **Authori
 ### Negative / Trade-offs
 
 - **GitHub-Account ist Login-Voraussetzung.** Lock-out für User ohne GitHub. Akzeptabel für eine Dev-Lern-Plattform.
-- **DB-Roundtrip pro authenticated Request** (Session-Lookup). Bei skillup.dev-Volumen irrelevant; bei Skala wäre Redis-Cache eine Option.
+- **DB-Roundtrip pro authenticated Request** (Session-Lookup). Bei koomiteh.dev-Volumen irrelevant; bei Skala wäre Redis-Cache eine Option.
 - **OAuth-App-Setup ist HITL.** Slice 3 kann nicht ohne manuelle GitHub-OAuth-App-Registrierung mergen. Dokumentiert im Issue.
 - **`SameSite=Lax` blockiert nicht alle CSRF-Vektoren** (z.B. method-override-Tricks). Daher die zusätzliche Origin-Header-Prüfung.
 

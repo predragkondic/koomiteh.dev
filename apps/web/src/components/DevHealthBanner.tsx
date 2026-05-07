@@ -7,7 +7,7 @@ type Status =
   | { kind: 'ok'; builtAt: string; db: 'ok' | 'error' }
   | { kind: 'fail'; reason: string };
 
-const STORAGE_KEY = 'skillup:dev-health-banner-hidden';
+const STORAGE_KEY = 'koomiteh:dev-health-banner-hidden';
 
 export function DevHealthBanner() {
   const [status, setStatus] = useState<Status>({ kind: 'loading' });

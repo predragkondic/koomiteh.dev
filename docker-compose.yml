@@ -1,21 +1,21 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: skillup-db
+    container_name: koomiteh-db
     environment:
-      POSTGRES_USER: skillup
-      POSTGRES_PASSWORD: skillup
-      POSTGRES_DB: skillup_dev
+      POSTGRES_USER: koomiteh
+      POSTGRES_PASSWORD: koomiteh
+      POSTGRES_DB: koomiteh_dev
     ports:
       - '5432:5432'
     volumes:
-      - skillup-db-data:/var/lib/postgresql/data
+      - koomiteh-db-data:/var/lib/postgresql/data
       - ./apps/api/docker/init-extensions.sql:/docker-entrypoint-initdb.d/00-extensions.sql:ro
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U skillup -d skillup_dev']
+      test: ['CMD-SHELL', 'pg_isready -U koomiteh -d koomiteh_dev']
       interval: 5s
       timeout: 3s
       retries: 10
 
 volumes:
-  skillup-db-data:
+  koomiteh-db-data:

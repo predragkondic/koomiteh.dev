@@ -13,12 +13,12 @@ importers:
       '@hono/node-server':
         specifier: ^1.19.5
         version: 1.19.14(hono@4.12.17)
+      '@koomiteh/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@sentry/node':
         specifier: ^10.27.0
         version: 10.51.0
-      '@skillup/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       drizzle-orm:
         specifier: ^0.45.2
         version: 0.45.2(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(pg@8.20.0)
@@ -68,6 +68,9 @@ importers:
       '@fontsource/roboto':
         specifier: ^5.2.10
         version: 5.2.10
+      '@koomiteh/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@mui/material':
         specifier: ^6.5.0
         version: 6.5.0(@emotion/react@11.14.0(@types/react@19.2.14)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@18.3.1))(@types/react@19.2.14)(react@18.3.1))(@types/react@19.2.14)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -77,9 +80,6 @@ importers:
       '@sentry/react':
         specifier: ^10.51.0
         version: 10.51.0(react@18.3.1)
-      '@skillup/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
       i18next:
         specifier: ^26.0.8
         version: 26.0.8(typescript@6.0.3)

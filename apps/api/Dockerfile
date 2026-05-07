@@ -8,7 +8,7 @@ COPY apps/api/package.json ./apps/api/
 COPY apps/web/package.json ./apps/web/
 COPY packages/shared/package.json ./packages/shared/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --frozen-lockfile --prod --filter=@skillup/api...
+    pnpm install --frozen-lockfile --prod --filter=@koomiteh/api...
 
 FROM base AS runtime
 ENV NODE_ENV=production

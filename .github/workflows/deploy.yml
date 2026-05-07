@@ -24,9 +24,9 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - run: pnpm install --frozen-lockfile --filter=@skillup/api...
+      - run: pnpm install --frozen-lockfile --filter=@koomiteh/api...
 
-      - run: pnpm -F @skillup/api db:migrate
+      - run: pnpm -F @koomiteh/api db:migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 

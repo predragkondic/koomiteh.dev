@@ -5,7 +5,7 @@
 
 ## Context
 
-skillup.dev erlaubt Public-User, auf Posts zu kommentieren. Comments enthalten Markdown — Devs zeigen oft Code-Variationen, also sind Code-Fences essentiell.
+koomiteh.dev erlaubt Public-User, auf Posts zu kommentieren. Comments enthalten Markdown — Devs zeigen oft Code-Variationen, also sind Code-Fences essentiell.
 
 Zwei zentrale Design-Fragen:
 

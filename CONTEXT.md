@@ -1,6 +1,6 @@
-# skillup.dev — Context
+# koomiteh.dev — Context
 
-Single-source domain context for skillup.dev. Read this before exploring the codebase. ADRs in `docs/adr/` capture decisions in detail; this file is the high-level snapshot and glossary.
+Single-source domain context for koomiteh.dev. Read this before exploring the codebase. ADRs in `docs/adr/` capture decisions in detail; this file is the high-level snapshot and glossary.
 
 ---
 
@@ -15,7 +15,7 @@ Web-Plattform für Programmier-Lernende. Kuratierte Frage-Antwort-Beiträge im F
 ```
 ┌──────────────────────────────┐         ┌──────────────────────────────┐
 │  Cloudflare Pages            │         │  Fly.io                      │
-│  https://skillup.dev         │ ──API──▶│  https://api.skillup.dev     │
+│  https://koomiteh.dev         │ ──API──▶│  https://api.koomiteh.dev     │
 │  apps/web (Vite SPA)         │         │  apps/api (Hono on Node)     │
 └──────────────────────────────┘         └────────────┬─────────────────┘
                                                       │
@@ -31,7 +31,7 @@ Web-Plattform für Programmier-Lernende. Kuratierte Frage-Antwort-Beiträge im F
 - **Web:** React + Vite + Redux-Toolkit-Query + MUI v6, deployed auf Cloudflare Pages.
 - **API:** Hono auf Node, deployed auf Fly.io. JSON-REST.
 - **DB:** Postgres bei Neon. Single Source of Truth für Inhalte und User-Daten.
-- **Auth:** GitHub-OAuth, Server-Sessions in Postgres, httpOnly-Cookie auf `.skillup.dev`.
+- **Auth:** GitHub-OAuth, Server-Sessions in Postgres, httpOnly-Cookie auf `.koomiteh.dev`.
 - **Monorepo:** npm workspaces — `apps/web`, `apps/api`, `packages/shared`.
 
 Detailed architecture decisions: `docs/adr/`.
@@ -75,7 +75,7 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 - **Schema in `packages/shared`.** Drizzle-Tabellen + drizzle-zod-Validatoren. Frontend importiert Validatoren für Form-Validation, Backend für API-Validation. Single Source of Truth für Types und Schemas.
 - **i18n nur UI, nicht Content.** UI-Labels en/de übersetzt. Beitrag-Inhalte und Code-Blöcke bleiben in Original-Sprache (Englisch). Kein Path-Prefix-i18n.
 - **Permalink-Stabilität.** `/interview/:language/:slug` muss URL-stabil bleiben. Soft-Delete liefert 410 Gone, aber URL wird nicht recycled.
-- **CORS und Cookies.** API erlaubt nur Origin `https://skillup.dev` (+ Localhost in Dev). Cookies sind `SameSite=Lax; HttpOnly; Secure; Domain=.skillup.dev`. Origin-Header-Check für state-changing Requests.
+- **CORS und Cookies.** API erlaubt nur Origin `https://koomiteh.dev` (+ Localhost in Dev). Cookies sind `SameSite=Lax; HttpOnly; Secure; Domain=.koomiteh.dev`. Origin-Header-Check für state-changing Requests.
 - **Kein E2E-Vendor-Lock-in.** Web auf Pages, API auf Fly, DB auf Neon — austauschbar (nicht trivial, aber kein Lock-in-Layer wie z.B. Vercel-Edge-Functions oder Supabase-Auth).
 - **Migrations via drizzle-kit.** Generierte SQL-Files committed unter `apps/api/drizzle/`. Migration läuft im CI als separater Step **vor** Deploy. Expand-Contract-Pattern bei Breaking-Changes.
 
@@ -87,7 +87,7 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
   ```sql
   UPDATE users SET role = 'admin' WHERE github_login = '<your-github-login>';
   ```
-- **Initial content seed.** Einmalig nach erstem Deploy: `npm run -w @skillup/api db:seed` läuft `content/interview/*.md` durch Zod, upsertet in `posts`. Idempotent. Danach ist die DB authoritativ — `content/`-Verzeichnis kann archiviert oder gelöscht werden.
+- **Initial content seed.** Einmalig nach erstem Deploy: `npm run -w @koomiteh/api db:seed` läuft `content/interview/*.md` durch Zod, upsertet in `posts`. Idempotent. Danach ist die DB authoritativ — `content/`-Verzeichnis kann archiviert oder gelöscht werden.
 - **Per-PR Test-DB.** GitHub-Action erstellt Neon-Branch pro PR, läuft Migrations + Tests, teardown bei PR-Close. Production-DB ist die `main`-Branch in Neon.
 
 ---

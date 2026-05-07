@@ -26,8 +26,8 @@ Außerdem die übergreifende Frage: Hard-Delete vs Soft-Delete pro Entity-Type.
 
 ### CSRF-Schutz
 
-- **Cookie-Konfiguration** (siehe ADR-0003): `SameSite=Lax; Secure; HttpOnly; Domain=.skillup.dev`. Lax blockt Cross-Site-POST-Requests (Browser sendet Cookie nicht bei Cross-Site-Form-Submit/AJAX).
-- **Origin-Header-Check** in Hono-Middleware für state-changing Methods (POST/PATCH/DELETE): `Origin === 'https://skillup.dev'` (Prod) oder `'http://localhost:5173'` (Dev). Antwort 403 wenn nicht.
+- **Cookie-Konfiguration** (siehe ADR-0003): `SameSite=Lax; Secure; HttpOnly; Domain=.koomiteh.dev`. Lax blockt Cross-Site-POST-Requests (Browser sendet Cookie nicht bei Cross-Site-Form-Submit/AJAX).
+- **Origin-Header-Check** in Hono-Middleware für state-changing Methods (POST/PATCH/DELETE): `Origin === 'https://koomiteh.dev'` (Prod) oder `'http://localhost:5173'` (Dev). Antwort 403 wenn nicht.
 - **Kein separates CSRF-Token.** Double-Submit-Token wäre redundant zu SameSite=Lax. Komplexität ohne Mehrwert in 2026.
 
 ### Rate-Limiting
@@ -74,7 +74,7 @@ Außerdem die übergreifende Frage: Hard-Delete vs Soft-Delete pro Entity-Type.
   - Vollständiges DELETE der Row und referenzierter Comments/Posts (CASCADE oder manuell).
   - Aktuell als manueller Admin-Process, kein Self-Service. Prozess in `docs/operations/` dokumentieren wenn anfällt.
 - **Datenbank-Region:** Neon EU-Region wählen für DSGVO-Compliance.
-- **Cookie-Consent:** Da skillup.dev nur Session-Cookies nutzt (essentially-functional, keine Tracking-Cookies), ist kein Consent-Banner zwingend. Sentry-DSN ist Server-side-konfigurierter Error-Tracking, kein Tracking-Cookie.
+- **Cookie-Consent:** Da koomiteh.dev nur Session-Cookies nutzt (essentially-functional, keine Tracking-Cookies), ist kein Consent-Banner zwingend. Sentry-DSN ist Server-side-konfigurierter Error-Tracking, kein Tracking-Cookie.
 
 ## Consequences
 

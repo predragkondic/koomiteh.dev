@@ -1,4 +1,4 @@
-# skillup.dev
+# koomiteh.dev
 
 Web platform for programming learners. Curated Q&A posts, GitHub-OAuth login, favorites, comments, reactions.
 
@@ -25,7 +25,7 @@ cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
 
 # Apply DB migrations.
-pnpm -F @skillup/api db:migrate
+pnpm -F @koomiteh/api db:migrate
 ```
 
 ### Day-to-day
@@ -34,10 +34,10 @@ Two terminals:
 
 ```sh
 # API on http://localhost:3000
-pnpm -F @skillup/api dev
+pnpm -F @koomiteh/api dev
 
 # Web on http://localhost:5173 (proxies /api → :3000)
-pnpm -F @skillup/web dev
+pnpm -F @koomiteh/web dev
 ```
 
 ### Useful commands
@@ -45,8 +45,8 @@ pnpm -F @skillup/web dev
 ```sh
 docker compose down            # stop DB (keeps data)
 docker compose down -v         # stop DB + drop data volume
-pnpm -F @skillup/api db:generate    # generate migration from schema diff
-pnpm -F @skillup/api db:migrate     # apply migrations
+pnpm -F @koomiteh/api db:generate    # generate migration from schema diff
+pnpm -F @koomiteh/api db:migrate     # apply migrations
 pnpm -r typecheck                   # typecheck all workspaces
 pnpm -r test                        # run tests in all workspaces
 ```

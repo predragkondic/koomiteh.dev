@@ -1,5 +1,5 @@
 {
-  "name": "skillup.dev",
+  "name": "koomiteh.dev",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -12,20 +12,20 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm -F @skillup/web dev",
-    "dev:api": "pnpm -F @skillup/api dev",
-    "build": "pnpm -F @skillup/web build",
-    "build:api": "pnpm -F @skillup/api build",
-    "preview": "pnpm -F @skillup/web preview",
+    "dev": "pnpm -F @koomiteh/web dev",
+    "dev:api": "pnpm -F @koomiteh/api dev",
+    "build": "pnpm -F @koomiteh/web build",
+    "build:api": "pnpm -F @koomiteh/api build",
+    "preview": "pnpm -F @koomiteh/web preview",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/predragkondic/skillup.dev.git"
+    "url": "git+https://github.com/predragkondic/koomiteh.dev.git"
   },
   "bugs": {
-    "url": "https://github.com/predragkondic/skillup.dev/issues"
+    "url": "https://github.com/predragkondic/koomiteh.dev/issues"
   },
-  "homepage": "https://github.com/predragkondic/skillup.dev#readme"
+  "homepage": "https://github.com/predragkondic/koomiteh.dev#readme"
 }

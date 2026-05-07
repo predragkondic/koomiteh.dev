@@ -79,8 +79,8 @@ GET /api/posts?language=ts&level=junior&tag=closures&q=closure&sort=relevance&pa
 
 ### Negative / Trade-offs
 
-- **Search funktioniert nur online.** Plan v1's MiniSearch funktionierte offline nach Initial-Load. Für skillup.dev kein realer Use-Case (Posts kommen eh aus DB).
-- **Offset wird teuer ab ~10k Rows.** Postgres scannt alle vorherigen Rows, um sie zu skippen. Bei skillup.dev-Volumen (Posts: dutzende-bis-hunderte) irrelevant. Sollte Volumen jemals stark wachsen → Cursor-Pagination als Migration.
+- **Search funktioniert nur online.** Plan v1's MiniSearch funktionierte offline nach Initial-Load. Für koomiteh.dev kein realer Use-Case (Posts kommen eh aus DB).
+- **Offset wird teuer ab ~10k Rows.** Postgres scannt alle vorherigen Rows, um sie zu skippen. Bei koomiteh.dev-Volumen (Posts: dutzende-bis-hunderte) irrelevant. Sollte Volumen jemals stark wachsen → Cursor-Pagination als Migration.
 - **Stop-Words und Stemming hardcoded auf Englisch.** `to_tsvector('english', ...)`. Inhalte sind englisch (laut `plan-v1-static.md`-Entscheidung), passt. Falls je mehrsprachige Inhalte: pro-Language-Vector oder `simple`-Config nötig.
 - **Generated-Column-Performance.** Insert/Update auf `posts` triggert Re-Compute des Vectors. Bei niedriger Schreibfrequenz (Admin-only) trivial.
 
@@ -88,7 +88,7 @@ GET /api/posts?language=ts&level=junior&tag=closures&q=closure&sort=relevance&pa
 
 - **MiniSearch beibehalten, Index aus DB serialisieren:** Verworfen. Index muss bei jedem Post-Edit neu erzeugt werden — entweder eager (Latency-Cost beim Save) oder lazy mit Cache-Invalidation (Komplexität). Server-Side-Search ist sauberer.
 - **`ILIKE '%query%'`:** Verworfen. Kein Ranking, kein Stemming, langsam ohne speziellen Index.
-- **Externe Search-Engine** (Meilisearch, Typesense, Algolia): Verworfen. Best-in-class Capabilities, aber extra Service zu betreiben + Sync-Logik. Massiv overkill für skillup.dev's Volumen. Kann später nachgerüstet werden, wenn Postgres-FTS limitiert.
+- **Externe Search-Engine** (Meilisearch, Typesense, Algolia): Verworfen. Best-in-class Capabilities, aber extra Service zu betreiben + Sync-Logik. Massiv overkill für koomiteh.dev's Volumen. Kann später nachgerüstet werden, wenn Postgres-FTS limitiert.
 - **Cursor-Pagination:** Verworfen für jetzt. Skaliert konstant unabhängig von Page-Tiefe, aber: kein Page-Jump (UX-Regression vs. Plan v1), Total-Count separat, Sort-Switch erzwingt Cursor-Reset. Würde sich erst lohnen ab Volumen >10k Rows.
 - **Infinite-Scroll:** Verworfen. Plan v1's UX hatte explizit numbered Pagination; Infinite-Scroll wäre eine UX-Pivot ohne Anlass.
 - **Hybrid (Offset + estimated total via `pg_class.reltuples`):** Verworfen. Premature für aktuelle Skala.

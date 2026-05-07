@@ -1,4 +1,4 @@
-# skillup.dev — Plan v1 (Static-Content-Phase)
+# koomiteh.dev — Plan v1 (Static-Content-Phase)
 
 > **Historisches Dokument.** Beschreibt die erste Iteration mit statischer JSON-basierter Content-Pipeline. Architektur wurde am 2026-05-06 erweitert um Backend, Auth und User-generated Content.
 >

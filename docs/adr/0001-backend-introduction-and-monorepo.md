@@ -6,7 +6,7 @@
 
 ## Context
 
-skillup.dev startete als reine SPA mit Build-Time-Inhalten (Markdown → JSON, statisch ausgeliefert von Cloudflare Pages). RTK-Query-Endpoints traffen statische `public/content/*.json`-Files. Architektur war bewusst API-symmetrisch designed (siehe `plan-v1-static.md`), um spätere Migration zu echtem Backend zu erleichtern.
+koomiteh.dev startete als reine SPA mit Build-Time-Inhalten (Markdown → JSON, statisch ausgeliefert von Cloudflare Pages). RTK-Query-Endpoints traffen statische `public/content/*.json`-Files. Architektur war bewusst API-symmetrisch designed (siehe `plan-v1-static.md`), um spätere Migration zu echtem Backend zu erleichtern.
 
 User-generated Content (Login, Favoriten, Kommentare, Reactions) ist nicht statisch realisierbar. Dynamische User-Daten brauchen Backend + Datenbank.
 
@@ -53,7 +53,7 @@ packages/
 - **Bun + Hono auf Cloudflare Workers:** Verworfen. Edge-Constraint zwingt zu HTTP-Driver (Neon HTTP), schließt klassische ORMs aus, Bun-Runtime hat Edge-Cases bei npm-Paketen. Risiko zu hoch für Solo-Projekt.
 - **Express:** Verworfen. Veraltet (Sync-Middleware, Callback-Style), keine eingebaute Schema-Validation.
 - **Fastify:** Echte Alternative zu Hono. Reiferes Plugin-Ökosystem. Hono gewählt wegen Web-Standards-API und besserer Migrations-Story zu Edge falls je gewünscht.
-- **NestJS:** Verworfen. Schwer, DI-Container, opinionated. Massiv overkill für skillup.dev.
+- **NestJS:** Verworfen. Schwer, DI-Container, opinionated. Massiv overkill für koomiteh.dev.
 - **Prisma als ORM:** Verworfen. Eigene Schema-DSL, separate Codegen-Engine, schwerer Runtime-Footprint (Engine-Binary). Drizzle's TS-natives Schema passt besser zu `packages/shared`.
 - **Kysely als Query-Builder:** Brutal type-safe, aber kein eingebautes Migrations-Tool, mehr Boilerplate für CRUD. Drizzle bietet beides.
 - **npm workspaces:** Initial gewählt aufgrund niedrigster Friction. Im Verlauf von Slice 2 nicht mehr tragbar — siehe Amendment unten.

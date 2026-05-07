@@ -1,5 +1,5 @@
 {
-  "name": "@skillup/api",
+  "name": "@koomiteh/api",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@hono/node-server": "^1.19.5",
     "@sentry/node": "^10.27.0",
-    "@skillup/shared": "workspace:*",
+    "@koomiteh/shared": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.10.5",
     "hono-pino": "^0.10.2",

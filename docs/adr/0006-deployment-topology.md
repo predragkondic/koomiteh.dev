@@ -13,8 +13,8 @@ Mit Backend-Einführung muss entschieden werden, wo API, DB und Web laufen. Auß
 
 | Komponente | Vendor | URL |
 |---|---|---|
-| Web (Vite-SPA) | Cloudflare Pages | `https://skillup.dev` |
-| API (Hono) | Fly.io | `https://api.skillup.dev` |
+| Web (Vite-SPA) | Cloudflare Pages | `https://koomiteh.dev` |
+| API (Hono) | Fly.io | `https://api.koomiteh.dev` |
 | DB (PostgreSQL) | Neon | (Connection-String) |
 
 **Begründung pro Vendor:**
@@ -25,10 +25,10 @@ Mit Backend-Einführung muss entschieden werden, wo API, DB und Web laufen. Auß
 
 ### Domain-Strategie: Subdomain mit Domain-Cookie
 
-- `skillup.dev` → Cloudflare Pages
-- `api.skillup.dev` → Fly-App-CNAME
-- **Cookie-Reichweite:** `Domain=.skillup.dev; SameSite=Lax; Secure; HttpOnly`. Beide Subdomains teilen Cookie. Same-Site nach RFC-6265bis (`skillup.dev` und `api.skillup.dev` sind same-site).
-- **CORS:** Hono erlaubt Origin `https://skillup.dev` (Prod) und `http://localhost:5173` (Dev), `credentials: true`.
+- `koomiteh.dev` → Cloudflare Pages
+- `api.koomiteh.dev` → Fly-App-CNAME
+- **Cookie-Reichweite:** `Domain=.koomiteh.dev; SameSite=Lax; Secure; HttpOnly`. Beide Subdomains teilen Cookie. Same-Site nach RFC-6265bis (`koomiteh.dev` und `api.koomiteh.dev` sind same-site).
+- **CORS:** Hono erlaubt Origin `https://koomiteh.dev` (Prod) und `http://localhost:5173` (Dev), `credentials: true`.
 
 ### Local Development
 
@@ -69,7 +69,7 @@ Mit Backend-Einführung muss entschieden werden, wo API, DB und Web laufen. Auß
 
 ### Negative / Trade-offs
 
-- **Drei Vendor-Accounts** statt einem. Mehr Onboarding (Slice 2 ist HITL wegen Vendor-Setup), mehr Bills (alle drei haben aber Free-Tier, der für skillup.dev reicht).
+- **Drei Vendor-Accounts** statt einem. Mehr Onboarding (Slice 2 ist HITL wegen Vendor-Setup), mehr Bills (alle drei haben aber Free-Tier, der für koomiteh.dev reicht).
 - **Cross-Region-Latency** zwischen Fly (API) und Neon (DB). Beide haben EU-Regionen — bei korrekter Region-Wahl <10ms intra-Region. Falls je Latency-Issue: Fly-Postgres als Co-located Alternative.
 - **Sentry-DSN-Exposure** für Frontend (DSN steht im Bundle). Standard-Sentry-Modus; Public-DSN ist by-design. Rate-Limit auf Sentry-Seite verhindert Missbrauch.
 

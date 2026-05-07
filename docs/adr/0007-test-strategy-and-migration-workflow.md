@@ -49,9 +49,9 @@ Pro PR erstellt eine GitHub-Action eine Neon-Branch via `neondatabase/create-bra
   with:
     project_id: ${{ secrets.NEON_PROJECT_ID }}
     branch_name: pr-${{ github.event.number }}
-- run: npm run -w @skillup/api db:migrate
+- run: npm run -w @koomiteh/api db:migrate
   env: { DATABASE_URL: ${{ steps.create_branch.outputs.db_url }} }
-- run: npm run -w @skillup/api test
+- run: npm run -w @koomiteh/api test
 - if: github.event.action == 'closed'
   uses: neondatabase/delete-branch-action@v3
 ```
@@ -66,7 +66,7 @@ Pro PR erstellt eine GitHub-Action eine Neon-Branch via `neondatabase/create-bra
 
 ```bash
 # Schema in packages/shared/db/schema.ts ändern
-npm run -w @skillup/api db:generate   # generiert SQL in apps/api/drizzle/
+npm run -w @koomiteh/api db:generate   # generiert SQL in apps/api/drizzle/
 git add apps/api/drizzle/
 git commit
 ```

@@ -14,7 +14,7 @@ import { theme } from './theme';
 
 type Mode = 'light' | 'dark';
 
-const STORAGE_KEY = 'skillup-theme';
+const STORAGE_KEY = 'koomiteh-theme';
 
 interface ThemeContextValue {
   mode: Mode;

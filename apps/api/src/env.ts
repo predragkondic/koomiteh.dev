@@ -22,7 +22,7 @@ function read(key: string, fallback?: string): string {
 
 const webOriginsRaw = read(
   'WEB_ORIGIN',
-  'https://skillup.dev,http://localhost:5173',
+  'https://koomiteh.dev,http://localhost:5173',
 );
 
 export const env = {

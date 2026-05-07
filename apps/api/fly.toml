@@ -1,4 +1,4 @@
-app = "skillup-api"
+app = "koomiteh-api"
 primary_region = "fra"
 
 [build]
@@ -7,7 +7,7 @@ primary_region = "fra"
 [env]
   NODE_ENV = "production"
   PORT = "3000"
-  WEB_ORIGIN = "https://skillup.dev"
+  WEB_ORIGIN = "https://koomiteh.dev"
   LOG_LEVEL = "info"
 
 [http_service]

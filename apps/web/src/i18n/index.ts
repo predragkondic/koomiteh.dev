@@ -9,7 +9,7 @@ import deInterview from './locales/de/interview.json';
 export const SUPPORTED_LOCALES = ['en', 'de'] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
-export const STORAGE_KEY = 'skillup.locale';
+export const STORAGE_KEY = 'koomiteh.locale';
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (SUPPORTED_LOCALES as readonly string[]).includes(value);

@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { CommandPalette } from '@/features/interview/CommandPalette';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
+import { AuthMenu } from './AuthMenu';
 
 function detectShortcutHint(): string {
   if (typeof navigator === 'undefined') return 'Ctrl K';
@@ -81,6 +82,7 @@ export function AppShell() {
           </Button>
           <LanguageToggle />
           <ThemeToggle />
+          <AuthMenu />
         </Toolbar>
       </AppBar>
       <Container component="main" sx={{ py: 4, flex: 1 }}>

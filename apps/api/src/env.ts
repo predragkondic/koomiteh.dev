@@ -6,6 +6,12 @@ const optional = [
   'WEB_ORIGIN',
   'LOG_LEVEL',
   'BUILT_AT',
+  'GITHUB_CLIENT_ID',
+  'GITHUB_CLIENT_SECRET',
+  'APP_BASE_URL',
+  'API_BASE_URL',
+  'SESSION_COOKIE_DOMAIN',
+  'SESSION_COOKIE_SECURE',
 ] as const;
 
 type RequiredKey = (typeof required)[number];
@@ -25,14 +31,34 @@ const webOriginsRaw = read(
   'https://koomiteh.dev,http://localhost:5173',
 );
 
+const nodeEnv = read('NODE_ENV', 'development');
+const isProdEnv = nodeEnv === 'production';
+
 export const env = {
   databaseUrl: read('DATABASE_URL'),
   sentryDsn: process.env.SENTRY_DSN ?? '',
-  nodeEnv: read('NODE_ENV', 'development'),
+  nodeEnv,
   port: Number(read('PORT', '3000')),
   webOrigins: webOriginsRaw.split(',').map((s) => s.trim()).filter(Boolean),
   logLevel: read('LOG_LEVEL', 'info'),
   builtAt: read('BUILT_AT', new Date().toISOString()),
+  github: {
+    clientId: read('GITHUB_CLIENT_ID', ''),
+    clientSecret: read('GITHUB_CLIENT_SECRET', ''),
+  },
+  appBaseUrl: read(
+    'APP_BASE_URL',
+    isProdEnv ? 'https://koomiteh.dev' : 'http://localhost:5173',
+  ),
+  apiBaseUrl: read(
+    'API_BASE_URL',
+    isProdEnv ? 'https://api.koomiteh.dev' : 'http://localhost:3000',
+  ),
+  sessionCookie: {
+    domain: read('SESSION_COOKIE_DOMAIN', ''),
+    secure:
+      read('SESSION_COOKIE_SECURE', isProdEnv ? 'true' : 'false') === 'true',
+  },
 };
 
-export const isProd = env.nodeEnv === 'production';
+export const isProd = isProdEnv;

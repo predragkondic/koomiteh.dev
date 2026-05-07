@@ -11,3 +11,7 @@ Five canonical triage roles, all using the default label strings (`needs-triage`
 ### Domain docs
 
 Single-context layout: one `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Content seed
+
+One-time bootstrap from `content/interview/*.md` into Postgres, idempotent thereafter. See `docs/agents/seed.md`.

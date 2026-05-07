@@ -45,6 +45,25 @@ const listQuerySchema = z.object({
 
 export const postsRoute = new Hono();
 
+postsRoute.get('/tags', async (c) => {
+  const language = c.req.query('language');
+  const conds: SQL[] = [isNull(posts.deletedAt)];
+  if (language) conds.push(eq(posts.language, language));
+
+  const rows = await db
+    .select({
+      tag: sql<string>`unnest(${posts.tags})`,
+    })
+    .from(posts)
+    .where(and(...conds));
+
+  const set = new Set<string>();
+  for (const r of rows) set.add(r.tag);
+  const tags = Array.from(set).sort();
+
+  return c.json({ tags });
+});
+
 postsRoute.get('/manifest', async (c) => {
   const rows = await db
     .select({
@@ -153,6 +172,30 @@ postsRoute.get('/', async (c) => {
     pageSize,
     total,
     pageCount: Math.ceil(total / pageSize),
+  });
+});
+
+postsRoute.get('/by-slug/:language/:slug', async (c) => {
+  const language = c.req.param('language');
+  const slug = c.req.param('slug');
+  const rows = await db
+    .select()
+    .from(posts)
+    .where(
+      and(
+        eq(posts.language, language),
+        eq(posts.slug, slug),
+        isNull(posts.deletedAt),
+      ),
+    )
+    .limit(1);
+  const row = rows[0];
+  if (!row) {
+    return c.json({ error: 'not_found' }, 404);
+  }
+  return c.json({
+    frontmatter: toFrontmatter(row),
+    bodyMd: row.bodyMd,
   });
 });
 

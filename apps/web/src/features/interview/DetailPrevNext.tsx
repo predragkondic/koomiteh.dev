@@ -1,8 +1,13 @@
+import { useMemo } from 'react';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { useTranslation } from 'react-i18next';
-import { useFilteredPosts } from '@/hooks/useFilteredPosts';
+import { useSearchPostsQuery } from '@/api/interviewApi';
+import {
+  effectiveSort,
+  readFilterState,
+} from '@/hooks/useFilteredPosts';
 import type { PostFrontmatter } from '@/types';
 
 interface Props {
@@ -11,12 +16,30 @@ interface Props {
 }
 
 const FILTER_KEYS = ['level', 'tag', 'sort', 'q'] as const;
+const NEIGHBOR_PAGE_SIZE = 100;
 
 export function DetailPrevNext({ currentId, language }: Props) {
   const { t } = useTranslation('interview');
   const [searchParams] = useSearchParams();
-  const { allFiltered } = useFilteredPosts();
 
+  const filter = useMemo(() => readFilterState(searchParams), [searchParams]);
+  const rawSort = searchParams.get('sort');
+  const effSort = useMemo(
+    () => effectiveSort(filter, rawSort),
+    [filter, rawSort],
+  );
+
+  const { data } = useSearchPostsQuery({
+    language,
+    level: filter.level === 'both' ? undefined : filter.level,
+    tag: filter.tags.length > 0 ? filter.tags : undefined,
+    q: filter.q || undefined,
+    sort: effSort,
+    page: 1,
+    pageSize: NEIGHBOR_PAGE_SIZE,
+  });
+
+  const allFiltered = data?.items ?? [];
   const hasFilters = FILTER_KEYS.some((k) => searchParams.has(k));
   const idx = allFiltered.findIndex((p) => p.id === currentId);
   const prev = idx > 0 ? allFiltered[idx - 1] : null;

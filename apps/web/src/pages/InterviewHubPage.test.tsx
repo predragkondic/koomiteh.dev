@@ -2,13 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { Route, Routes } from 'react-router-dom';
 import { screen } from '@testing-library/react';
+import type { Manifest } from '@koomiteh/shared';
 import { server } from '@/test/msw-server';
 import { renderWithProviders } from '@/test/render';
-import type { Manifest } from '@/types';
 import { InterviewHubPage } from './InterviewHubPage';
 
 function manifestHandler(manifest: Manifest) {
-  return http.get('/content/manifest.json', () => HttpResponse.json(manifest));
+  return http.get('http://localhost:3000/posts/manifest', () => HttpResponse.json(manifest));
 }
 
 describe('InterviewHubPage', () => {
@@ -64,7 +64,7 @@ describe('InterviewHubPage', () => {
 
   it('renders an error alert when manifest fetch fails', async () => {
     server.use(
-      http.get('/content/manifest.json', () =>
+      http.get('http://localhost:3000/posts/manifest', () =>
         HttpResponse.json({ message: 'boom' }, { status: 500 }),
       ),
     );

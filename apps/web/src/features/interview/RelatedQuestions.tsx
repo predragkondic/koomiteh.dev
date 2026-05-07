@@ -7,7 +7,7 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import { useGetIndexQuery } from '@/api/interviewApi';
+import { useSearchPostsQuery } from '@/api/interviewApi';
 import { relatedByTags } from '@/utils/related';
 
 interface Props {
@@ -18,9 +18,18 @@ interface Props {
 
 export function RelatedQuestions({ currentId, language, tags }: Props) {
   const { t } = useTranslation('interview');
-  const { data } = useGetIndexQuery(language);
+  const skip = tags.length === 0;
+  const { data } = useSearchPostsQuery(
+    {
+      language,
+      tag: tags,
+      pageSize: 20,
+    },
+    { skip },
+  );
+
   const related = useMemo(
-    () => relatedByTags(data ?? [], currentId, tags),
+    () => relatedByTags(data?.items ?? [], currentId, tags),
     [data, currentId, tags],
   );
 

@@ -1,15 +1,11 @@
 import { useMemo } from 'react';
-import { skipToken } from '@reduxjs/toolkit/query';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useGetIndexQuery, useGetSearchIndexQuery } from '@/api/interviewApi';
-import type { Level, PostFrontmatter } from '@/types';
-import { DEFAULT_SORT, isSort, type Sort, sortPosts } from '@/utils/sort';
 import {
-  loadSearchIndex,
-  mergeHitsWithIndex,
-  runSearch,
-  type SearchHit,
-} from '@/utils/search';
+  useGetTagsQuery,
+  useSearchPostsQuery,
+} from '@/api/interviewApi';
+import type { Level, PostFrontmatter } from '@/types';
+import { DEFAULT_SORT, isSort, type Sort } from '@/utils/sort';
 
 export const PAGE_SIZE = 20;
 
@@ -21,62 +17,6 @@ export interface FilterState {
   sort: Sort;
   page: number;
   q: string;
-}
-
-export interface FilteredResult {
-  items: PostFrontmatter[];
-  allFiltered: PostFrontmatter[];
-  totalFiltered: number;
-  page: number;
-  pageCount: number;
-}
-
-interface ApplyExtras {
-  scoreById?: ReadonlyMap<string, number>;
-  effectiveSort?: Sort;
-}
-
-export function applyFilterSortPage(
-  items: readonly PostFrontmatter[],
-  state: FilterState,
-  pageSize = PAGE_SIZE,
-  extras: ApplyExtras = {},
-): FilteredResult {
-  const { level, tags, page: requestedPage } = state;
-  const filtered = items.filter((p) => {
-    if (level !== 'both' && p.level !== level) return false;
-    if (tags.length && !tags.every((t) => p.tags.includes(t))) return false;
-    return true;
-  });
-  const sort = extras.effectiveSort ?? state.sort;
-  const sorted =
-    sort === 'relevance' && extras.scoreById
-      ? rankByScore(filtered, extras.scoreById)
-      : sortPosts(filtered, sort);
-  const totalFiltered = sorted.length;
-  const pageCount = Math.max(1, Math.ceil(totalFiltered / pageSize));
-  const page = Math.min(Math.max(1, requestedPage), pageCount);
-  const start = (page - 1) * pageSize;
-  return {
-    items: sorted.slice(start, start + pageSize),
-    allFiltered: sorted,
-    totalFiltered,
-    page,
-    pageCount,
-  };
-}
-
-function rankByScore(
-  items: readonly PostFrontmatter[],
-  scoreById: ReadonlyMap<string, number>,
-): PostFrontmatter[] {
-  return items.slice().sort((a, b) => {
-    const sa = scoreById.get(a.id) ?? 0;
-    const sb = scoreById.get(b.id) ?? 0;
-    if (sb !== sa) return sb - sa;
-    if (a.id === b.id) return 0;
-    return a.id < b.id ? -1 : 1;
-  });
 }
 
 export function writeFilterState(state: FilterState): URLSearchParams {
@@ -110,7 +50,11 @@ export function effectiveSort(
   return filter.q ? 'relevance' : DEFAULT_SORT;
 }
 
-export interface UseFilteredPostsResult extends FilteredResult {
+export interface UseFilteredPostsResult {
+  items: PostFrontmatter[];
+  totalFiltered: number;
+  page: number;
+  pageCount: number;
   isIndexLoading: boolean;
   indexError: unknown;
   isSearchLoading: boolean;
@@ -124,66 +68,49 @@ export interface UseFilteredPostsResult extends FilteredResult {
 export function useFilteredPosts(): UseFilteredPostsResult {
   const { language = '' } = useParams();
   const [searchParams] = useSearchParams();
-  const { data, isLoading, error } = useGetIndexQuery(language);
 
   const filter = useMemo(() => readFilterState(searchParams), [searchParams]);
   const rawSort = searchParams.get('sort');
   const effSort = useMemo(() => effectiveSort(filter, rawSort), [filter, rawSort]);
 
-  const {
-    data: searchJson,
-    isLoading: isSearchLoading,
-    error: searchError,
-  } = useGetSearchIndexQuery(filter.q ? undefined : skipToken);
-
-  const hits: SearchHit[] = useMemo(() => {
-    if (!filter.q || !searchJson) return [];
-    try {
-      const idx = loadSearchIndex(searchJson);
-      return runSearch(idx, filter.q);
-    } catch {
-      return [];
-    }
-  }, [filter.q, searchJson]);
-
-  const visiblePosts = useMemo(() => {
-    if (!data) return [];
-    if (!filter.q) return data;
-    if (searchError) return data;
-    if (!searchJson) return [];
-    const merged = mergeHitsWithIndex(hits, data);
-    return merged.items;
-  }, [data, filter.q, searchJson, searchError, hits]);
-
-  const scoreById = useMemo(() => {
-    if (!filter.q || hits.length === 0) return undefined;
-    const m = new Map<string, number>();
-    for (const h of hits) m.set(h.id, h.score);
-    return m;
-  }, [filter.q, hits]);
-
-  const result = useMemo(
-    () =>
-      applyFilterSortPage(visiblePosts, filter, PAGE_SIZE, {
-        scoreById,
-        effectiveSort: effSort,
-      }),
-    [visiblePosts, filter, scoreById, effSort],
+  const searchArgs = useMemo(
+    () => ({
+      language: language || undefined,
+      level: filter.level === 'both' ? undefined : filter.level,
+      tag: filter.tags.length > 0 ? filter.tags : undefined,
+      q: filter.q || undefined,
+      sort: effSort,
+      page: filter.page,
+      pageSize: PAGE_SIZE,
+    }),
+    [language, filter, effSort],
   );
 
-  const tagOptions = useMemo(() => {
-    if (!data) return [];
-    const set = new Set<string>();
-    for (const p of data) for (const t of p.tags) set.add(t);
-    return Array.from(set).sort();
-  }, [data]);
+  const { data, isLoading, error } = useSearchPostsQuery(searchArgs);
+
+  const { data: tagsData } = useGetTagsQuery(
+    { language: language || undefined },
+    { skip: !language },
+  );
+
+  const items = data?.items ?? [];
+  const totalFiltered = data?.total ?? 0;
+  const pageCount = data?.pageCount ?? 1;
+  const page = data?.page ?? filter.page;
+
+  const tagOptions = tagsData?.tags ?? [];
+
+  const hasQuery = Boolean(filter.q);
 
   return {
-    ...result,
-    isIndexLoading: isLoading,
-    indexError: error,
-    isSearchLoading: filter.q ? isSearchLoading : false,
-    searchError: filter.q ? searchError : undefined,
+    items,
+    totalFiltered,
+    page,
+    pageCount: Math.max(1, pageCount),
+    isIndexLoading: !hasQuery && isLoading,
+    indexError: !hasQuery ? error : undefined,
+    isSearchLoading: hasQuery && isLoading,
+    searchError: hasQuery ? error : undefined,
     language,
     filter,
     effectiveSort: effSort,

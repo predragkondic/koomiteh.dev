@@ -60,3 +60,8 @@ export const postListResponseSchema = z.object({
   pageCount: z.number().int().nonnegative(),
 });
 export type PostListResponse = z.infer<typeof postListResponseSchema>;
+
+export const tagsResponseSchema = z.object({
+  tags: z.array(z.string()),
+});
+export type TagsResponse = z.infer<typeof tagsResponseSchema>;

@@ -218,6 +218,81 @@ describe('GET /posts (search + ranking)', () => {
   });
 });
 
+describe('GET /posts/tags', () => {
+  beforeEach(async () => {
+    await seedFromDir(fixtureDir);
+  });
+
+  it('returns sorted unique tags across all languages', async () => {
+    const { status, body } = await callJson<{ tags: string[] }>('/posts/tags');
+    expect(status).toBe(200);
+    expect(body.tags).toEqual([...body.tags].sort());
+    expect(new Set(body.tags).size).toBe(body.tags.length);
+    expect(body.tags).toContain('closures');
+    expect(body.tags).toContain('hoisting');
+    expect(body.tags).toContain('variance');
+  });
+
+  it('filters tags by language', async () => {
+    const { body } = await callJson<{ tags: string[] }>(
+      '/posts/tags?language=javascript',
+    );
+    expect(body.tags).not.toContain('variance');
+    expect(body.tags).toContain('hoisting');
+  });
+
+  it('excludes tags from soft-deleted posts', async () => {
+    await db.execute(
+      sql`UPDATE ${posts} SET deleted_at = now() WHERE content_id = 'typescript-senior-variance'`,
+    );
+    const { body } = await callJson<{ tags: string[] }>(
+      '/posts/tags?language=typescript',
+    );
+    expect(body.tags).not.toContain('variance');
+  });
+});
+
+describe('GET /posts/by-slug/:language/:slug', () => {
+  beforeEach(async () => {
+    await seedFromDir(fixtureDir);
+  });
+
+  it('returns frontmatter + bodyMd for matching language+slug', async () => {
+    const { status, body } = await callJson<{
+      frontmatter: { id: string; slug: string; language: string };
+      bodyMd: string;
+    }>('/posts/by-slug/typescript/what-is-a-closure');
+    expect(status).toBe(200);
+    expect(body.frontmatter.id).toBe('typescript-junior-closures');
+    expect(body.frontmatter.slug).toBe('what-is-a-closure');
+    expect(body.frontmatter.language).toBe('typescript');
+  });
+
+  it('returns 404 for unknown slug', async () => {
+    const { status } = await callJson(
+      '/posts/by-slug/typescript/does-not-exist',
+    );
+    expect(status).toBe(404);
+  });
+
+  it('returns 404 when language does not match the slug', async () => {
+    const { status } = await callJson(
+      '/posts/by-slug/javascript/what-is-a-closure',
+    );
+    expect(status).toBe(404);
+  });
+
+  it('excludes soft-deleted posts', async () => {
+    await db.execute(
+      sql`UPDATE ${posts} SET deleted_at = now() WHERE content_id = 'typescript-junior-closures'`,
+    );
+    const { status } = await callJson(
+      '/posts/by-slug/typescript/what-is-a-closure',
+    );
+    expect(status).toBe(404);
+  });
+});
+
 describe('GET /posts/:id', () => {
   beforeEach(async () => {
     await seedFromDir(fixtureDir);

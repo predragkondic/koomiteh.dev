@@ -30,5 +30,10 @@
     "switcherLabel": "Language",
     "en": "EN",
     "de": "DE"
+  },
+  "auth": {
+    "login": "Sign in with GitHub",
+    "logout": "Sign out",
+    "menuLabel": "Account menu"
   }
 }

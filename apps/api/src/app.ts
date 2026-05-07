@@ -7,6 +7,7 @@ import { Sentry } from './sentry.js';
 import { requestId } from './middleware/request-id.js';
 import { originCheck } from './middleware/origin-check.js';
 import { healthRoute } from './routes/health.js';
+import { authRoute } from './routes/auth.js';
 
 export function createApp() {
   const app = new Hono();
@@ -34,6 +35,7 @@ export function createApp() {
   app.use('*', originCheck(env.webOrigins));
 
   app.route('/health', healthRoute);
+  app.route('/auth', authRoute);
 
   app.onError((err, c) => {
     const reqId = c.get('requestId');

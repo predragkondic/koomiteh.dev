@@ -27,7 +27,7 @@ function getGithubClient(): GitHub {
   return new GitHub(
     env.github.clientId,
     env.github.clientSecret,
-    `${env.apiBaseUrl}/api/auth/github/callback`,
+    `${env.apiBaseUrl}/auth/github/callback`,
   );
 }
 

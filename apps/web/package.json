@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build:content": "tsx scripts/build-content.ts",
-    "prebuild": "pnpm run build:content",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",

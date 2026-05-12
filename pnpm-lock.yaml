@@ -101,6 +101,9 @@ importers:
       i18next-browser-languagedetector:
         specifier: ^8.2.1
         version: 8.2.1
+      marked:
+        specifier: ^18.0.2
+        version: 18.0.3
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -116,6 +119,9 @@ importers:
       react-router-dom:
         specifier: ^6.30.3
         version: 6.30.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      shiki:
+        specifier: ^4.0.2
+        version: 4.0.2
     devDependencies:
       '@testing-library/jest-dom':
         specifier: ^6.9.1
@@ -135,27 +141,12 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.10(@types/node@25.6.0)(esbuild@0.27.7)(tsx@4.21.0))
-      gray-matter:
-        specifier: ^4.0.3
-        version: 4.0.3
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1
-      marked:
-        specifier: ^18.0.2
-        version: 18.0.3
-      minisearch:
-        specifier: ^7.2.0
-        version: 7.2.0
       msw:
         specifier: ^2.14.2
         version: 2.14.3(@types/node@25.6.0)(typescript@6.0.3)
-      shiki:
-        specifier: ^4.0.2
-        version: 4.0.2
-      tsx:
-        specifier: ^4.21.0
-        version: 4.21.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -2188,9 +2179,6 @@ packages:
 
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
-
-  minisearch@7.2.0:
-    resolution: {integrity: sha512-dqT2XBYUOZOiC5t2HRnwADjhNS2cecp9u+TJRiJ1Qp/f5qjkeT5APcGPjHw+bz89Ms8Jp+cG4AlE+QZ/QnDglg==}
 
   module-details-from-path@1.0.4:
     resolution: {integrity: sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==}
@@ -4639,8 +4627,6 @@ snapshots:
       brace-expansion: 5.0.5
 
   minimist@1.2.8: {}
-
-  minisearch@7.2.0: {}
 
   module-details-from-path@1.0.4: {}
 

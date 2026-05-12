@@ -2,10 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { Route, Routes } from 'react-router-dom';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import MiniSearch from 'minisearch';
+import type { Manifest, PostFrontmatter } from '@koomiteh/shared';
 import { server } from '@/test/msw-server';
 import { renderWithProviders } from '@/test/render';
-import type { Manifest, PostFrontmatter } from '@/types';
 import { CommandPalette } from './CommandPalette';
 
 const POSTS: PostFrontmatter[] = [
@@ -41,29 +40,34 @@ const POSTS: PostFrontmatter[] = [
   },
 ];
 
-function buildSearchJson() {
-  const ms = new MiniSearch<PostFrontmatter>({
-    idField: 'id',
-    fields: ['question', 'tags'],
-    storeFields: ['id', 'slug', 'language', 'level', 'question'],
-    extractField: (doc, field) => {
-      const v = (doc as unknown as Record<string, unknown>)[field];
-      if (Array.isArray(v)) return v.join(' ');
-      return (v as string) ?? '';
-    },
-  });
-  ms.addAll(POSTS);
-  return ms.toJSON();
-}
-
 function setupHandlers(manifest: Manifest, withSearchError = false) {
   server.use(
-    http.get('/content/manifest.json', () => HttpResponse.json(manifest)),
-    http.get('/content/search-index.json', () =>
-      withSearchError
-        ? HttpResponse.json({ message: 'boom' }, { status: 500 })
-        : HttpResponse.json(buildSearchJson()),
+    http.get('http://localhost:3000/posts/manifest', () =>
+      HttpResponse.json(manifest),
     ),
+    http.get('http://localhost:3000/posts', ({ request }) => {
+      const url = new URL(request.url);
+      const q = url.searchParams.get('q');
+      if (withSearchError) {
+        return HttpResponse.json({ message: 'boom' }, { status: 500 });
+      }
+      const matches = q
+        ? POSTS.filter(
+            (p) =>
+              p.question.toLowerCase().includes(q.toLowerCase()) ||
+              p.tags.some((t) =>
+                t.toLowerCase().includes(q.toLowerCase()),
+              ),
+          )
+        : POSTS;
+      return HttpResponse.json({
+        items: matches,
+        page: 1,
+        pageSize: 20,
+        total: matches.length,
+        pageCount: 1,
+      });
+    }),
   );
 }
 
@@ -112,8 +116,10 @@ describe('CommandPalette', () => {
     renderWithProviders(<Harness open />);
     await typeQuery('closure');
 
-    await waitFor(() =>
-      expect(screen.getByText('What is a closure?')).toBeInTheDocument(),
+    await waitFor(
+      () =>
+        expect(screen.getByText('What is a closure?')).toBeInTheDocument(),
+      { timeout: 2000 },
     );
     expect(screen.getAllByText('typescript').length).toBeGreaterThan(0);
   });
@@ -124,8 +130,10 @@ describe('CommandPalette', () => {
     renderWithProviders(<Harness open />);
     await typeQuery('closure');
 
-    await waitFor(() =>
-      expect(screen.getByText('What is a closure?')).toBeInTheDocument(),
+    await waitFor(
+      () =>
+        expect(screen.getByText('What is a closure?')).toBeInTheDocument(),
+      { timeout: 2000 },
     );
     expect(screen.queryByText('typescript')).toBeNull();
   });
@@ -136,7 +144,11 @@ describe('CommandPalette', () => {
     renderWithProviders(<Harness open />);
     await typeQuery('closure');
 
-    const item = await screen.findByText('What is a closure?');
+    const item = await screen.findByText(
+      'What is a closure?',
+      {},
+      { timeout: 2000 },
+    );
     fireEvent.click(item);
 
     expect(await screen.findByTestId('detail')).toBeInTheDocument();
@@ -148,8 +160,10 @@ describe('CommandPalette', () => {
     renderWithProviders(<Harness open />);
     const input = await typeQuery('closure');
 
-    await waitFor(() =>
-      expect(screen.getByText('What is a closure?')).toBeInTheDocument(),
+    await waitFor(
+      () =>
+        expect(screen.getByText('What is a closure?')).toBeInTheDocument(),
+      { timeout: 2000 },
     );
 
     fireEvent.keyDown(input, { key: 'ArrowDown' });
@@ -158,13 +172,18 @@ describe('CommandPalette', () => {
     expect(await screen.findByTestId('detail')).toBeInTheDocument();
   });
 
-  it('shows error message when search index fails to load', async () => {
+  it('shows error message when search request fails', async () => {
     setupHandlers(MULTI_LANG, true);
 
     renderWithProviders(<Harness open />);
+    await typeQuery('closure');
 
     expect(
-      await screen.findByText(/Suchindex konnte nicht geladen werden\./),
+      await screen.findByText(
+        /Suchindex konnte nicht geladen werden\./,
+        {},
+        { timeout: 2000 },
+      ),
     ).toBeInTheDocument();
   });
 });

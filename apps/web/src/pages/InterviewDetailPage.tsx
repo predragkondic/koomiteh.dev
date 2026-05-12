@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetPostQuery } from '@/api/interviewApi';
 import { DetailBreadcrumb } from '@/features/interview/DetailBreadcrumb';
 import { DetailPrevNext } from '@/features/interview/DetailPrevNext';
+import { MarkdownBody } from '@/features/interview/MarkdownBody';
 import { RelatedQuestions } from '@/features/interview/RelatedQuestions';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -56,7 +57,7 @@ export function InterviewDetailPage() {
 
   if (!data) return null;
 
-  const { frontmatter, bodyHtml } = data;
+  const { frontmatter, bodyMd } = data;
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
   return (
@@ -68,7 +69,7 @@ export function InterviewDetailPage() {
       <Typography variant="h3" component="h1">
         {frontmatter.question}
       </Typography>
-      <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+      <MarkdownBody bodyMd={bodyMd} />
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
         {frontmatter.tags.map((tag) => (
           <Chip key={tag} label={tag} size="small" variant="outlined" />

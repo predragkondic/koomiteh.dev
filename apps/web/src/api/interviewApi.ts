@@ -1,78 +1,67 @@
-import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { Manifest, Post, PostFrontmatter, SearchIndexJson } from '@/types';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type {
+  Manifest,
+  PostDetail,
+  PostListResponse,
+  TagsResponse,
+} from '@koomiteh/shared';
+import { config } from '@/config';
+import type { Sort } from '@/utils/sort';
 
-async function fetchJson<T>(url: string): Promise<
-  | { data: T }
-  | { error: { status: number; message: string } }
-> {
-  let res: Response;
-  try {
-    res = await fetch(url);
-  } catch (e) {
-    return {
-      error: { status: 0, message: e instanceof Error ? e.message : 'Network error' },
-    };
-  }
-  if (!res.ok) {
-    return { error: { status: res.status, message: res.statusText } };
-  }
-  const contentType = res.headers.get('content-type') ?? '';
-  if (!contentType.includes('application/json')) {
-    return { error: { status: 404, message: 'Not JSON' } };
-  }
-  const data = (await res.json()) as T;
-  return { data };
+export interface SearchPostsArgs {
+  language?: string;
+  level?: 'junior' | 'senior';
+  tag?: readonly string[];
+  q?: string;
+  sort?: Sort;
+  page?: number;
+  pageSize?: number;
+}
+
+function toQueryParams(args: SearchPostsArgs): URLSearchParams {
+  const params = new URLSearchParams();
+  if (args.language) params.set('language', args.language);
+  if (args.level) params.set('level', args.level);
+  if (args.tag) for (const t of args.tag) params.append('tag', t);
+  if (args.q) params.set('q', args.q);
+  if (args.sort) params.set('sort', args.sort);
+  if (args.page) params.set('page', String(args.page));
+  if (args.pageSize) params.set('pageSize', String(args.pageSize));
+  return params;
 }
 
 export const interviewApi = createApi({
   reducerPath: 'interviewApi',
-  baseQuery: fakeBaseQuery(),
+  baseQuery: fetchBaseQuery({
+    baseUrl: config.apiBaseUrl || '/api',
+    credentials: 'include',
+  }),
   endpoints: (build) => ({
     getManifest: build.query<Manifest, void>({
-      async queryFn() {
-        return fetchJson<Manifest>('/content/manifest.json');
+      query: () => '/posts/manifest',
+    }),
+    searchPosts: build.query<PostListResponse, SearchPostsArgs>({
+      query: (args) => {
+        const qs = toQueryParams(args).toString();
+        return qs ? `/posts?${qs}` : '/posts';
       },
     }),
-    getIndex: build.query<PostFrontmatter[], string>({
-      async queryFn(language) {
-        const result = await fetchJson<PostFrontmatter[]>(
-          `/content/indexes/${language}.json`,
-        );
-        if ('error' in result && result.error.status === 404) {
-          return { error: { status: 404, message: 'Unknown language' } };
-        }
-        return result;
-      },
+    getPost: build.query<PostDetail, { language: string; slug: string }>({
+      query: ({ language, slug }) =>
+        `/posts/by-slug/${encodeURIComponent(language)}/${encodeURIComponent(slug)}`,
     }),
-    getPost: build.query<Post, { language: string; slug: string }>({
-      async queryFn({ language, slug }) {
-        const indexResult = await fetchJson<PostFrontmatter[]>(
-          `/content/indexes/${language}.json`,
-        );
-        if ('error' in indexResult) {
-          if (indexResult.error.status === 404) {
-            return { error: { status: 404, message: 'Unknown language' } };
-          }
-          return indexResult;
-        }
-        const entry = indexResult.data.find((p) => p.slug === slug);
-        if (!entry) {
-          return { error: { status: 404, message: 'Unknown slug' } };
-        }
-        return fetchJson<Post>(`/content/posts/${entry.id}.json`);
-      },
-    }),
-    getSearchIndex: build.query<SearchIndexJson, void>({
-      async queryFn() {
-        return fetchJson<SearchIndexJson>('/content/search-index.json');
-      },
+    getTags: build.query<TagsResponse, { language?: string }>({
+      query: ({ language }) =>
+        language
+          ? `/posts/tags?language=${encodeURIComponent(language)}`
+          : '/posts/tags',
     }),
   }),
 });
 
 export const {
   useGetManifestQuery,
-  useGetIndexQuery,
+  useSearchPostsQuery,
   useGetPostQuery,
-  useGetSearchIndexQuery,
+  useGetTagsQuery,
 } = interviewApi;

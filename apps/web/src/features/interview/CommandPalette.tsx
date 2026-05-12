@@ -10,12 +10,14 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import { useGetManifestQuery, useGetSearchIndexQuery } from '@/api/interviewApi';
 import {
-  loadSearchIndex,
-  runGlobalSearch,
-  type GlobalSearchHit,
-} from '@/utils/search';
+  useGetManifestQuery,
+  useSearchPostsQuery,
+} from '@/api/interviewApi';
+import type { PostFrontmatter } from '@/types';
+
+const DEBOUNCE_MS = 250;
+const PALETTE_PAGE_SIZE = 20;
 
 interface Props {
   open: boolean;
@@ -26,34 +28,39 @@ export function CommandPalette({ open, onClose }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [q, setQ] = useState('');
+  const [debouncedQ, setDebouncedQ] = useState('');
   const [highlighted, setHighlighted] = useState(0);
   const listRef = useRef<HTMLUListElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { data: manifest } = useGetManifestQuery();
-  const { data: searchJson, error: searchError } = useGetSearchIndexQuery(
-    open ? undefined : skipToken,
-  );
+  useEffect(() => {
+    const handle = window.setTimeout(() => setDebouncedQ(q.trim()), DEBOUNCE_MS);
+    return () => window.clearTimeout(handle);
+  }, [q]);
 
+  const { data: manifest } = useGetManifestQuery();
   const showLanguageBadge = (manifest?.languages.length ?? 0) >= 2;
 
-  const hits: GlobalSearchHit[] = useMemo(() => {
-    if (!q.trim() || !searchJson) return [];
-    try {
-      const idx = loadSearchIndex(searchJson);
-      return runGlobalSearch(idx, q);
-    } catch {
-      return [];
-    }
-  }, [q, searchJson]);
+  const trimmed = debouncedQ.trim();
+  const queryArg =
+    open && trimmed
+      ? { q: trimmed, pageSize: PALETTE_PAGE_SIZE, sort: 'relevance' as const }
+      : skipToken;
+  const { data, error: searchError } = useSearchPostsQuery(queryArg);
+
+  const hits: PostFrontmatter[] = useMemo(() => {
+    if (!trimmed) return [];
+    return data?.items ?? [];
+  }, [trimmed, data]);
 
   useEffect(() => {
     setHighlighted(0);
-  }, [q]);
+  }, [hits]);
 
   useEffect(() => {
     if (!open) {
       setQ('');
+      setDebouncedQ('');
       setHighlighted(0);
     }
   }, [open]);
@@ -66,7 +73,7 @@ export function CommandPalette({ open, onClose }: Props) {
     el?.scrollIntoView?.({ block: 'nearest' });
   }, [highlighted]);
 
-  function selectHit(hit: GlobalSearchHit) {
+  function selectHit(hit: PostFrontmatter) {
     navigate(`/interview/${hit.language}/${hit.slug}`);
     onClose();
   }
@@ -133,12 +140,12 @@ export function CommandPalette({ open, onClose }: Props) {
 
 interface BodyProps {
   q: string;
-  hits: GlobalSearchHit[];
+  hits: PostFrontmatter[];
   highlighted: number;
   searchError: unknown;
   showLanguageBadge: boolean;
   listRef: React.RefObject<HTMLUListElement | null>;
-  onSelect: (hit: GlobalSearchHit) => void;
+  onSelect: (hit: PostFrontmatter) => void;
   onHover: (index: number) => void;
 }
 

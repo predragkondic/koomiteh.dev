@@ -22,6 +22,7 @@ import {
 } from '@/hooks/useFilteredPosts';
 import type { PostFrontmatter } from '@/types';
 import { ActiveFilterChips } from '@/features/interview/ActiveFilterChips';
+import { FavoriteButton } from '@/features/interview/FavoriteButton';
 import { FilterBar, type FilterChange } from '@/features/interview/FilterBar';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -188,7 +189,11 @@ function PostCard({ post }: { post: PostFrontmatter }) {
   const to = `/interview/${post.language}/${post.slug}${search ? `?${search}` : ''}`;
 
   return (
-    <Card variant="outlined">
+    <Card variant="outlined" sx={{ position: 'relative' }}>
+      <FavoriteButton
+        postId={post.id}
+        sx={{ position: 'absolute', top: 4, right: 4, zIndex: 1 }}
+      />
       <CardActionArea
         component={RouterLink}
         to={to}
@@ -196,7 +201,7 @@ function PostCard({ post }: { post: PostFrontmatter }) {
       >
         <CardContent>
           <Stack spacing={1.5}>
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} sx={{ pr: 4 }}>
               <Chip label={post.language} size="small" />
               <Chip label={post.level} size="small" variant="outlined" />
             </Stack>

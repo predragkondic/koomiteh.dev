@@ -35,5 +35,13 @@
     "login": "Mit GitHub anmelden",
     "logout": "Abmelden",
     "menuLabel": "Account-Menü"
+  },
+  "favorites": {
+    "addAria": "Zu Favoriten hinzufügen",
+    "removeAria": "Aus Favoriten entfernen",
+    "loginPrompt": "Melde dich an, um Beiträge zu favorisieren.",
+    "navLabel": "Favoriten",
+    "pageTitle": "Deine Favoriten",
+    "empty": "Du hast noch keine Beiträge favorisiert."
   }
 }

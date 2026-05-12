@@ -35,5 +35,13 @@
     "login": "Sign in with GitHub",
     "logout": "Sign out",
     "menuLabel": "Account menu"
+  },
+  "favorites": {
+    "addAria": "Add to favorites",
+    "removeAria": "Remove from favorites",
+    "loginPrompt": "Sign in to favorite posts.",
+    "navLabel": "Favorites",
+    "pageTitle": "Your favorites",
+    "empty": "You haven't favorited any posts yet."
   }
 }

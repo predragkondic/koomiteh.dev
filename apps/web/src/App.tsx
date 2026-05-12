@@ -7,6 +7,7 @@ import { InterviewDetailPage } from '@/pages/InterviewDetailPage';
 import { InterviewHubPage } from '@/pages/InterviewHubPage';
 import { InterviewLayout } from '@/pages/InterviewLayout';
 import { InterviewListingPage } from '@/pages/InterviewListingPage';
+import { MyFavoritesPage } from '@/pages/MyFavoritesPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 export function App() {
@@ -24,6 +25,7 @@ export function App() {
                 element={<InterviewDetailPage />}
               />
             </Route>
+            <Route path="me/favorites" element={<MyFavoritesPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

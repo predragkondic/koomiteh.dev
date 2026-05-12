@@ -74,7 +74,7 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 - **TypeScript everywhere.** `apps/web`, `apps/api`, `packages/shared`. Keine JS-Files für Application-Code.
 - **Schema in `packages/shared`.** Drizzle-Tabellen + drizzle-zod-Validatoren. Frontend importiert Validatoren für Form-Validation, Backend für API-Validation. Single Source of Truth für Types und Schemas.
 - **i18n nur UI, nicht Content.** UI-Labels en/de übersetzt. Beitrag-Inhalte und Code-Blöcke bleiben in Original-Sprache (Englisch). Kein Path-Prefix-i18n.
-- **Permalink-Stabilität.** `/interview/:language/:slug` muss URL-stabil bleiben. Soft-Delete liefert 410 Gone, aber URL wird nicht recycled.
+- **Permalink-Stabilität.** `/interview/:language/:slug` muss URL-stabil bleiben. Detail-API (`GET /posts/:id`, `GET /posts/by-slug/...`) liefert für soft-deleted Posts **410 Gone** (nicht 404, nicht 200) — Frontend rendert einen "Frage entfernt"-State. URL wird nicht recycled. Public-Listing (`GET /posts`) blendet soft-deleted Posts aus.
 - **CORS und Cookies.** API erlaubt nur Origin `https://koomiteh.dev` (+ Localhost in Dev). Cookies sind `SameSite=Lax; HttpOnly; Secure; Domain=.koomiteh.dev`. Origin-Header-Check für state-changing Requests.
 - **Kein E2E-Vendor-Lock-in.** Web auf Pages, API auf Fly, DB auf Neon — austauschbar (nicht trivial, aber kein Lock-in-Layer wie z.B. Vercel-Edge-Functions oder Supabase-Auth).
 - **Migrations via drizzle-kit.** Generierte SQL-Files committed unter `apps/api/drizzle/`. Migration läuft im CI als separater Step **vor** Deploy. Expand-Contract-Pattern bei Breaking-Changes.

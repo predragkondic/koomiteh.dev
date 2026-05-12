@@ -91,6 +91,15 @@ export function AuthMenu() {
         >
           <ListItemText>{t('favorites.navLabel')}</ListItemText>
         </MenuItem>
+        {user.role === 'admin' && (
+          <MenuItem
+            component={RouterLink}
+            to="/admin"
+            onClick={handleClose}
+          >
+            <ListItemText>{t('admin:title')}</ListItemText>
+          </MenuItem>
+        )}
         <Divider />
         <MenuItem disabled={isLoggingOut} onClick={handleLogout}>
           <ListItemText>{t('auth.logout')}</ListItemText>

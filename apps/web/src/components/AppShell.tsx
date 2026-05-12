@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import { Link as RouterLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CommandPalette } from '@/features/interview/CommandPalette';
+import { useGetMeQuery } from '@/api/authApi';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthMenu } from './AuthMenu';
@@ -22,6 +23,8 @@ export function AppShell() {
   const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const shortcut = useMemo(detectShortcutHint, []);
+  const { data: me } = useGetMeQuery();
+  const isAdmin = me?.user?.role === 'admin';
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -52,6 +55,17 @@ export function AppShell() {
             {t('appName')}
           </Typography>
           <Box sx={{ flex: 1 }} />
+          {isAdmin && (
+            <Button
+              component={RouterLink}
+              to="/admin"
+              size="small"
+              color="inherit"
+              sx={{ textTransform: 'none' }}
+            >
+              {t('admin:title')}
+            </Button>
+          )}
           <Button
             variant="outlined"
             size="small"

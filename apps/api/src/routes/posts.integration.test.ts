@@ -282,14 +282,16 @@ describe('GET /posts/by-slug/:language/:slug', () => {
     expect(status).toBe(404);
   });
 
-  it('excludes soft-deleted posts', async () => {
+  it('returns 410 Gone for soft-deleted posts (permalink stable)', async () => {
     await db.execute(
       sql`UPDATE ${posts} SET deleted_at = now() WHERE content_id = 'typescript-junior-closures'`,
     );
-    const { status } = await callJson(
+    const { status, body } = await callJson<{ error: string; id: string }>(
       '/posts/by-slug/typescript/what-is-a-closure',
     );
-    expect(status).toBe(404);
+    expect(status).toBe(410);
+    expect(body.error).toBe('gone');
+    expect(body.id).toBe('typescript-junior-closures');
   });
 });
 
@@ -317,13 +319,16 @@ describe('GET /posts/:id', () => {
     expect(status).toBe(404);
   });
 
-  it('excludes soft-deleted posts', async () => {
+  it('returns 410 Gone for soft-deleted posts and excludes them from listings', async () => {
     await db.execute(
       sql`UPDATE ${posts} SET deleted_at = now() WHERE content_id = 'typescript-junior-closures'`,
     );
 
-    const { status } = await callJson('/posts/typescript-junior-closures');
-    expect(status).toBe(404);
+    const { status, body: goneBody } = await callJson<{ error: string }>(
+      '/posts/typescript-junior-closures',
+    );
+    expect(status).toBe(410);
+    expect(goneBody.error).toBe('gone');
 
     const { body } = await callJson<{
       total: number;

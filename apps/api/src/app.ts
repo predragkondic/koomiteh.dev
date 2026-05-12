@@ -10,6 +10,7 @@ import { healthRoute } from './routes/health.js';
 import { authRoute } from './routes/auth.js';
 import { postsRoute } from './routes/posts.js';
 import { favoritesRoute, myFavoritesRoute } from './routes/favorites.js';
+import { adminRoute } from './routes/admin.js';
 
 export function createApp() {
   const app = new Hono();
@@ -41,6 +42,7 @@ export function createApp() {
   app.route('/posts', postsRoute);
   app.route('/favorites', favoritesRoute);
   app.route('/me', myFavoritesRoute);
+  app.route('/admin', adminRoute);
 
   app.onError((err, c) => {
     const reqId = c.get('requestId');

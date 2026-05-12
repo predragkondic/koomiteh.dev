@@ -1,0 +1,56 @@
+{
+  "title": "Admin",
+  "list": {
+    "title": "All posts",
+    "newButton": "New post",
+    "statusActive": "Active",
+    "statusDeleted": "Deleted",
+    "showDeleted": "Show deleted",
+    "empty": "No posts.",
+    "loading": "Loading posts…",
+    "loadError": "Failed to load posts.",
+    "columns": {
+      "question": "Question",
+      "language": "Language",
+      "level": "Level",
+      "status": "Status",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "restore": "Restore",
+      "view": "View"
+    }
+  },
+  "editor": {
+    "newTitle": "New post",
+    "editTitle": "Edit post",
+    "fields": {
+      "slug": "Slug",
+      "slugHelper": "kebab-case (a-z, 0-9, dashes)",
+      "question": "Question",
+      "language": "Language",
+      "level": "Level",
+      "tags": "Tags",
+      "tagsHelper": "Comma-separated, kebab-case",
+      "bodyMd": "Body (Markdown)"
+    },
+    "preview": "Preview",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "unsavedWarning": "You have unsaved changes. Discard them?",
+    "errorGeneric": "Failed to save.",
+    "errorSlugConflict": "Slug already used for this language.",
+    "errorContentIdConflict": "A post with this slug + level already exists.",
+    "errorInvalidLanguage": "Invalid language.",
+    "errorInvalidBody": "Some fields are invalid."
+  },
+  "gone": {
+    "title": "Question removed",
+    "body": "This question has been removed."
+  },
+  "confirmDelete": "Delete this post (soft-delete)?"
+}

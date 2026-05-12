@@ -5,8 +5,10 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   useGetMeQuery,
@@ -82,6 +84,14 @@ export function AuthMenu() {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
+        <MenuItem
+          component={RouterLink}
+          to="/me/favorites"
+          onClick={handleClose}
+        >
+          <ListItemText>{t('favorites.navLabel')}</ListItemText>
+        </MenuItem>
+        <Divider />
         <MenuItem disabled={isLoggingOut} onClick={handleLogout}>
           <ListItemText>{t('auth.logout')}</ListItemText>
         </MenuItem>

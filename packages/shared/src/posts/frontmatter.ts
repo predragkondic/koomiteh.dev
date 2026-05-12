@@ -65,3 +65,6 @@ export const tagsResponseSchema = z.object({
   tags: z.array(z.string()),
 });
 export type TagsResponse = z.infer<typeof tagsResponseSchema>;
+
+export const favoritesListResponseSchema = postListResponseSchema;
+export type FavoritesListResponse = z.infer<typeof favoritesListResponseSchema>;

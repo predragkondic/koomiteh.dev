@@ -7,6 +7,7 @@ import {
   bigint,
   index,
   uniqueIndex,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
@@ -65,12 +66,34 @@ export const posts = pgTable(
   ],
 );
 
+export const favorites = pgTable(
+  'favorites',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => posts.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.postId] }),
+    index('favorites_user_id_idx').on(table.userId),
+    index('favorites_user_created_idx').on(table.userId, table.createdAt),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
+export type Favorite = typeof favorites.$inferSelect;
+export type NewFavorite = typeof favorites.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
@@ -78,3 +101,5 @@ export const insertSessionSchema = createInsertSchema(sessions);
 export const selectSessionSchema = createSelectSchema(sessions);
 export const insertPostSchema = createInsertSchema(posts);
 export const selectPostSchema = createSelectSchema(posts);
+export const insertFavoriteSchema = createInsertSchema(favorites);
+export const selectFavoriteSchema = createSelectSchema(favorites);

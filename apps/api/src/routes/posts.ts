@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { and, eq, isNull, sql, type SQL } from 'drizzle-orm';
+import { and, arrayOverlaps, eq, isNull, sql, type SQL } from 'drizzle-orm';
 import {
   posts,
   LANGUAGES,
@@ -114,7 +114,7 @@ postsRoute.get('/', async (c) => {
   if (language) baseConds.push(eq(posts.language, language));
   if (level) baseConds.push(eq(posts.level, level));
   if (tag && tag.length > 0) {
-    baseConds.push(sql`${posts.tags} && ${tag}::text[]`);
+    baseConds.push(arrayOverlaps(posts.tags, tag));
   }
 
   const runListing = async (extraCond: SQL | null, orderBy: SQL) => {

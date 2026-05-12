@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetPostQuery } from '@/api/interviewApi';
 import { DetailBreadcrumb } from '@/features/interview/DetailBreadcrumb';
 import { DetailPrevNext } from '@/features/interview/DetailPrevNext';
+import { FavoriteButton } from '@/features/interview/FavoriteButton';
 import { MarkdownBody } from '@/features/interview/MarkdownBody';
 import { RelatedQuestions } from '@/features/interview/RelatedQuestions';
 import { NotFoundPage } from './NotFoundPage';
@@ -66,9 +67,12 @@ export function InterviewDetailPage() {
         language={frontmatter.language}
         level={frontmatter.level}
       />
-      <Typography variant="h3" component="h1">
-        {frontmatter.question}
-      </Typography>
+      <Stack direction="row" spacing={1} alignItems="flex-start">
+        <Typography variant="h3" component="h1" sx={{ flex: 1 }}>
+          {frontmatter.question}
+        </Typography>
+        <FavoriteButton postId={frontmatter.id} size="medium" />
+      </Stack>
       <MarkdownBody bodyMd={bodyMd} />
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
         {frontmatter.tags.map((tag) => (

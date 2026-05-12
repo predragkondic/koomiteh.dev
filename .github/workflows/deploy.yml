@@ -10,6 +10,9 @@ concurrency:
 
 jobs:
   migrate-prod:
+    environment: production
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -27,8 +30,6 @@ jobs:
       - run: pnpm install --frozen-lockfile --filter=@koomiteh/api...
 
       - run: pnpm -F @koomiteh/api db:migrate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   deploy-api:
     needs: migrate-prod

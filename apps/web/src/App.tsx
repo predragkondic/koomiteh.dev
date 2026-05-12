@@ -3,6 +3,9 @@ import { AppShell } from '@/components/AppShell';
 import { DevHealthBanner } from '@/components/DevHealthBanner';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { config } from '@/config';
+import { AdminLayout } from '@/pages/AdminLayout';
+import { AdminPostEditorPage } from '@/pages/AdminPostEditorPage';
+import { AdminPostsListPage } from '@/pages/AdminPostsListPage';
 import { InterviewDetailPage } from '@/pages/InterviewDetailPage';
 import { InterviewHubPage } from '@/pages/InterviewHubPage';
 import { InterviewLayout } from '@/pages/InterviewLayout';
@@ -26,6 +29,17 @@ export function App() {
               />
             </Route>
             <Route path="me/favorites" element={<MyFavoritesPage />} />
+            <Route path="admin" element={<AdminLayout />}>
+              <Route index element={<AdminPostsListPage />} />
+              <Route
+                path="posts/new"
+                element={<AdminPostEditorPage mode="new" />}
+              />
+              <Route
+                path="posts/:id/edit"
+                element={<AdminPostEditorPage mode="edit" />}
+              />
+            </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

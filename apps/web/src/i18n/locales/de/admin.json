@@ -1,0 +1,56 @@
+{
+  "title": "Admin",
+  "list": {
+    "title": "Alle Beiträge",
+    "newButton": "Neuer Beitrag",
+    "statusActive": "Aktiv",
+    "statusDeleted": "Gelöscht",
+    "showDeleted": "Gelöschte anzeigen",
+    "empty": "Keine Beiträge.",
+    "loading": "Beiträge werden geladen…",
+    "loadError": "Beiträge konnten nicht geladen werden.",
+    "columns": {
+      "question": "Frage",
+      "language": "Sprache",
+      "level": "Level",
+      "status": "Status",
+      "updated": "Aktualisiert",
+      "actions": "Aktionen"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "restore": "Wiederherstellen",
+      "view": "Ansehen"
+    }
+  },
+  "editor": {
+    "newTitle": "Neuer Beitrag",
+    "editTitle": "Beitrag bearbeiten",
+    "fields": {
+      "slug": "Slug",
+      "slugHelper": "kebab-case (a-z, 0-9, Bindestriche)",
+      "question": "Frage",
+      "language": "Sprache",
+      "level": "Level",
+      "tags": "Tags",
+      "tagsHelper": "Kommagetrennt, kebab-case",
+      "bodyMd": "Inhalt (Markdown)"
+    },
+    "preview": "Vorschau",
+    "save": "Speichern",
+    "saving": "Speichern…",
+    "cancel": "Abbrechen",
+    "unsavedWarning": "Du hast ungespeicherte Änderungen. Verwerfen?",
+    "errorGeneric": "Speichern fehlgeschlagen.",
+    "errorSlugConflict": "Slug ist für diese Sprache bereits vergeben.",
+    "errorContentIdConflict": "Es existiert bereits ein Beitrag mit diesem Slug + Level.",
+    "errorInvalidLanguage": "Ungültige Sprache.",
+    "errorInvalidBody": "Einige Felder sind ungültig."
+  },
+  "gone": {
+    "title": "Frage entfernt",
+    "body": "Diese Frage wurde entfernt."
+  },
+  "confirmDelete": "Diesen Beitrag löschen (Soft-Delete)?"
+}

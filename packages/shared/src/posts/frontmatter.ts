@@ -68,3 +68,50 @@ export type TagsResponse = z.infer<typeof tagsResponseSchema>;
 
 export const favoritesListResponseSchema = postListResponseSchema;
 export type FavoritesListResponse = z.infer<typeof favoritesListResponseSchema>;
+
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export const adminPostCreateSchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(SLUG_RE, 'slug must be kebab-case (a-z, 0-9, dashes)'),
+  question: z.string().min(1).max(500),
+  language: z.string().min(1),
+  level: postLevelSchema,
+  tags: z.array(z.string().regex(TAG_RE, 'tag must match /^[a-z0-9-]+$/')),
+  bodyMd: z.string().min(1),
+});
+export type AdminPostCreate = z.infer<typeof adminPostCreateSchema>;
+
+export const adminPostUpdateSchema = adminPostCreateSchema.partial();
+export type AdminPostUpdate = z.infer<typeof adminPostUpdateSchema>;
+
+export const adminPostListItemSchema = postFrontmatterSchema.extend({
+  deletedAt: z.string().nullable(),
+});
+export type AdminPostListItem = z.infer<typeof adminPostListItemSchema>;
+
+export const adminPostListResponseSchema = z.object({
+  items: z.array(adminPostListItemSchema),
+  page: z.number().int().positive(),
+  pageSize: z.number().int().positive(),
+  total: z.number().int().nonnegative(),
+  pageCount: z.number().int().nonnegative(),
+});
+export type AdminPostListResponse = z.infer<typeof adminPostListResponseSchema>;
+
+export const adminPostDetailSchema = z.object({
+  frontmatter: adminPostListItemSchema,
+  bodyMd: z.string(),
+});
+export type AdminPostDetail = z.infer<typeof adminPostDetailSchema>;
+
+export const postGoneResponseSchema = z.object({
+  error: z.literal('gone'),
+  id: z.string(),
+  language: z.string(),
+  slug: z.string(),
+});
+export type PostGoneResponse = z.infer<typeof postGoneResponseSchema>;

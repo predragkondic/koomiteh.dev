@@ -42,6 +42,18 @@ export function InterviewDetailPage() {
   if (error) {
     const status = (error as { status?: number }).status;
     if (status === 404) return <NotFoundPage scope="post" />;
+    if (status === 410) {
+      return (
+        <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Typography variant="h4" gutterBottom>
+            {t('admin:gone.title')}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {t('admin:gone.body')}
+          </Typography>
+        </Box>
+      );
+    }
     return (
       <Alert
         severity="error"

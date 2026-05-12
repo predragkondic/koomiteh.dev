@@ -181,17 +181,22 @@ postsRoute.get('/by-slug/:language/:slug', async (c) => {
   const rows = await db
     .select()
     .from(posts)
-    .where(
-      and(
-        eq(posts.language, language),
-        eq(posts.slug, slug),
-        isNull(posts.deletedAt),
-      ),
-    )
+    .where(and(eq(posts.language, language), eq(posts.slug, slug)))
     .limit(1);
   const row = rows[0];
   if (!row) {
     return c.json({ error: 'not_found' }, 404);
+  }
+  if (row.deletedAt) {
+    return c.json(
+      {
+        error: 'gone',
+        id: row.contentId,
+        language: row.language,
+        slug: row.slug,
+      },
+      410,
+    );
   }
   return c.json({
     frontmatter: toFrontmatter(row),
@@ -204,11 +209,22 @@ postsRoute.get('/:id', async (c) => {
   const rows = await db
     .select()
     .from(posts)
-    .where(and(eq(posts.contentId, contentId), isNull(posts.deletedAt)))
+    .where(eq(posts.contentId, contentId))
     .limit(1);
   const row = rows[0];
   if (!row) {
     return c.json({ error: 'not_found' }, 404);
+  }
+  if (row.deletedAt) {
+    return c.json(
+      {
+        error: 'gone',
+        id: row.contentId,
+        language: row.language,
+        slug: row.slug,
+      },
+      410,
+    );
   }
   return c.json({
     frontmatter: toFrontmatter(row),

@@ -3,18 +3,21 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { interviewApi } from '@/api/interviewApi';
 import { authApi } from '@/api/authApi';
 import { favoritesApi } from '@/api/favoritesApi';
+import { adminApi } from '@/api/adminApi';
 
 export const store = configureStore({
   reducer: {
     [interviewApi.reducerPath]: interviewApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [favoritesApi.reducerPath]: favoritesApi.reducer,
+    [adminApi.reducerPath]: adminApi.reducer,
   },
   middleware: (getDefault) =>
     getDefault().concat(
       interviewApi.middleware,
       authApi.middleware,
       favoritesApi.middleware,
+      adminApi.middleware,
     ),
 });
 

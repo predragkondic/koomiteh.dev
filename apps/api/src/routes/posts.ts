@@ -12,8 +12,19 @@ import { env } from '../env.js';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 20;
+const MIN_Q_LENGTH = 3;
 
 const SEARCH_VECTOR = sql`${posts}.search_vector`;
+
+function buildPrefixTsQuery(q: string): string | null {
+  const tokens = q
+    .toLowerCase()
+    .split(/\s+/)
+    .map((t) => t.replace(/[^\p{L}\p{N}]+/gu, ''))
+    .filter((t) => t.length > 0);
+  if (tokens.length === 0) return null;
+  return tokens.map((t) => `${t}:*`).join(' & ');
+}
 
 function toFrontmatter(row: Post): PostFrontmatter {
   return {
@@ -140,21 +151,25 @@ postsRoute.get('/', async (c) => {
   let items: Post[] = [];
   let total = 0;
 
-  if (q) {
-    const ftsCond = sql`${SEARCH_VECTOR} @@ plainto_tsquery('english', ${q})`;
+  const qTrimmed = q?.trim() ?? '';
+  const tsq =
+    qTrimmed.length >= MIN_Q_LENGTH ? buildPrefixTsQuery(qTrimmed) : null;
+
+  if (tsq) {
+    const ftsCond = sql`${SEARCH_VECTOR} @@ to_tsquery('english', ${tsq})`;
     const ftsOrder =
       sort === 'relevance'
-        ? sql`ts_rank(${SEARCH_VECTOR}, plainto_tsquery('english', ${q})) DESC, ${posts.createdAt} DESC`
+        ? sql`ts_rank(${SEARCH_VECTOR}, to_tsquery('english', ${tsq})) DESC, ${posts.createdAt} DESC`
         : sql`${posts.createdAt} DESC`;
     const ftsResult = await runListing(ftsCond, ftsOrder);
     if (ftsResult.total > 0) {
       items = ftsResult.rows;
       total = ftsResult.total;
     } else {
-      const trgmCond = sql`${posts.question} % ${q}`;
+      const trgmCond = sql`${posts.question} % ${qTrimmed}`;
       const trgmOrder =
         sort === 'relevance'
-          ? sql`similarity(${posts.question}, ${q}) DESC, ${posts.createdAt} DESC`
+          ? sql`similarity(${posts.question}, ${qTrimmed}) DESC, ${posts.createdAt} DESC`
           : sql`${posts.createdAt} DESC`;
       const trgmResult = await runListing(trgmCond, trgmOrder);
       items = trgmResult.rows;

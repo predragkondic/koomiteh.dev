@@ -207,6 +207,27 @@ describe('GET /posts (search + ranking)', () => {
     expect(body.items[0].id).toBe('javascript-junior-hoisting');
   });
 
+  it('ignores q shorter than 3 characters and returns the full listing', async () => {
+    const { body } = await callJson<{
+      items: Array<{ id: string }>;
+      total: number;
+    }>('/posts?q=w');
+
+    expect(body.total).toBe(4);
+  });
+
+  it('matches via prefix FTS when q has >= 3 chars (q=clos → closures)', async () => {
+    const { body } = await callJson<{
+      items: Array<{ id: string }>;
+      total: number;
+    }>('/posts?q=clos');
+
+    expect(body.total).toBeGreaterThan(0);
+    expect(body.items.some((i) => i.id === 'typescript-junior-closures')).toBe(
+      true,
+    );
+  });
+
   it('honors sort=newest while still applying FTS where-clause', async () => {
     const { body } = await callJson<{
       items: Array<{ id: string; createdAt: string }>;

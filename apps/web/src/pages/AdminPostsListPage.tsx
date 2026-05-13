@@ -264,7 +264,7 @@ export function AdminPostsListPage() {
                           size="small"
                           component={RouterLink}
                           to={`/interview/${row.language}/${row.slug}`}
-                          disabled={busy || isDeleted}
+                          disabled={busy}
                         >
                           {t('list.actions.view')}
                         </Button>

@@ -17,6 +17,7 @@
 //   in the same PR.
 
 import '@mui/material/styles';
+import '@mui/material/Chip';
 
 declare module '@mui/material/styles' {
   // Each domain entry shares the standard MUI PaletteColor shape (main/dark/
@@ -26,7 +27,6 @@ declare module '@mui/material/styles' {
     soft: string;
     contrastText: string;
   }
-
   interface SurfacePalette {
     /** page background — same value as palette.background.default */
     canvas: string;
@@ -50,6 +50,9 @@ declare module '@mui/material/styles' {
       javascript: DomainPaletteColor;
     };
     surface: SurfacePalette;
+    input: {
+      background: string;
+    }
   }
 
   interface PaletteOptions {
@@ -70,5 +73,11 @@ declare module '@mui/material/styles' {
   }
   interface TypographyVariantsOptions {
     fontFamilyMono?: string;
+  }
+}
+
+declare module '@mui/material/Chip' {
+  interface ChipPropsVariantOverrides {
+    tag: true;
   }
 }

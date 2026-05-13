@@ -68,6 +68,13 @@
     },
     "generateButton": "Generate",
     "generating": "Generating…",
+    "regenerateButton": "Regenerate",
+    "confirmRegenerate": {
+      "title": "Discard edits?",
+      "body": "Regenerating will discard your changes to the draft.",
+      "confirm": "Discard and regenerate",
+      "cancel": "Cancel"
+    },
     "draft": {
       "title": "Draft",
       "question": "Question",
@@ -78,7 +85,8 @@
     "error": {
       "generic": "Generation failed.",
       "unavailable": "Generate is not configured.",
-      "geminiFailed": "Gemini did not respond."
+      "geminiFailed": "Gemini did not respond.",
+      "retry": "Retry"
     }
   }
 }

@@ -216,6 +216,18 @@ describe('GET /posts (search + ranking)', () => {
     expect(body.total).toBe(4);
   });
 
+  it('matches stopword queries via ILIKE fallback (q=what → "What is variance...")', async () => {
+    const { body } = await callJson<{
+      items: Array<{ id: string }>;
+      total: number;
+    }>('/posts?q=what');
+
+    expect(body.total).toBeGreaterThan(0);
+    expect(body.items.some((i) => i.id === 'typescript-senior-variance')).toBe(
+      true,
+    );
+  });
+
   it('matches via prefix FTS when q has >= 3 chars (q=clos → closures)', async () => {
     const { body } = await callJson<{
       items: Array<{ id: string }>;

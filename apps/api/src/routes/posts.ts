@@ -26,6 +26,10 @@ function buildPrefixTsQuery(q: string): string | null {
   return tokens.map((t) => `${t}:*`).join(' & ');
 }
 
+function escapeLike(s: string): string {
+  return s.replace(/[\\%_]/g, '\\$&');
+}
+
 function toFrontmatter(row: Post): PostFrontmatter {
   return {
     id: row.contentId,
@@ -166,14 +170,15 @@ postsRoute.get('/', async (c) => {
       items = ftsResult.rows;
       total = ftsResult.total;
     } else {
-      const trgmCond = sql`${posts.question} % ${qTrimmed}`;
-      const trgmOrder =
+      const likePattern = `%${escapeLike(qTrimmed)}%`;
+      const fallbackCond = sql`(${posts.question} % ${qTrimmed} OR ${posts.question} ILIKE ${likePattern})`;
+      const fallbackOrder =
         sort === 'relevance'
           ? sql`similarity(${posts.question}, ${qTrimmed}) DESC, ${posts.createdAt} DESC`
           : sql`${posts.createdAt} DESC`;
-      const trgmResult = await runListing(trgmCond, trgmOrder);
-      items = trgmResult.rows;
-      total = trgmResult.total;
+      const fallbackResult = await runListing(fallbackCond, fallbackOrder);
+      items = fallbackResult.rows;
+      total = fallbackResult.total;
     }
   } else {
     const result = await runListing(null, sql`${posts.createdAt} DESC`);

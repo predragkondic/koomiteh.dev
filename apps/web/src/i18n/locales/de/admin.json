@@ -3,13 +3,26 @@
   "list": {
     "title": "Alle Beiträge",
     "newButton": "Neuer Beitrag",
+    "aiButton": "KI-Vorschlag",
     "statusActive": "Aktiv",
+    "statusDraft": "Entwurf",
     "statusDeleted": "Gelöscht",
     "showDeleted": "Gelöschte anzeigen",
     "filter": "Filter",
-    "empty": "Keine Beiträge.",
+    "empty": "Keine Beiträge gefunden.",
     "loading": "Beiträge werden geladen…",
     "loadError": "Beiträge konnten nicht geladen werden.",
+    "languageNames": {
+      "typescript": "TypeScript",
+      "javascript": "JavaScript"
+    },
+    "levels": {
+      "junior": "junior",
+      "senior": "senior"
+    },
+    "pager": {
+      "info": "{{shown}} von {{total}} Beiträgen"
+    },
     "columns": {
       "question": "Frage",
       "language": "Sprache",
@@ -25,7 +38,8 @@
       "view": "Ansehen"
     },
     "a11y": {
-      "actions": "Aktionen"
+      "actions": "Aktionen",
+      "sortBy": "Sortieren nach {{column}}"
     }
   },
   "editor": {

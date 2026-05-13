@@ -1,24 +1,32 @@
-import { useState, type MouseEvent } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState, type MouseEvent } from 'react';
+import {
+  Link as RouterLink,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
+import Fab from '@mui/material/Fab';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
+import Pagination from '@mui/material/Pagination';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -28,7 +36,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import RestoreIcon from '@mui/icons-material/Restore';
+import RestoreIcon from '@mui/icons-material/RestoreOutlined';
 import VisibilityIcon from '@mui/icons-material/VisibilityOutlined';
 import { useTranslation } from 'react-i18next';
 import type { AdminPostListItem } from '@koomiteh/shared';
@@ -38,13 +46,54 @@ import {
   useRestoreAdminPostMutation,
 } from '@/api/adminApi';
 
+type SortKey = 'question' | 'language' | 'level' | 'status' | 'updated';
+type SortDir = 'asc' | 'desc';
+
+const SORT_KEYS: ReadonlyArray<SortKey> = [
+  'question',
+  'language',
+  'level',
+  'status',
+  'updated',
+];
+
+const PAGE_SIZE = 10;
+const SHOW_DELETED_KEY = 'admin.allPosts.showDeleted';
+
+function isSortKey(v: string | null): v is SortKey {
+  return v !== null && (SORT_KEYS as readonly string[]).includes(v);
+}
+
+function postStatus(row: AdminPostListItem): 'active' | 'deleted' {
+  return row.deletedAt !== null ? 'deleted' : 'active';
+}
+
+function compareRows(a: AdminPostListItem, b: AdminPostListItem, key: SortKey) {
+  if (key === 'updated') {
+    return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+  }
+  const av =
+    key === 'status' ? postStatus(a) : String(a[key as keyof typeof a] ?? '');
+  const bv =
+    key === 'status' ? postStatus(b) : String(b[key as keyof typeof b] ?? '');
+  return av.localeCompare(bv, undefined, { sensitivity: 'base' });
+}
+
 export function AdminPostsListPage() {
   const { t, i18n } = useTranslation('admin');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
 
-  const [includeDeleted, setIncludeDeleted] = useState(false);
+  const [includeDeleted, setIncludeDeleted] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(SHOW_DELETED_KEY) === '1';
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(SHOW_DELETED_KEY, includeDeleted ? '1' : '0');
+  }, [includeDeleted]);
+
   const { data, isLoading, error, refetch } = useListAdminPostsQuery({
     includeDeleted,
     pageSize: 100,
@@ -113,76 +162,168 @@ export function AdminPostsListPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', py: 3 }}>
+    <DesktopView
+      data={data}
+      isLoading={isLoading}
+      error={Boolean(error)}
+      onRetry={() => refetch()}
+      includeDeleted={includeDeleted}
+      onToggleDeleted={setIncludeDeleted}
+      locale={locale}
+      onDelete={handleDelete}
+      onRestore={handleRestore}
+      isDeleting={(id) =>
+        deleteState.isLoading && deleteState.originalArgs === id
+      }
+      isRestoring={(id) =>
+        restoreState.isLoading && restoreState.originalArgs === id
+      }
+    />
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Desktop branch
+// ────────────────────────────────────────────────────────────────────────────
+
+interface DesktopViewProps {
+  data: { items: AdminPostListItem[] } | undefined;
+  isLoading: boolean;
+  error: boolean;
+  onRetry: () => void;
+  includeDeleted: boolean;
+  onToggleDeleted: (v: boolean) => void;
+  locale: string;
+  onDelete: (id: string) => void;
+  onRestore: (id: string) => void;
+  isDeleting: (id: string) => boolean;
+  isRestoring: (id: string) => boolean;
+}
+
+function DesktopView({
+  data,
+  isLoading,
+  error,
+  onRetry,
+  includeDeleted,
+  onToggleDeleted,
+  locale,
+  onDelete,
+  onRestore,
+  isDeleting,
+  isRestoring,
+}: DesktopViewProps) {
+  const { t } = useTranslation('admin');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const sortKey: SortKey | null = (() => {
+    const raw = searchParams.get('sort');
+    return isSortKey(raw) ? raw : 'updated';
+  })();
+  const sortDir: SortDir =
+    searchParams.get('dir') === 'asc' ? 'asc' : 'desc';
+  const [page, setPage] = useState(1);
+
+  function setSort(key: SortKey, nextDir: SortDir | null) {
+    const next = new URLSearchParams(searchParams);
+    if (nextDir === null) {
+      next.delete('sort');
+      next.delete('dir');
+    } else {
+      next.set('sort', key);
+      next.set('dir', nextDir);
+    }
+    setSearchParams(next, { replace: true });
+    setPage(1);
+  }
+
+  function cycleSort(key: SortKey) {
+    if (sortKey !== key) return setSort(key, 'asc');
+    if (sortDir === 'asc') return setSort(key, 'desc');
+    return setSort(key, null);
+  }
+
+  const items = data?.items ?? [];
+
+  const sortedItems = useMemo(() => {
+    if (!sortKey) return items;
+    const sign = sortDir === 'asc' ? 1 : -1;
+    return [...items].sort((a, b) => sign * compareRows(a, b, sortKey));
+  }, [items, sortKey, sortDir]);
+
+  const totalShown = sortedItems.length;
+  const totalAll = items.length;
+  const pageCount = Math.max(1, Math.ceil(totalShown / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pageItems = sortedItems.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
+
+  return (
+    <Box
+      sx={{
+        maxWidth: 1280,
+        mx: 'auto',
+        width: '100%',
+        pt: 9,
+        pb: 20,
+      }}
+    >
       <Stack
         direction="row"
-        justifyContent="space-between"
         alignItems="center"
+        justifyContent="space-between"
         sx={{ mb: 2 }}
       >
-        <Typography variant="h4" component="h1">
+        <Typography variant="h2" component="h1">
           {t('list.title')}
         </Typography>
-        <Stack direction="row" spacing={1}>
-          <IconButton
-            component={RouterLink}
-            to="/admin/posts/generate"
-            aria-label={t('generate.entryButton')}
-            sx={{
-              width: 40,
-              height: 40,
-              p: 0,
-              borderRadius: '999px',
-              backgroundColor: 'secondary.main',
-              color: 'secondary.contrastText',
-              '&:hover': { backgroundColor: 'secondary.light' },
-            }}
-          >
-            <AutoAwesomeIcon sx={{ fontSize: 20 }} />
-          </IconButton>
-          <IconButton
-            component={RouterLink}
-            to="/admin/posts/new"
-            aria-label={t('list.newButton')}
-            sx={{
-              width: 40,
-              height: 40,
-              p: 0,
-              borderRadius: '999px',
-              backgroundColor: 'primary.main',
-              color: 'primary.contrastText',
-              '&:hover': { backgroundColor: 'primary.light' },
-            }}
-          >
-            <AddIcon sx={{ fontSize: 20 }} />
-          </IconButton>
+        <Stack direction="row" spacing={1.5}>
+          <Tooltip title={t('list.aiButton')}>
+            <Fab
+              size="small"
+              color="default"
+              aria-label={t('list.aiButton')}
+              component={RouterLink}
+              to="/admin/posts/generate"
+            >
+              <AutoAwesomeIcon fontSize="small" />
+            </Fab>
+          </Tooltip>
+          <Tooltip title={t('list.newButton')}>
+            <Fab
+              size="small"
+              color="primary"
+              aria-label={t('list.newButton')}
+              component={RouterLink}
+              to="/admin/posts/new"
+            >
+              <AddIcon />
+            </Fab>
+          </Tooltip>
         </Stack>
       </Stack>
 
-      <FormControlLabel
-        control={
-          <Switch
-            checked={includeDeleted}
-            onChange={(_, v) => setIncludeDeleted(v)}
-          />
-        }
-        label={t('list.showDeleted')}
-        sx={{ mb: 2 }}
-      />
-
-      {isLoading && (
-        <Stack spacing={1} aria-busy aria-label={t('list.loading')}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} variant="rounded" height={56} />
-          ))}
-        </Stack>
-      )}
+      <Stack direction="row" sx={{ mb: 5.5 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              color="primary"
+              checked={includeDeleted}
+              onChange={(_, v) => onToggleDeleted(v)}
+            />
+          }
+          label={t('list.showDeleted')}
+        />
+      </Stack>
 
       {error && (
         <Alert
           severity="error"
+          sx={{ mb: 2 }}
           action={
-            <Button color="inherit" size="small" onClick={() => refetch()}>
+            <Button color="inherit" size="small" onClick={onRetry}>
               {t('common:actions.retry')}
             </Button>
           }
@@ -191,115 +332,360 @@ export function AdminPostsListPage() {
         </Alert>
       )}
 
-      {data && data.items.length === 0 && (
-        <Typography color="text.secondary">{t('list.empty')}</Typography>
-      )}
+      <Card variant="outlined" sx={{ overflow: 'hidden' }}>
+        <Table sx={{ tableLayout: 'fixed' }}>
+          <colgroup>
+            <col />
+            <col style={{ width: 100 }} />
+            <col style={{ width: 110 }} />
+            <col style={{ width: 110 }} />
+            <col style={{ width: 130 }} />
+            <col style={{ width: 140 }} />
+          </colgroup>
+          <TableHead>
+            <TableRow>
+              {(
+                [
+                  ['question', t('list.columns.question')],
+                  ['language', t('list.columns.language')],
+                  ['level', t('list.columns.level')],
+                  ['status', t('list.columns.status')],
+                  ['updated', t('list.columns.updated')],
+                ] as Array<[SortKey, string]>
+              ).map(([key, label]) => (
+                <TableCell key={key}>
+                  <TableSortLabel
+                    active={sortKey === key}
+                    direction={sortKey === key ? sortDir : 'asc'}
+                    onClick={() => cycleSort(key)}
+                    aria-label={t('list.a11y.sortBy', { column: label })}
+                  >
+                    {label}
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+              <TableCell align="right" sx={{ pr: 1.5 }}>
+                {t('list.columns.actions')}
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {isLoading &&
+              Array.from({ length: 8 }).map((_, i) => (
+                <TableRow key={`sk-${i}`}>
+                  {Array.from({ length: 6 }).map((__, j) => (
+                    <TableCell key={j}>
+                      <Skeleton variant="text" height={22} />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
 
-      {data && data.items.length > 0 && (
-        <TableContainer component={Paper} variant="outlined">
-          <Table size="small">
-            <TableHead>
+            {!isLoading && pageItems.length === 0 && (
               <TableRow>
-                <TableCell>{t('list.columns.question')}</TableCell>
-                <TableCell>{t('list.columns.language')}</TableCell>
-                <TableCell>{t('list.columns.level')}</TableCell>
-                <TableCell>{t('list.columns.status')}</TableCell>
-                <TableCell>{t('list.columns.updated')}</TableCell>
-                <TableCell align="right">
-                  {t('list.columns.actions')}
+                <TableCell colSpan={6}>
+                  <Stack
+                    alignItems="center"
+                    sx={{
+                      py: 14,
+                      gap: 1,
+                      color: 'text.disabled',
+                      fontSize: 13.5,
+                    }}
+                  >
+                    <Typography variant="body2">{t('list.empty')}</Typography>
+                  </Stack>
                 </TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.items.map((row) => {
-                const isDeleted = row.deletedAt !== null;
-                const busy =
-                  (deleteState.isLoading &&
-                    deleteState.originalArgs === row.id) ||
-                  (restoreState.isLoading &&
-                    restoreState.originalArgs === row.id);
-                return (
-                  <TableRow key={row.id} hover>
-                    <TableCell sx={{ maxWidth: 360 }}>
-                      <Typography variant="body2">{row.question}</Typography>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                      >
-                        {row.slug}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>{row.language}</TableCell>
-                    <TableCell>{row.level}</TableCell>
-                    <TableCell>
-                      <Chip
-                        size="small"
-                        label={
-                          isDeleted
-                            ? t('list.statusDeleted')
-                            : t('list.statusActive')
-                        }
-                        color={isDeleted ? 'default' : 'success'}
-                        variant={isDeleted ? 'outlined' : 'filled'}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {new Date(row.updatedAt).toLocaleDateString(locale)}
-                    </TableCell>
-                    <TableCell align="right">
-                      <Stack
-                        direction="row"
-                        spacing={1}
-                        justifyContent="flex-end"
-                      >
-                        <Button
-                          size="small"
-                          component={RouterLink}
-                          to={`/admin/posts/${encodeURIComponent(row.id)}/edit`}
-                          disabled={busy}
-                        >
-                          {t('list.actions.edit')}
-                        </Button>
-                        <Button
-                          size="small"
-                          component={RouterLink}
-                          to={`/interview/${row.language}/${row.slug}`}
-                          disabled={busy || isDeleted}
-                        >
-                          {t('list.actions.view')}
-                        </Button>
-                        {isDeleted ? (
-                          <Button
-                            size="small"
-                            color="primary"
-                            onClick={() => handleRestore(row.id)}
-                            disabled={busy}
-                          >
-                            {t('list.actions.restore')}
-                          </Button>
-                        ) : (
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleDelete(row.id)}
-                            disabled={busy}
-                            aria-label={t('list.actions.delete')}
-                          >
-                            <Typography component="span" fontSize={18}>
-                              ×
-                            </Typography>
-                          </IconButton>
-                        )}
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+            )}
+
+            {!isLoading &&
+              pageItems.map((row) => (
+                <PostRow
+                  key={row.id}
+                  row={row}
+                  locale={locale}
+                  busyDelete={isDeleting(row.id)}
+                  busyRestore={isRestoring(row.id)}
+                  onDelete={() => onDelete(row.id)}
+                  onRestore={() => onRestore(row.id)}
+                />
+              ))}
+          </TableBody>
+        </Table>
+
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{
+            px: 4,
+            py: 3,
+            borderTop: 1,
+            borderColor: 'divider',
+            bgcolor: 'surface.elevated',
+          }}
+        >
+          <Typography variant="body2" color="text.disabled">
+            {t('list.pager.info', { shown: totalShown, total: totalAll })}
+          </Typography>
+          <Pagination
+            size="small"
+            shape="rounded"
+            count={pageCount}
+            page={currentPage}
+            onChange={(_, p) => setPage(p)}
+          />
+        </Stack>
+      </Card>
     </Box>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Row
+// ────────────────────────────────────────────────────────────────────────────
+
+interface PostRowProps {
+  row: AdminPostListItem;
+  locale: string;
+  busyDelete: boolean;
+  busyRestore: boolean;
+  onDelete: () => void;
+  onRestore: () => void;
+}
+
+function PostRow({
+  row,
+  locale,
+  busyDelete,
+  busyRestore,
+  onDelete,
+  onRestore,
+}: PostRowProps) {
+  const { t } = useTranslation('admin');
+  const isDeleted = row.deletedAt !== null;
+  const updated = new Intl.DateTimeFormat(locale).format(
+    new Date(row.updatedAt),
+  );
+
+  return (
+    <TableRow
+      hover
+      sx={{
+        '&:hover .actions-cluster': {
+          borderColor: 'divider',
+          backgroundColor: 'background.default',
+        },
+      }}
+    >
+      <TableCell>
+        <Typography
+          variant="body1"
+          title={row.question}
+          sx={{
+            fontWeight: 500,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            ...(isDeleted && {
+              textDecoration: 'line-through',
+              color: 'text.disabled',
+            }),
+          }}
+        >
+          {row.question}
+        </Typography>
+      </TableCell>
+      <TableCell>
+        <LanguageBadge language={row.language} />
+      </TableCell>
+      <TableCell>
+        <LevelChip level={row.level} />
+      </TableCell>
+      <TableCell>
+        <StatusChip deleted={isDeleted} />
+      </TableCell>
+      <TableCell>
+        <Typography
+          variant="body2"
+          sx={{
+            color: isDeleted ? 'text.disabled' : 'text.secondary',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {updated}
+        </Typography>
+      </TableCell>
+      <TableCell align="right">
+        <Stack
+          className="actions-cluster"
+          direction="row"
+          spacing={0.25}
+          sx={{
+            display: 'inline-flex',
+            p: '2px',
+            border: 1,
+            borderColor: 'transparent',
+            borderRadius: 1,
+            transition: 'background-color 120ms ease, border-color 120ms ease',
+          }}
+        >
+          <Tooltip title={t('list.actions.edit')}>
+            <span>
+              <IconButton
+                size="small"
+                component={RouterLink}
+                to={`/admin/posts/${encodeURIComponent(row.id)}/edit`}
+                disabled={isDeleted}
+                aria-label={t('list.actions.edit')}
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip title={t('list.actions.view')}>
+            <span>
+              <IconButton
+                size="small"
+                component={RouterLink}
+                to={`/interview/${row.language}/${row.slug}`}
+                disabled={isDeleted}
+                aria-label={t('list.actions.view')}
+              >
+                <VisibilityIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
+          {isDeleted ? (
+            <Tooltip title={t('list.actions.restore')}>
+              <IconButton
+                size="small"
+                onClick={onRestore}
+                disabled={busyRestore}
+                aria-label={t('list.actions.restore')}
+              >
+                {busyRestore ? (
+                  <CircularProgress size={14} />
+                ) : (
+                  <RestoreIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <Tooltip title={t('list.actions.delete')}>
+              <IconButton
+                size="small"
+                color="error"
+                onClick={onDelete}
+                disabled={busyDelete}
+                aria-label={t('list.actions.delete')}
+              >
+                {busyDelete ? (
+                  <CircularProgress size={14} />
+                ) : (
+                  <DeleteIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
+          )}
+        </Stack>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Cells
+// ────────────────────────────────────────────────────────────────────────────
+
+function LanguageBadge({ language }: { language: string }) {
+  const { t } = useTranslation('admin');
+  const isTs = language === 'typescript';
+  const isJs = language === 'javascript';
+  const label = isTs ? 'TS' : isJs ? 'JS' : language.slice(0, 2).toUpperCase();
+  const tip = isTs
+    ? t('list.languageNames.typescript')
+    : isJs
+      ? t('list.languageNames.javascript')
+      : language;
+  return (
+    <Tooltip title={tip}>
+      <Box
+        role="img"
+        aria-label={tip}
+        sx={{
+          width: 22,
+          height: 22,
+          borderRadius: 0.5,
+          display: 'inline-grid',
+          placeItems: 'center',
+          fontFamily: 'fontFamily',
+          fontSize: '0.625rem',
+          fontWeight: 700,
+          letterSpacing: 0,
+          bgcolor: isTs ? '#3178C6' : isJs ? '#F7DF1E' : 'surface.elevated',
+          color: isTs ? '#fff' : isJs ? '#1a1a1d' : 'text.secondary',
+          cursor: 'default',
+        }}
+      >
+        {label}
+      </Box>
+    </Tooltip>
+  );
+}
+
+function LevelChip({ level }: { level: 'junior' | 'senior' }) {
+  const { t } = useTranslation('admin');
+  return (
+    <Chip
+      variant="level"
+      color={level}
+      size="small"
+      label={
+        <>
+          <Box
+            component="span"
+            sx={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              backgroundColor: 'currentColor',
+              display: 'inline-block',
+            }}
+          />
+          <span>{t(`list.levels.${level}`)}</span>
+        </>
+      }
+    />
+  );
+}
+
+function StatusChip({ deleted }: { deleted: boolean }) {
+  const { t } = useTranslation('admin');
+  if (deleted) {
+    return (
+      <Chip
+        variant="outlined"
+        size="small"
+        label={t('list.statusDeleted')}
+        sx={{
+          borderStyle: 'dashed',
+          height: 22,
+          fontSize: '0.75rem',
+          fontWeight: 500,
+          color: 'text.disabled',
+        }}
+      />
+    );
+  }
+  return (
+    <Chip
+      variant="status"
+      color="active"
+      size="small"
+      label={t('list.statusActive')}
+    />
   );
 }
 

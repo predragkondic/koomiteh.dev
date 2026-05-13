@@ -79,5 +79,14 @@ declare module '@mui/material/styles' {
 declare module '@mui/material/Chip' {
   interface ChipPropsVariantOverrides {
     tag: true;
+    level: true;
+    status: true;
+  }
+  interface ChipPropsColorOverrides {
+    junior: true;
+    senior: true;
+    active: true;
+    draft: true;
+    deleted: true;
   }
 }

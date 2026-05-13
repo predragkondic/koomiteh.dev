@@ -442,6 +442,91 @@ export const theme = createTheme({
             },
           }),
         },
+        {
+          props: { variant: 'level', color: 'junior' },
+          style: ({ theme: t }) => ({
+            height: 22,
+            borderRadius: radius.pill,
+            fontFamily: FONT_SANS,
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            letterSpacing: 0,
+            backgroundColor: t.vars.palette.level.junior.soft,
+            color: t.vars.palette.level.junior.main,
+            border: `1px solid color-mix(in oklab, ${t.vars.palette.level.junior.main} 35%, transparent)`,
+            '& .MuiChip-label': {
+              paddingInline: 8,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+            },
+          }),
+        },
+        {
+          props: { variant: 'level', color: 'senior' },
+          style: ({ theme: t }) => ({
+            height: 22,
+            borderRadius: radius.pill,
+            fontFamily: FONT_SANS,
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            letterSpacing: 0,
+            backgroundColor: t.vars.palette.level.senior.soft,
+            color: t.vars.palette.level.senior.main,
+            border: `1px solid color-mix(in oklab, ${t.vars.palette.level.senior.main} 35%, transparent)`,
+            '& .MuiChip-label': {
+              paddingInline: 8,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+            },
+          }),
+        },
+        {
+          props: { variant: 'status', color: 'active' },
+          style: ({ theme: t }) => ({
+            height: 22,
+            borderRadius: radius.pill,
+            fontFamily: FONT_SANS,
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            letterSpacing: 0,
+            backgroundColor: `color-mix(in oklab, ${t.vars.palette.success.main} 18%, transparent)`,
+            color: t.vars.palette.success.main,
+            border: `1px solid color-mix(in oklab, ${t.vars.palette.success.main} 35%, transparent)`,
+            '& .MuiChip-label': { paddingInline: 8 },
+          }),
+        },
+        {
+          props: { variant: 'status', color: 'draft' },
+          style: ({ theme: t }) => ({
+            height: 22,
+            borderRadius: radius.pill,
+            fontFamily: FONT_SANS,
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            letterSpacing: 0,
+            backgroundColor: `color-mix(in oklab, ${t.vars.palette.warning.main} 18%, transparent)`,
+            color: t.vars.palette.warning.main,
+            border: `1px solid color-mix(in oklab, ${t.vars.palette.warning.main} 35%, transparent)`,
+            '& .MuiChip-label': { paddingInline: 8 },
+          }),
+        },
+        {
+          props: { variant: 'status', color: 'deleted' },
+          style: ({ theme: t }) => ({
+            height: 22,
+            borderRadius: radius.pill,
+            fontFamily: FONT_SANS,
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            letterSpacing: 0,
+            backgroundColor: `color-mix(in oklab, ${t.vars.palette.error.main} 18%, transparent)`,
+            color: t.vars.palette.error.main,
+            border: `1px solid color-mix(in oklab, ${t.vars.palette.error.main} 35%, transparent)`,
+            '& .MuiChip-label': { paddingInline: 8 },
+          }),
+        },
       ],
       styleOverrides: {
         sizeSmall: { height: 22, fontSize: '0.6875rem' },
@@ -614,13 +699,26 @@ export const theme = createTheme({
     MuiPaginationItem: {
       styleOverrides: {
         root: ({ theme: t }) => ({
-          fontFamily: FONT_MONO,
+          fontFamily: FONT_SANS,
+          fontSize: '0.8125rem',
           fontWeight: 500,
+          minWidth: 28,
+          height: 28,
           borderRadius: radius.sm,
           '&.Mui-selected': {
             backgroundColor: t.vars.palette.primary.main,
             color: t.vars.palette.primary.contrastText,
             '&:hover': { backgroundColor: t.vars.palette.primary.dark },
+          },
+        }),
+      },
+    },
+
+    MuiTableSortLabel: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          '&.Mui-active, &.Mui-active .MuiTableSortLabel-icon': {
+            color: t.vars.palette.primary.main,
           },
         }),
       },

@@ -3,13 +3,26 @@
   "list": {
     "title": "All posts",
     "newButton": "New post",
+    "aiButton": "AI suggestion",
     "statusActive": "Active",
+    "statusDraft": "Draft",
     "statusDeleted": "Deleted",
     "showDeleted": "Show deleted",
     "filter": "Filter",
-    "empty": "No posts.",
+    "empty": "No posts found.",
     "loading": "Loading posts…",
     "loadError": "Failed to load posts.",
+    "languageNames": {
+      "typescript": "TypeScript",
+      "javascript": "JavaScript"
+    },
+    "levels": {
+      "junior": "junior",
+      "senior": "senior"
+    },
+    "pager": {
+      "info": "{{shown}} of {{total}} posts"
+    },
     "columns": {
       "question": "Question",
       "language": "Language",
@@ -25,7 +38,8 @@
       "view": "View"
     },
     "a11y": {
-      "actions": "Actions"
+      "actions": "Actions",
+      "sortBy": "Sort by {{column}}"
     }
   },
   "editor": {

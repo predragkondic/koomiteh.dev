@@ -122,13 +122,22 @@ export function AdminPostsListPage() {
         <Typography variant="h4" component="h1">
           {t('list.title')}
         </Typography>
-        <Button
+        <IconButton
           component={RouterLink}
           to="/admin/posts/new"
-          variant="contained"
+          aria-label={t('list.newButton')}
+          sx={{
+            width: 40,
+            height: 40,
+            p: 0,
+            borderRadius: '999px',
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+            '&:hover': { backgroundColor: 'primary.light' },
+          }}
         >
-          {t('list.newButton')}
-        </Button>
+          <AddIcon sx={{ fontSize: 20 }} />
+        </IconButton>
       </Stack>
 
       <FormControlLabel

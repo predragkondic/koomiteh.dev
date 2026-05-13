@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
+import { config } from '@/config';
 import i18n from '@/i18n';
 import { server } from './msw-server';
 
@@ -18,6 +19,7 @@ if (!window.matchMedia) {
 }
 
 await i18n.changeLanguage('de');
+config.apiBaseUrl = 'http://localhost:3000';
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {

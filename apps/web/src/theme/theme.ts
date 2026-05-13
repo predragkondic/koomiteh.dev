@@ -56,6 +56,9 @@ const light = {
       secondary: 'oklch(0.42 0.006 270)',
       disabled: 'oklch(0.72 0.006 270)',
     },
+    input: {
+      background: "#101014",
+    },
     success: { main: '#1f8950', light: '#4cc28a', dark: '#0f5a32', contrastText: '#ffffff' },
     warning: { main: '#c98a1f', light: '#e7ab44', dark: '#8a5e0f', contrastText: '#ffffff' },
     error:   { main: '#d5483b', light: '#e96a59', dark: '#9d2e22', contrastText: '#ffffff' },
@@ -417,6 +420,29 @@ export const theme = createTheme({
     // Chips
 
     MuiChip: {
+      variants: [
+        {
+          props: { variant: 'tag' },
+          style: ({ theme: t }) => ({
+            height: 26,
+            borderRadius: radius.pill,
+            fontFamily: t.typography.fontFamilyMono,
+            fontSize: '0.71875rem',
+            fontWeight: 500,
+            letterSpacing: '0.01em',
+            backgroundColor: `rgba(${t.vars.palette.primary.mainChannel} / 0.10)`,
+            border: `1px solid rgba(${t.vars.palette.primary.mainChannel} / 0.22)`,
+            color:
+              t.palette.mode === 'dark' ? '#FF8ABA' : t.vars.palette.primary.dark,
+            '& .MuiChip-label': { paddingInline: 8 },
+            '& .MuiChip-deleteIcon': {
+              fontSize: 14,
+              color: t.vars.palette.text.disabled,
+              marginRight: 4,
+            },
+          }),
+        },
+      ],
       styleOverrides: {
         sizeSmall: { height: 22, fontSize: '0.6875rem' },
         // Neutral (no `color` prop, or color="default"): use our surface ramp.
@@ -432,17 +458,30 @@ export const theme = createTheme({
       },
     },
 
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          fontFamily: t.typography.fontFamilyMono,
+          fontSize: '0.65625rem',
+          letterSpacing: '0.02em',
+          color: t.vars.palette.text.disabled,
+          marginTop: 4,
+          marginLeft: 0,
+        }),
+      },
+    },
+
     // Inputs
 
     MuiTextField: {
-      defaultProps: { variant: 'outlined', size: 'small' },
+      defaultProps: { variant: 'outlined', size: 'small', },
     },
 
     MuiOutlinedInput: {
       styleOverrides: {
         root: ({ theme: t }) => ({
           borderRadius: radius.md,
-          backgroundColor: t.vars.palette.background.default,
+          backgroundColor: t.palette.input.background,
           fontFamily: FONT_SANS,
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: t.vars.palette.divider,

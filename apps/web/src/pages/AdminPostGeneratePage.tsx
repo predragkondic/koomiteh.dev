@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -36,8 +41,16 @@ export function AdminPostGeneratePage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [draftForm, setDraftForm] = useState<AdminPostCreate | null>(null);
+  const [draftSnapshot, setDraftSnapshot] = useState<AdminPostCreate | null>(
+    null,
+  );
   const [tagsInput, setTagsInput] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [confirmRegenerateOpen, setConfirmRegenerateOpen] = useState(false);
+  const [lastGenerateInputs, setLastGenerateInputs] = useState<FormState | null>(
+    null,
+  );
+  const [generateErrorRetryable, setGenerateErrorRetryable] = useState(false);
   const [generate, generateState] = useGeneratePostMutation();
   const [createPost, createState] = useCreateAdminPostMutation();
 
@@ -68,28 +81,81 @@ export function AdminPostGeneratePage() {
     }
   }
 
-  async function handleGenerate() {
+  async function runGenerate(inputs: FormState) {
     setErrorMsg(null);
+    setGenerateErrorRetryable(false);
+    setLastGenerateInputs(inputs);
     try {
-      const result = await generate(form).unwrap();
-      setDraftForm({
+      const result = await generate(inputs).unwrap();
+      const next: AdminPostCreate = {
         slug: result.slug,
         question: result.question,
         language: result.language,
         level: result.level,
         tags: result.tags,
         bodyMd: result.bodyMd,
-      });
+      };
+      setDraftForm(next);
+      setDraftSnapshot(next);
       setTagsInput(result.tags.join(', '));
     } catch (err) {
       const code = (err as { data?: { error?: string } }).data?.error;
       setErrorMsg(mapErrorCode(code));
+      setGenerateErrorRetryable(true);
     }
+  }
+
+  async function handleGenerate() {
+    await runGenerate(form);
+  }
+
+  async function handleRetryGenerate() {
+    if (lastGenerateInputs) {
+      await runGenerate(lastGenerateInputs);
+    }
+  }
+
+  const isDraftDirty = useMemo(() => {
+    if (!draftForm || !draftSnapshot) return false;
+    return (
+      draftForm.slug !== draftSnapshot.slug ||
+      draftForm.question !== draftSnapshot.question ||
+      draftForm.bodyMd !== draftSnapshot.bodyMd ||
+      JSON.stringify(draftForm.tags) !== JSON.stringify(draftSnapshot.tags)
+    );
+  }, [draftForm, draftSnapshot]);
+
+  useEffect(() => {
+    if (!isDraftDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDraftDirty]);
+
+  function handleRegenerate() {
+    if (isDraftDirty) {
+      setConfirmRegenerateOpen(true);
+      return;
+    }
+    void handleGenerate();
+  }
+
+  function handleConfirmRegenerate() {
+    setConfirmRegenerateOpen(false);
+    void handleGenerate();
+  }
+
+  function handleCancelRegenerate() {
+    setConfirmRegenerateOpen(false);
   }
 
   async function handleSave() {
     if (!draftForm) return;
     setErrorMsg(null);
+    setGenerateErrorRetryable(false);
     try {
       const result = await createPost(draftForm).unwrap();
       navigate(
@@ -115,7 +181,22 @@ export function AdminPostGeneratePage() {
       </Typography>
 
       {errorMsg && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert
+          severity="error"
+          sx={{ mb: 2 }}
+          action={
+            generateErrorRetryable && lastGenerateInputs ? (
+              <Button
+                color="inherit"
+                size="small"
+                onClick={handleRetryGenerate}
+                disabled={isGenerating}
+              >
+                {t('generate.error.retry')}
+              </Button>
+            ) : undefined
+          }
+        >
           {errorMsg}
         </Alert>
       )}
@@ -187,6 +268,29 @@ export function AdminPostGeneratePage() {
             : t('generate.generateButton')}
         </Button>
       </Stack>
+
+      <Dialog
+        open={confirmRegenerateOpen}
+        onClose={handleCancelRegenerate}
+        aria-labelledby="confirm-regenerate-title"
+      >
+        <DialogTitle id="confirm-regenerate-title">
+          {t('generate.confirmRegenerate.title')}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t('generate.confirmRegenerate.body')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelRegenerate}>
+            {t('generate.confirmRegenerate.cancel')}
+          </Button>
+          <Button onClick={handleConfirmRegenerate} variant="contained">
+            {t('generate.confirmRegenerate.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {draftForm && (
         <Box>
@@ -274,6 +378,12 @@ export function AdminPostGeneratePage() {
           <Stack direction="row" spacing={1} sx={{ mt: 3 }} justifyContent="flex-end">
             <Button onClick={handleCancel} disabled={isSaving}>
               {t('editor.cancel')}
+            </Button>
+            <Button
+              onClick={handleRegenerate}
+              disabled={isGenerating || isSaving}
+            >
+              {t('generate.regenerateButton')}
             </Button>
             <Button
               variant="contained"

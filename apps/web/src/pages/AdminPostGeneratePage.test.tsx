@@ -292,6 +292,223 @@ describe('AdminPostGeneratePage', () => {
     });
   });
 
+  it('regenerates with same inputs when no edits have been made', async () => {
+    setupAdmin();
+    let callCount = 0;
+    const receivedBodies: unknown[] = [];
+    server.use(
+      http.post(
+        'http://localhost:3000/admin/posts/generate',
+        async ({ request }) => {
+          callCount += 1;
+          receivedBodies.push(await request.json());
+          return HttpResponse.json({
+            question: callCount === 1 ? 'First question' : 'Second question',
+            slug: callCount === 1 ? 'first' : 'second',
+            tags: ['t'],
+            bodyMd: callCount === 1 ? '# First' : '# Second',
+            language: 'typescript',
+            level: 'junior',
+          });
+        },
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
+
+    const questionField = (await screen.findByLabelText(
+      /^Frage/i,
+    )) as HTMLInputElement;
+    expect(questionField.value).toBe('First question');
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Neu generieren|Regenerate/i }),
+    );
+
+    await waitFor(() => {
+      const f = screen.getByLabelText(/^Frage/i) as HTMLInputElement;
+      expect(f.value).toBe('Second question');
+    });
+
+    expect(callCount).toBe(2);
+    expect(receivedBodies[1]).toMatchObject({
+      topic: 'closures',
+      language: 'typescript',
+      level: 'junior',
+    });
+  });
+
+  it('shows confirm dialog when regenerating after edits, then regenerates on confirm', async () => {
+    setupAdmin();
+    let callCount = 0;
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () => {
+        callCount += 1;
+        return HttpResponse.json({
+          question: callCount === 1 ? 'First' : 'Second',
+          slug: callCount === 1 ? 'first' : 'second',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        });
+      }),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
+
+    const questionField = (await screen.findByLabelText(
+      /^Frage/i,
+    )) as HTMLInputElement;
+    fireEvent.change(questionField, { target: { value: 'Edited question' } });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Neu generieren|Regenerate/i }),
+    );
+
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    expect(callCount).toBe(1);
+
+    const confirmBtn = screen.getByRole('button', {
+      name: /Verwerfen|Discard|Bestätigen/i,
+    });
+    fireEvent.click(confirmBtn);
+
+    await waitFor(() => {
+      const f = screen.getByLabelText(/^Frage/i) as HTMLInputElement;
+      expect(f.value).toBe('Second');
+    });
+    expect(callCount).toBe(2);
+  });
+
+  it('keeps edits when regenerate confirm dialog is cancelled', async () => {
+    setupAdmin();
+    let callCount = 0;
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () => {
+        callCount += 1;
+        return HttpResponse.json({
+          question: 'First',
+          slug: 'first',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        });
+      }),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
+
+    const questionField = (await screen.findByLabelText(
+      /^Frage/i,
+    )) as HTMLInputElement;
+    fireEvent.change(questionField, { target: { value: 'Edited question' } });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Neu generieren|Regenerate/i }),
+    );
+
+    await screen.findByRole('dialog');
+    const cancelBtn = screen.getByRole('button', { name: /^Abbrechen$|^Cancel$/i });
+    fireEvent.click(cancelBtn);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+    expect(callCount).toBe(1);
+    expect((screen.getByLabelText(/^Frage/i) as HTMLInputElement).value).toBe(
+      'Edited question',
+    );
+  });
+
+  it('warns via beforeunload when draft has unsaved edits', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () =>
+        HttpResponse.json({
+          question: 'Q',
+          slug: 'q',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
+
+    const questionField = (await screen.findByLabelText(
+      /^Frage/i,
+    )) as HTMLInputElement;
+
+    const cleanEvent = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(cleanEvent);
+    expect(cleanEvent.defaultPrevented).toBe(false);
+
+    fireEvent.change(questionField, { target: { value: 'Edited' } });
+
+    await waitFor(() => {
+      const dirtyEvent = new Event('beforeunload', { cancelable: true });
+      window.dispatchEvent(dirtyEvent);
+      expect(dirtyEvent.defaultPrevented).toBe(true);
+    });
+  });
+
   it('shows error alert when generation returns 503', async () => {
     setupAdmin();
     server.use(
@@ -313,10 +530,74 @@ describe('AdminPostGeneratePage', () => {
     fireEvent.change(screen.getByLabelText(/Thema/i), {
       target: { value: 'closures' },
     });
-    fireEvent.click(screen.getByRole('button', { name: /Generieren/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
+    });
+  });
+
+  it('retry button in error alert re-runs generate with same inputs', async () => {
+    setupAdmin();
+    const seen: unknown[] = [];
+    let call = 0;
+    server.use(
+      http.post(
+        'http://localhost:3000/admin/posts/generate',
+        async ({ request }) => {
+          call += 1;
+          seen.push(await request.json());
+          if (call === 1) {
+            return HttpResponse.json(
+              { error: 'gemini_failed' },
+              { status: 502 },
+            );
+          }
+          return HttpResponse.json({
+            question: 'Recovered',
+            slug: 'recovered',
+            tags: ['t'],
+            bodyMd: '# Recovered',
+            language: 'typescript',
+            level: 'junior',
+          });
+        },
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
+
+    const alert = await screen.findByRole('alert');
+    const retryBtn = await screen.findByRole('button', {
+      name: /Erneut versuchen|Retry/i,
+    });
+    expect(alert).toBeInTheDocument();
+
+    fireEvent.click(retryBtn);
+
+    const questionField = (await screen.findByLabelText(
+      /^Frage/i,
+    )) as HTMLInputElement;
+    expect(questionField.value).toBe('Recovered');
+
+    expect(call).toBe(2);
+    expect(seen[1]).toMatchObject({
+      topic: 'closures',
+      language: 'typescript',
+      level: 'junior',
     });
   });
 });

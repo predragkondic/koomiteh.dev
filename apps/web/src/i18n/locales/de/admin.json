@@ -68,6 +68,13 @@
     },
     "generateButton": "Generieren",
     "generating": "Generiere…",
+    "regenerateButton": "Neu generieren",
+    "confirmRegenerate": {
+      "title": "Edits verwerfen?",
+      "body": "Beim Neu-Generieren gehen deine Änderungen am Draft verloren.",
+      "confirm": "Verwerfen und neu generieren",
+      "cancel": "Abbrechen"
+    },
     "draft": {
       "title": "Vorschlag",
       "question": "Frage",
@@ -78,7 +85,8 @@
     "error": {
       "generic": "Generierung fehlgeschlagen.",
       "unavailable": "Generate ist nicht konfiguriert.",
-      "geminiFailed": "Gemini hat nicht geantwortet."
+      "geminiFailed": "Gemini hat nicht geantwortet.",
+      "retry": "Erneut versuchen"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,17 +12,11 @@ import { useGetMeQuery } from '@/api/authApi';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthMenu } from './AuthMenu';
-
-function detectShortcutHint(): string {
-  if (typeof navigator === 'undefined') return 'Ctrl K';
-  const ua = navigator.userAgent;
-  return /Mac|iPhone|iPad|iPod/.test(ua) ? '⌘ K' : 'Ctrl K';
-}
+import { SearchTrigger } from './SearchTrigger';
 
 export function AppShell() {
   const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const shortcut = useMemo(detectShortcutHint, []);
   const { data: me } = useGetMeQuery();
   const isAdmin = me?.user?.role === 'admin';
 
@@ -66,34 +60,7 @@ export function AppShell() {
               {t('admin:title')}
             </Button>
           )}
-          <Button
-            variant="outlined"
-            size="small"
-            color="inherit"
-            onClick={() => setPaletteOpen(true)}
-            aria-label={t('search.openLabel')}
-            aria-keyshortcuts={shortcut.replace(' ', '+')}
-            sx={{
-              textTransform: 'none',
-              justifyContent: 'space-between',
-              minWidth: 200,
-              color: 'text.secondary',
-              borderColor: 'divider',
-              gap: 2,
-            }}
-          >
-            <span>{t('search.placeholder')}</span>
-            <Box
-              component="span"
-              sx={{
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-                color: 'text.disabled',
-              }}
-            >
-              {shortcut}
-            </Box>
-          </Button>
+          <SearchTrigger onClick={() => setPaletteOpen(true)} withShortcutHint />
           <LanguageToggle />
           <ThemeToggle />
           <AuthMenu />

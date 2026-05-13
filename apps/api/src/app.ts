@@ -11,6 +11,7 @@ import { authRoute } from './routes/auth.js';
 import { postsRoute } from './routes/posts.js';
 import { favoritesRoute, myFavoritesRoute } from './routes/favorites.js';
 import { adminRoute } from './routes/admin.js';
+import { adminGenerateRoute } from './routes/admin-generate.js';
 
 export function createApp() {
   const app = new Hono();
@@ -43,6 +44,7 @@ export function createApp() {
   app.route('/favorites', favoritesRoute);
   app.route('/me', myFavoritesRoute);
   app.route('/admin', adminRoute);
+  app.route('/admin/posts/generate', adminGenerateRoute);
 
   app.onError((err, c) => {
     const reqId = c.get('requestId');

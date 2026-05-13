@@ -56,5 +56,29 @@
     "title": "Question removed",
     "body": "This question has been removed."
   },
-  "confirmDelete": "Delete this post (soft-delete)?"
+  "confirmDelete": "Delete this post (soft-delete)?",
+  "generate": {
+    "title": "Generate post",
+    "entryButton": "Generate post",
+    "fields": {
+      "topic": "Topic",
+      "topicHelper": "What should the post be about?",
+      "language": "Language",
+      "level": "Level"
+    },
+    "generateButton": "Generate",
+    "generating": "Generating…",
+    "draft": {
+      "title": "Draft",
+      "question": "Question",
+      "slug": "Slug",
+      "tags": "Tags",
+      "bodyMd": "Body"
+    },
+    "error": {
+      "generic": "Generation failed.",
+      "unavailable": "Generate is not configured.",
+      "geminiFailed": "Gemini did not respond."
+    }
+  }
 }

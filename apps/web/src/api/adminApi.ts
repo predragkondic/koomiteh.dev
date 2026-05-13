@@ -4,6 +4,8 @@ import type {
   AdminPostDetail,
   AdminPostListResponse,
   AdminPostUpdate,
+  GeneratePostRequest,
+  GeneratePostResponse,
 } from '@koomiteh/shared';
 import { config } from '@/config';
 
@@ -88,6 +90,13 @@ export const adminApi = createApi({
         { type: 'AdminPost', id },
       ],
     }),
+    generatePost: build.mutation<GeneratePostResponse, GeneratePostRequest>({
+      query: (body) => ({
+        url: '/admin/posts/generate',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -98,4 +107,5 @@ export const {
   useUpdateAdminPostMutation,
   useDeleteAdminPostMutation,
   useRestoreAdminPostMutation,
+  useGeneratePostMutation,
 } = adminApi;

@@ -1,0 +1,22 @@
+import { z } from 'zod';
+import { postLevelSchema } from './frontmatter.js';
+
+export const generatePostRequestSchema = z.object({
+  topic: z.string().min(1).max(500),
+  language: z.string().min(1),
+  level: postLevelSchema,
+});
+export type GeneratePostRequest = z.infer<typeof generatePostRequestSchema>;
+
+const TAG_RE = /^[a-z0-9-]+$/;
+const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export const generatePostResponseSchema = z.object({
+  question: z.string().min(1).max(500),
+  slug: z.string().min(1).max(120).regex(SLUG_RE),
+  tags: z.array(z.string().regex(TAG_RE)).max(5),
+  bodyMd: z.string().min(1),
+  language: z.string().min(1),
+  level: postLevelSchema,
+});
+export type GeneratePostResponse = z.infer<typeof generatePostResponseSchema>;

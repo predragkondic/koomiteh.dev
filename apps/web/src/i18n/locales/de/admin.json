@@ -56,5 +56,29 @@
     "title": "Frage entfernt",
     "body": "Diese Frage wurde entfernt."
   },
-  "confirmDelete": "Diesen Beitrag löschen (Soft-Delete)?"
+  "confirmDelete": "Diesen Beitrag löschen (Soft-Delete)?",
+  "generate": {
+    "title": "Beitrag generieren",
+    "entryButton": "Beitrag generieren",
+    "fields": {
+      "topic": "Thema",
+      "topicHelper": "Worüber soll der Beitrag handeln?",
+      "language": "Sprache",
+      "level": "Level"
+    },
+    "generateButton": "Generieren",
+    "generating": "Generiere…",
+    "draft": {
+      "title": "Vorschlag",
+      "question": "Frage",
+      "slug": "Slug",
+      "tags": "Tags",
+      "bodyMd": "Inhalt"
+    },
+    "error": {
+      "generic": "Generierung fehlgeschlagen.",
+      "unavailable": "Generate ist nicht konfiguriert.",
+      "geminiFailed": "Gemini hat nicht geantwortet."
+    }
+  }
 }

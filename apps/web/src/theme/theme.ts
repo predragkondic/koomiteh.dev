@@ -12,10 +12,10 @@ import { alpha, createTheme } from '@mui/material/styles';
 // the design-system page is the source of truth for visual review.
 // ────────────────────────────────────────────────────────────────────────────
 
-const FONT_SANS =
-  "'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const FONT_SANS = "'Roboto', sans-serif";
+const FONT_HEADING =  "'Aleo', serif";
 const FONT_MONO =
-  "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace";
+  "'JetBrains Mono', monospace";
 
 /** Brand accent — magenta. The one loud color. */
 const ACCENT = '#FF2E88';
@@ -185,26 +185,24 @@ export const theme = createTheme({
   typography: {
     fontFamily: FONT_SANS,
     fontFamilyMono: FONT_MONO,
-    fontWeightRegular: 400,
     fontWeightMedium: 500,
     fontWeightBold: 600,
 
     h1: {
-      fontFamily: FONT_SANS,
-      fontSize: '3rem', // 48px — hero display
+      fontFamily: FONT_HEADING,
       fontWeight: 600,
       lineHeight: 1.05,
       letterSpacing: '-0.03em',
     },
     h2: {
-      fontFamily: FONT_SANS,
+      fontFamily: FONT_HEADING,
       fontSize: '2rem', // 32px
       fontWeight: 600,
       lineHeight: 1.12,
       letterSpacing: '-0.025em',
     },
     h3: {
-      fontFamily: FONT_SANS,
+      fontFamily: FONT_HEADING,
       fontSize: '1.375rem', // 22px
       fontWeight: 600,
       lineHeight: 1.25,
@@ -222,20 +220,18 @@ export const theme = createTheme({
       fontSize: '0.9375rem',
       fontWeight: 500,
       lineHeight: 1.4,
-      letterSpacing: '-0.01em',
     },
     h6: {
       fontFamily: FONT_SANS,
       fontSize: '0.875rem',
       fontWeight: 500,
       lineHeight: 1.4,
-      letterSpacing: '-0.005em',
     },
     body1: {
       fontFamily: FONT_SANS,
       fontSize: '0.9375rem', // 15px
       lineHeight: 1.55,
-      letterSpacing: '-0.005em',
+      fontWEIGHT: 100,
     },
     body2: {
       fontFamily: FONT_SANS,

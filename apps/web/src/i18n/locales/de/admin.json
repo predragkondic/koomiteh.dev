@@ -6,6 +6,7 @@
     "statusActive": "Aktiv",
     "statusDeleted": "Gelöscht",
     "showDeleted": "Gelöschte anzeigen",
+    "filter": "Filter",
     "empty": "Keine Beiträge.",
     "loading": "Beiträge werden geladen…",
     "loadError": "Beiträge konnten nicht geladen werden.",
@@ -22,6 +23,9 @@
       "delete": "Löschen",
       "restore": "Wiederherstellen",
       "view": "Ansehen"
+    },
+    "a11y": {
+      "actions": "Aktionen"
     }
   },
   "editor": {

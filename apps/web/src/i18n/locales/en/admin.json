@@ -6,6 +6,7 @@
     "statusActive": "Active",
     "statusDeleted": "Deleted",
     "showDeleted": "Show deleted",
+    "filter": "Filter",
     "empty": "No posts.",
     "loading": "Loading posts…",
     "loadError": "Failed to load posts.",
@@ -22,6 +23,9 @@
       "delete": "Delete",
       "restore": "Restore",
       "view": "View"
+    },
+    "a11y": {
+      "actions": "Actions"
     }
   },
   "editor": {

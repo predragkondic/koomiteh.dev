@@ -13,6 +13,7 @@ import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthMenu } from './AuthMenu';
 import { SearchTrigger } from './SearchTrigger';
+import { MobileToolbar } from './MobileToolbar';
 
 export function AppShell() {
   const { t } = useTranslation();
@@ -35,35 +36,47 @@ export function AppShell() {
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppBar position="sticky" color="default" elevation={0}>
         <Toolbar sx={{ gap: 2 }}>
-          <Typography
-            component={RouterLink}
-            to="/"
-            variant="h6"
+          <Box
             sx={{
-              textDecoration: 'none',
-              color: 'inherit',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
+              display: { xs: 'none', md: 'flex' },
+              alignItems: 'center',
+              gap: 2,
+              width: '100%',
             }}
           >
-            {t('appName')}
-          </Typography>
-          <Box sx={{ flex: 1 }} />
-          {isAdmin && (
-            <Button
+            <Typography
               component={RouterLink}
-              to="/admin"
-              size="small"
-              color="inherit"
-              sx={{ textTransform: 'none' }}
+              to="/"
+              variant="h6"
+              sx={{
+                textDecoration: 'none',
+                color: 'inherit',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+              }}
             >
-              {t('admin:title')}
-            </Button>
-          )}
-          <SearchTrigger onClick={() => setPaletteOpen(true)} withShortcutHint />
-          <LanguageToggle />
-          <ThemeToggle />
-          <AuthMenu />
+              {t('appName')}
+            </Typography>
+            <Box sx={{ flex: 1 }} />
+            {isAdmin && (
+              <Button
+                component={RouterLink}
+                to="/admin"
+                size="small"
+                color="inherit"
+                sx={{ textTransform: 'none' }}
+              >
+                {t('admin:title')}
+              </Button>
+            )}
+            <SearchTrigger onClick={() => setPaletteOpen(true)} withShortcutHint />
+            <LanguageToggle />
+            <ThemeToggle />
+            <AuthMenu />
+          </Box>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, width: '100%' }}>
+            <MobileToolbar setPaletteOpen={setPaletteOpen} />
+          </Box>
         </Toolbar>
       </AppBar>
       <Container component="main" sx={{ py: 4, flex: 1 }}>

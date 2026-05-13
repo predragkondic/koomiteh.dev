@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,17 +12,12 @@ import { useGetMeQuery } from '@/api/authApi';
 import { LanguageToggle } from './LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 import { AuthMenu } from './AuthMenu';
-
-function detectShortcutHint(): string {
-  if (typeof navigator === 'undefined') return 'Ctrl K';
-  const ua = navigator.userAgent;
-  return /Mac|iPhone|iPad|iPod/.test(ua) ? '⌘ K' : 'Ctrl K';
-}
+import { SearchTrigger } from './SearchTrigger';
+import { MobileToolbar } from './MobileToolbar';
 
 export function AppShell() {
   const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const shortcut = useMemo(detectShortcutHint, []);
   const { data: me } = useGetMeQuery();
   const isAdmin = me?.user?.role === 'admin';
 
@@ -41,62 +36,47 @@ export function AppShell() {
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <AppBar position="sticky" color="default" elevation={0}>
         <Toolbar sx={{ gap: 2 }}>
-          <Typography
-            component={RouterLink}
-            to="/"
-            variant="h6"
+          <Box
             sx={{
-              textDecoration: 'none',
-              color: 'inherit',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-            }}
-          >
-            {t('appName')}
-          </Typography>
-          <Box sx={{ flex: 1 }} />
-          {isAdmin && (
-            <Button
-              component={RouterLink}
-              to="/admin"
-              size="small"
-              color="inherit"
-              sx={{ textTransform: 'none' }}
-            >
-              {t('admin:title')}
-            </Button>
-          )}
-          <Button
-            variant="outlined"
-            size="small"
-            color="inherit"
-            onClick={() => setPaletteOpen(true)}
-            aria-label={t('search.openLabel')}
-            aria-keyshortcuts={shortcut.replace(' ', '+')}
-            sx={{
-              textTransform: 'none',
-              justifyContent: 'space-between',
-              minWidth: 200,
-              color: 'text.secondary',
-              borderColor: 'divider',
+              display: { xs: 'none', md: 'flex' },
+              alignItems: 'center',
               gap: 2,
+              width: '100%',
             }}
           >
-            <span>{t('search.placeholder')}</span>
-            <Box
-              component="span"
+            <Typography
+              component={RouterLink}
+              to="/"
+              variant="h6"
               sx={{
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-                color: 'text.disabled',
+                textDecoration: 'none',
+                color: 'inherit',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
               }}
             >
-              {shortcut}
-            </Box>
-          </Button>
-          <LanguageToggle />
-          <ThemeToggle />
-          <AuthMenu />
+              {t('appName')}
+            </Typography>
+            <Box sx={{ flex: 1 }} />
+            {isAdmin && (
+              <Button
+                component={RouterLink}
+                to="/admin"
+                size="small"
+                color="inherit"
+                sx={{ textTransform: 'none' }}
+              >
+                {t('admin:title')}
+              </Button>
+            )}
+            <SearchTrigger onClick={() => setPaletteOpen(true)} withShortcutHint />
+            <LanguageToggle />
+            <ThemeToggle />
+            <AuthMenu />
+          </Box>
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, width: '100%' }}>
+            <MobileToolbar setPaletteOpen={setPaletteOpen} />
+          </Box>
         </Toolbar>
       </AppBar>
       <Container component="main" sx={{ py: 4, flex: 1 }}>

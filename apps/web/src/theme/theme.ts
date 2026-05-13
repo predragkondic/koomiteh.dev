@@ -1,4 +1,4 @@
-import { alpha, createTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
 // Type augmentations for palette.level.*, palette.language.*, palette.surface.*,
 // and typography.fontFamilyMono live in `./mui.d.ts` — picked up automatically
@@ -286,9 +286,9 @@ export const theme = createTheme({
       defaultProps: { elevation: 0 },
       styleOverrides: {
         root: ({ theme: t }) => ({
-          backgroundColor: t.palette.background.default,
+          backgroundColor: t.vars.palette.background.default,
           backgroundImage: 'none',
-          borderBottom: `1px solid ${t.palette.divider}`,
+          borderBottom: `1px solid ${t.vars.palette.divider}`,
         }),
       },
     },
@@ -302,11 +302,11 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           borderRadius: radius.md,
-          borderColor: t.palette.divider,
+          borderColor: t.vars.palette.divider,
           backgroundImage: 'none',
           transition: 'border-color 120ms ease, background-color 120ms ease',
           '&:hover': {
-            borderColor: t.palette.surface.borderStrong,
+            borderColor: t.vars.palette.surface.borderStrong,
           },
         }),
       },
@@ -321,7 +321,7 @@ export const theme = createTheme({
     MuiDivider: {
       styleOverrides: {
         root: ({ theme: t }) => ({
-          borderColor: t.palette.surface.borderSubtle,
+          borderColor: t.vars.palette.surface.borderSubtle,
         }),
       },
     },
@@ -340,17 +340,17 @@ export const theme = createTheme({
         sizeMedium: { paddingInline: 14, height: 36, fontSize: '0.84375rem' },
         sizeLarge: { paddingInline: 18, height: 44, fontSize: '0.9375rem' },
         outlined: ({ theme: t }) => ({
-          borderColor: t.palette.divider,
+          borderColor: t.vars.palette.divider,
           '&:hover': {
-            borderColor: t.palette.surface.borderStrong,
-            backgroundColor: t.palette.background.paper,
+            borderColor: t.vars.palette.surface.borderStrong,
+            backgroundColor: t.vars.palette.background.paper,
           },
         }),
         text: ({ theme: t }) => ({
-          color: t.palette.text.secondary,
+          color: t.vars.palette.text.secondary,
           '&:hover': {
-            backgroundColor: t.palette.background.paper,
-            color: t.palette.text.primary,
+            backgroundColor: t.vars.palette.background.paper,
+            color: t.vars.palette.text.primary,
           },
         }),
       },
@@ -370,8 +370,8 @@ export const theme = createTheme({
     MuiToggleButtonGroup: {
       styleOverrides: {
         root: ({ theme: t }) => ({
-          backgroundColor: t.palette.background.default,
-          border: `1px solid ${t.palette.divider}`,
+          backgroundColor: t.vars.palette.background.default,
+          border: `1px solid ${t.vars.palette.divider}`,
           borderRadius: radius.md,
           padding: 2,
           gap: 2,
@@ -396,18 +396,18 @@ export const theme = createTheme({
           fontSize: '0.78125rem',
           textTransform: 'none',
           letterSpacing: '-0.005em',
-          color: t.palette.text.secondary,
+          color: t.vars.palette.text.secondary,
           borderRadius: radius.sm,
           '&:hover': {
-            color: t.palette.text.primary,
+            color: t.vars.palette.text.primary,
             backgroundColor: 'transparent',
           },
           '&.Mui-selected': {
-            backgroundColor: t.palette.background.paper,
-            color: t.palette.text.primary,
+            backgroundColor: t.vars.palette.background.paper,
+            color: t.vars.palette.text.primary,
             boxShadow: '0 1px 0 rgba(0,0,0,0.04)',
             '&:hover': {
-              backgroundColor: t.palette.background.paper,
+              backgroundColor: t.vars.palette.background.paper,
             },
           },
         }),
@@ -423,9 +423,9 @@ export const theme = createTheme({
         // Scoped to colorDefault so color="success"/"primary"/etc. keep their
         // natural MUI styling.
         colorDefault: ({ theme: t }) => ({
-          backgroundColor: t.palette.surface.elevated,
-          borderColor: t.palette.divider,
-          color: t.palette.text.secondary,
+          backgroundColor: t.vars.palette.surface.elevated,
+          borderColor: t.vars.palette.divider,
+          color: t.vars.palette.text.secondary,
         }),
         outlined: { backgroundColor: 'transparent' },
         deleteIcon: { fontSize: 14 },
@@ -442,21 +442,21 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           borderRadius: radius.md,
-          backgroundColor: t.palette.background.default,
+          backgroundColor: t.vars.palette.background.default,
           fontFamily: FONT_SANS,
           '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: t.palette.divider,
+            borderColor: t.vars.palette.divider,
             transition: 'border-color 120ms ease',
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: t.palette.surface.borderStrong,
+            borderColor: t.vars.palette.surface.borderStrong,
           },
           '&.Mui-focused': {
             '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: t.palette.primary.main,
+              borderColor: t.vars.palette.primary.main,
               borderWidth: 1,
             },
-            boxShadow: `0 0 0 3px ${alpha(t.palette.primary.main, 0.22)}`,
+            boxShadow: `0 0 0 3px rgba(${t.vars.palette.primary.mainChannel} / 0.22)`,
           },
         }),
         input: { paddingBlock: 10 },
@@ -470,8 +470,8 @@ export const theme = createTheme({
           fontSize: '0.71875rem',
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          color: t.palette.text.disabled,
-          '&.Mui-focused': { color: t.palette.primary.main },
+          color: t.vars.palette.text.disabled,
+          '&.Mui-focused': { color: t.vars.palette.primary.main },
         }),
         outlined: {
           // Pull the floated label up so it sits above the input border cleanly.
@@ -485,8 +485,8 @@ export const theme = createTheme({
     MuiAutocomplete: {
       styleOverrides: {
         paper: ({ theme: t }) => ({
-          backgroundColor: t.palette.surface.elevated,
-          border: `1px solid ${t.palette.divider}`,
+          backgroundColor: t.vars.palette.surface.elevated,
+          border: `1px solid ${t.vars.palette.divider}`,
           borderRadius: radius.md,
           boxShadow: '0 8px 24px -10px rgba(0,0,0,0.45)',
         }),
@@ -498,8 +498,8 @@ export const theme = createTheme({
     MuiMenu: {
       styleOverrides: {
         paper: ({ theme: t }) => ({
-          backgroundColor: t.palette.surface.elevated,
-          border: `1px solid ${t.palette.divider}`,
+          backgroundColor: t.vars.palette.surface.elevated,
+          border: `1px solid ${t.vars.palette.divider}`,
           borderRadius: radius.md,
           boxShadow: '0 8px 24px -10px rgba(0,0,0,0.45)',
           padding: 4,
@@ -515,7 +515,7 @@ export const theme = createTheme({
           fontSize: '0.84375rem',
           paddingBlock: 8,
           paddingInline: 10,
-          '&:hover': { backgroundColor: t.palette.background.paper },
+          '&:hover': { backgroundColor: t.vars.palette.background.paper },
         }),
       },
     },
@@ -523,10 +523,10 @@ export const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: ({ theme: t }) => ({
-          backgroundColor: t.palette.surface.elevated,
+          backgroundColor: t.vars.palette.surface.elevated,
           backgroundImage: 'none',
           borderRadius: radius.lg,
-          border: `1px solid ${t.palette.divider}`,
+          border: `1px solid ${t.vars.palette.divider}`,
           boxShadow: '0 24px 56px -20px rgba(0,0,0,0.55)',
         }),
       },
@@ -535,16 +535,16 @@ export const theme = createTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: ({ theme: t }) => ({
-          backgroundColor: t.palette.surface.elevated,
-          color: t.palette.text.primary,
-          border: `1px solid ${t.palette.divider}`,
+          backgroundColor: t.vars.palette.surface.elevated,
+          color: t.vars.palette.text.primary,
+          border: `1px solid ${t.vars.palette.divider}`,
           borderRadius: radius.sm,
           fontSize: '0.71875rem',
           fontFamily: FONT_MONO,
           paddingBlock: 4,
           paddingInline: 8,
         }),
-        arrow: ({ theme: t }) => ({ color: t.palette.surface.elevated }),
+        arrow: ({ theme: t }) => ({ color: t.vars.palette.surface.elevated }),
       },
     },
 
@@ -554,8 +554,8 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           borderRadius: radius.md,
-          border: `1px solid ${t.palette.divider}`,
-          backgroundColor: t.palette.background.paper,
+          border: `1px solid ${t.vars.palette.divider}`,
+          backgroundColor: t.vars.palette.background.paper,
           fontSize: '0.84375rem',
         }),
         icon: { alignSelf: 'center' },
@@ -579,9 +579,9 @@ export const theme = createTheme({
           fontWeight: 500,
           borderRadius: radius.sm,
           '&.Mui-selected': {
-            backgroundColor: t.palette.primary.main,
-            color: t.palette.primary.contrastText,
-            '&:hover': { backgroundColor: t.palette.primary.dark },
+            backgroundColor: t.vars.palette.primary.main,
+            color: t.vars.palette.primary.contrastText,
+            '&:hover': { backgroundColor: t.vars.palette.primary.dark },
           },
         }),
       },
@@ -594,9 +594,9 @@ export const theme = createTheme({
         root: ({ theme: t }) => ({
           borderRadius: radius.sm,
           '&.Mui-selected': {
-            backgroundColor: t.palette.background.default,
-            outline: `1px solid ${alpha(t.palette.primary.main, 0.45)}`,
-            '&:hover': { backgroundColor: t.palette.background.default },
+            backgroundColor: t.vars.palette.background.default,
+            outline: `1px solid rgba(${t.vars.palette.primary.mainChannel} / 0.45)`,
+            '&:hover': { backgroundColor: t.vars.palette.background.default },
           },
         }),
       },

@@ -36,6 +36,9 @@
     "logout": "Abmelden",
     "menuLabel": "Account-Menü"
   },
+  "nav": {
+    "menuLabel": "Menü öffnen"
+  },
   "favorites": {
     "addAria": "Zu Favoriten hinzufügen",
     "removeAria": "Aus Favoriten entfernen",

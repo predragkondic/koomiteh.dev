@@ -12,6 +12,8 @@ const optional = [
   'API_BASE_URL',
   'SESSION_COOKIE_DOMAIN',
   'SESSION_COOKIE_SECURE',
+  'GEMINI_API_KEY',
+  'GEMINI_MODEL',
 ] as const;
 
 type RequiredKey = (typeof required)[number];
@@ -58,6 +60,10 @@ export const env = {
     domain: read('SESSION_COOKIE_DOMAIN', ''),
     secure:
       read('SESSION_COOKIE_SECURE', isProdEnv ? 'true' : 'false') === 'true',
+  },
+  gemini: {
+    apiKey: read('GEMINI_API_KEY', ''),
+    model: read('GEMINI_MODEL', 'gemini-2.5-flash'),
   },
 };
 

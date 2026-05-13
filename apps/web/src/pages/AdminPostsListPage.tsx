@@ -23,6 +23,7 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -122,22 +123,40 @@ export function AdminPostsListPage() {
         <Typography variant="h4" component="h1">
           {t('list.title')}
         </Typography>
-        <IconButton
-          component={RouterLink}
-          to="/admin/posts/new"
-          aria-label={t('list.newButton')}
-          sx={{
-            width: 40,
-            height: 40,
-            p: 0,
-            borderRadius: '999px',
-            backgroundColor: 'primary.main',
-            color: 'primary.contrastText',
-            '&:hover': { backgroundColor: 'primary.light' },
-          }}
-        >
-          <AddIcon sx={{ fontSize: 20 }} />
-        </IconButton>
+        <Stack direction="row" spacing={1}>
+          <IconButton
+            component={RouterLink}
+            to="/admin/posts/generate"
+            aria-label={t('generate.entryButton')}
+            sx={{
+              width: 40,
+              height: 40,
+              p: 0,
+              borderRadius: '999px',
+              backgroundColor: 'secondary.main',
+              color: 'secondary.contrastText',
+              '&:hover': { backgroundColor: 'secondary.light' },
+            }}
+          >
+            <AutoAwesomeIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+          <IconButton
+            component={RouterLink}
+            to="/admin/posts/new"
+            aria-label={t('list.newButton')}
+            sx={{
+              width: 40,
+              height: 40,
+              p: 0,
+              borderRadius: '999px',
+              backgroundColor: 'primary.main',
+              color: 'primary.contrastText',
+              '&:hover': { backgroundColor: 'primary.light' },
+            }}
+          >
+            <AddIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        </Stack>
       </Stack>
 
       <FormControlLabel
@@ -354,6 +373,23 @@ function MobileView({
           {total}
         </Typography>
         <Box sx={{ flex: 1 }} />
+        <IconButton
+          component={RouterLink}
+          to="/admin/posts/generate"
+          aria-label={t('generate.entryButton')}
+          sx={{
+            width: 34,
+            height: 34,
+            p: 0,
+            borderRadius: '999px',
+            backgroundColor: 'secondary.main',
+            color: 'secondary.contrastText',
+            '&:hover': { backgroundColor: 'secondary.light' },
+            mr: 1,
+          }}
+        >
+          <AutoAwesomeIcon sx={{ fontSize: 18 }} />
+        </IconButton>
         <IconButton
           component={RouterLink}
           to="/admin/posts/new"

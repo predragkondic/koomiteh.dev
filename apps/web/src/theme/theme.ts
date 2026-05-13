@@ -210,7 +210,7 @@ export const theme = createTheme({
     },
     h4: {
       fontFamily: FONT_SANS,
-      fontSize: '1.0625rem', // 17px
+      fontSize: '1.375rem', // 17px
       fontWeight: 500,
       lineHeight: 1.35,
       letterSpacing: '-0.015em',

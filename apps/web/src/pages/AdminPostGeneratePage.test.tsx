@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { Routes, Route } from 'react-router-dom';
+import type { AdminPostCreate } from '@koomiteh/shared';
 import { server } from '@/test/msw-server';
 import { renderWithProviders } from '@/test/render';
 import { AdminPostGeneratePage } from './AdminPostGeneratePage';
@@ -45,7 +46,7 @@ describe('AdminPostGeneratePage', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the generated draft read-only after a successful generation', async () => {
+  it('renders the generated draft as editable form fields populated with initial values', async () => {
     setupAdmin();
     server.use(
       http.post('http://localhost:3000/admin/posts/generate', async () => {
@@ -74,13 +75,221 @@ describe('AdminPostGeneratePage', () => {
     fireEvent.change(topic, { target: { value: 'closures' } });
     fireEvent.click(screen.getByRole('button', { name: /Generieren/i }));
 
-    await waitFor(() => {
-      expect(screen.getByText(/What is a closure\?/)).toBeInTheDocument();
+    const questionField = (await screen.findByLabelText(/^Frage/i)) as HTMLInputElement;
+    expect(questionField.value).toBe('What is a closure?');
+
+    const slugField = screen.getByLabelText(/^Slug/i) as HTMLInputElement;
+    expect(slugField.value).toBe('what-is-a-closure');
+
+    const tagsField = screen.getByLabelText(/^Tags/i) as HTMLInputElement;
+    expect(tagsField.value).toBe('closures, functions');
+
+    const bodyField = screen.getByLabelText(/Inhalt \(Markdown\)/i) as HTMLTextAreaElement;
+    expect(bodyField.value).toContain('## Closure');
+  });
+
+  it('renders live markdown preview that updates as bodyMd is edited', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () =>
+        HttpResponse.json({
+          question: 'Q',
+          slug: 'q',
+          tags: ['t'],
+          bodyMd: '# Initial',
+          language: 'typescript',
+          level: 'junior',
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
     });
-    expect(screen.getByText('what-is-a-closure')).toBeInTheDocument();
-    expect(screen.getByText('closures')).toBeInTheDocument();
-    expect(screen.getByText('functions')).toBeInTheDocument();
-    expect(screen.getByText(/Closure/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Generieren/i }));
+
+    await screen.findByRole('heading', { name: /Initial/ });
+
+    const bodyField = screen.getByLabelText(/Inhalt \(Markdown\)/i);
+    fireEvent.change(bodyField, { target: { value: '## Updated heading' } });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', { name: /Initial/ }),
+      ).not.toBeInTheDocument();
+      const h2 = screen.getByRole('heading', { name: /Updated heading/ });
+      expect(h2.tagName.toLowerCase()).toBe('h2');
+    });
+  });
+
+  it('saves edited draft via POST /admin/posts and navigates to edit page', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () =>
+        HttpResponse.json({
+          question: 'Q',
+          slug: 'q',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        }),
+      ),
+    );
+
+    let receivedBody: AdminPostCreate | null = null;
+    server.use(
+      http.post('http://localhost:3000/admin/posts', async ({ request }) => {
+        receivedBody = (await request.json()) as AdminPostCreate;
+        return HttpResponse.json({
+          frontmatter: {
+            id: 'typescript/q/junior',
+            slug: receivedBody.slug,
+            question: receivedBody.question,
+            language: receivedBody.language,
+            level: receivedBody.level,
+            tags: receivedBody.tags,
+            updatedAt: new Date().toISOString(),
+            deletedAt: null,
+          },
+          bodyMd: receivedBody.bodyMd,
+        });
+      }),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+        <Route
+          path="/admin/posts/:id/edit"
+          element={<div data-testid="edit-page">EDIT</div>}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Generieren/i }));
+
+    const slugField = (await screen.findByLabelText(/^Slug/i)) as HTMLInputElement;
+    fireEvent.change(slugField, { target: { value: 'edited-slug' } });
+
+    fireEvent.click(screen.getByRole('button', { name: /^Speichern$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('edit-page')).toBeInTheDocument();
+    });
+    expect(receivedBody).toMatchObject({
+      slug: 'edited-slug',
+      question: 'Q',
+      tags: ['t'],
+      bodyMd: '# Body',
+      language: 'typescript',
+      level: 'junior',
+    });
+  });
+
+  it('shows slug-conflict error and stays on page when create returns 409', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () =>
+        HttpResponse.json({
+          question: 'Q',
+          slug: 'taken',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        }),
+      ),
+      http.post('http://localhost:3000/admin/posts', () =>
+        HttpResponse.json({ error: 'slug_conflict' }, { status: 409 }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+        <Route
+          path="/admin/posts/:id/edit"
+          element={<div data-testid="edit-page">EDIT</div>}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Generieren/i }));
+
+    await screen.findByLabelText(/^Slug/i);
+    fireEvent.click(screen.getByRole('button', { name: /^Speichern$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/Slug/i);
+    });
+    expect(screen.queryByTestId('edit-page')).not.toBeInTheDocument();
+  });
+
+  it('cancels back to /admin when cancel button is clicked', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () =>
+        HttpResponse.json({
+          question: 'Q',
+          slug: 'q',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin"
+          element={<div data-testid="admin-home">ADMIN</div>}
+        />
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /Generieren/i }));
+
+    await screen.findByLabelText(/^Slug/i);
+    fireEvent.click(screen.getByRole('button', { name: /^Abbrechen$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('admin-home')).toBeInTheDocument();
+    });
   });
 
   it('shows error alert when generation returns 503', async () => {

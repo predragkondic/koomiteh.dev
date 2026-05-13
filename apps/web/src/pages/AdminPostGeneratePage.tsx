@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -14,8 +14,12 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES } from '@koomiteh/shared';
-import type { GeneratePostRequest, GeneratePostResponse } from '@koomiteh/shared';
-import { useGeneratePostMutation } from '@/api/adminApi';
+import type { AdminPostCreate, GeneratePostRequest } from '@koomiteh/shared';
+import {
+  useCreateAdminPostMutation,
+  useGeneratePostMutation,
+} from '@/api/adminApi';
+import { MarkdownBody } from '@/features/interview/MarkdownBody';
 
 const LEVELS = ['junior', 'senior'] as const;
 
@@ -29,10 +33,13 @@ const INITIAL_FORM: FormState = {
 
 export function AdminPostGeneratePage() {
   const { t } = useTranslation('admin');
+  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
-  const [draft, setDraft] = useState<GeneratePostResponse | null>(null);
+  const [draftForm, setDraftForm] = useState<AdminPostCreate | null>(null);
+  const [tagsInput, setTagsInput] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [generate, generateState] = useGeneratePostMutation();
+  const [createPost, createState] = useCreateAdminPostMutation();
 
   function mapErrorCode(code: string | undefined): string {
     switch (code) {
@@ -46,18 +53,60 @@ export function AdminPostGeneratePage() {
     }
   }
 
+  function mapSaveErrorCode(code: string | undefined): string {
+    switch (code) {
+      case 'slug_conflict':
+        return t('editor.errorSlugConflict');
+      case 'content_id_conflict':
+        return t('editor.errorContentIdConflict');
+      case 'invalid_language':
+        return t('editor.errorInvalidLanguage');
+      case 'invalid_body':
+        return t('editor.errorInvalidBody');
+      default:
+        return t('editor.errorGeneric');
+    }
+  }
+
   async function handleGenerate() {
     setErrorMsg(null);
     try {
       const result = await generate(form).unwrap();
-      setDraft(result);
+      setDraftForm({
+        slug: result.slug,
+        question: result.question,
+        language: result.language,
+        level: result.level,
+        tags: result.tags,
+        bodyMd: result.bodyMd,
+      });
+      setTagsInput(result.tags.join(', '));
     } catch (err) {
       const code = (err as { data?: { error?: string } }).data?.error;
       setErrorMsg(mapErrorCode(code));
     }
   }
 
+  async function handleSave() {
+    if (!draftForm) return;
+    setErrorMsg(null);
+    try {
+      const result = await createPost(draftForm).unwrap();
+      navigate(
+        `/admin/posts/${encodeURIComponent(result.frontmatter.id)}/edit`,
+      );
+    } catch (err) {
+      const code = (err as { data?: { error?: string } }).data?.error;
+      setErrorMsg(mapSaveErrorCode(code));
+    }
+  }
+
+  function handleCancel() {
+    navigate('/admin');
+  }
+
   const isGenerating = generateState.isLoading;
+  const isSaving = createState.isLoading;
 
   return (
     <Box sx={{ maxWidth: 1000, mx: 'auto', py: 3 }}>
@@ -139,64 +188,102 @@ export function AdminPostGeneratePage() {
         </Button>
       </Stack>
 
-      {draft && (
-        <Paper variant="outlined" sx={{ p: 3 }}>
-          <Typography variant="overline" sx={{ display: 'block', mb: 1 }}>
-            {t('generate.draft.title')}
-          </Typography>
+      {draftForm && (
+        <Box>
+          <TextField
+            label={t('editor.fields.question')}
+            value={draftForm.question}
+            onChange={(e) =>
+              setDraftForm({ ...draftForm, question: e.target.value })
+            }
+            fullWidth
+            required
+            sx={{ mb: 2 }}
+          />
 
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="caption" color="text.secondary">
-              {t('generate.draft.question')}
-            </Typography>
-            <Typography variant="h6" component="p">
-              {draft.question}
-            </Typography>
-          </Box>
+          <TextField
+            label={t('editor.fields.slug')}
+            value={draftForm.slug}
+            onChange={(e) =>
+              setDraftForm({ ...draftForm, slug: e.target.value })
+            }
+            helperText={t('editor.fields.slugHelper')}
+            required
+            fullWidth
+            sx={{ mb: 2 }}
+          />
 
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="caption" color="text.secondary">
-              {t('generate.draft.slug')}
-            </Typography>
-            <Typography
-              component="p"
-              sx={{ fontFamily: 'monospace', fontSize: 14 }}
-            >
-              {draft.slug}
-            </Typography>
-          </Box>
+          <TextField
+            label={t('editor.fields.tags')}
+            value={tagsInput}
+            onChange={(e) => {
+              setTagsInput(e.target.value);
+              setDraftForm({
+                ...draftForm,
+                tags: e.target.value
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter((s) => s.length > 0),
+              });
+            }}
+            helperText={t('editor.fields.tagsHelper')}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
 
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="caption" color="text.secondary">
-              {t('generate.draft.tags')}
-            </Typography>
-            <Stack direction="row" spacing={1} sx={{ mt: 0.5, flexWrap: 'wrap' }}>
-              {draft.tags.map((tag) => (
-                <Chip key={tag} label={tag} size="small" />
-              ))}
-            </Stack>
-          </Box>
-
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              {t('generate.draft.bodyMd')}
-            </Typography>
-            <Box
-              component="pre"
-              sx={{
-                fontFamily: 'monospace',
-                fontSize: 13,
-                whiteSpace: 'pre-wrap',
-                backgroundColor: 'action.hover',
-                p: 2,
-                borderRadius: 1,
-                mt: 0.5,
-              }}
-            >
-              {draft.bodyMd}
+          <Stack
+            direction={{ xs: 'column', md: 'row' }}
+            spacing={2}
+            sx={{ minHeight: 400 }}
+          >
+            <Box sx={{ flex: 1 }}>
+              <Typography
+                variant="overline"
+                component="label"
+                htmlFor="bodyMd-textarea"
+                sx={{ display: 'block', mb: 0.5 }}
+              >
+                {t('editor.fields.bodyMd')}
+              </Typography>
+              <TextField
+                id="bodyMd-textarea"
+                value={draftForm.bodyMd}
+                onChange={(e) =>
+                  setDraftForm({ ...draftForm, bodyMd: e.target.value })
+                }
+                multiline
+                minRows={20}
+                fullWidth
+                slotProps={{
+                  input: {
+                    sx: { fontFamily: 'monospace', fontSize: '0.875rem' },
+                  },
+                }}
+              />
             </Box>
-          </Box>
-        </Paper>
+            <Box sx={{ flex: 1 }}>
+              <Typography variant="overline" sx={{ display: 'block', mb: 0.5 }}>
+                {t('editor.preview')}
+              </Typography>
+              <Paper variant="outlined" sx={{ p: 2, minHeight: 480 }}>
+                <MarkdownBody bodyMd={draftForm.bodyMd} />
+              </Paper>
+            </Box>
+          </Stack>
+
+          <Stack direction="row" spacing={1} sx={{ mt: 3 }} justifyContent="flex-end">
+            <Button onClick={handleCancel} disabled={isSaving}>
+              {t('editor.cancel')}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? t('editor.saving') : t('editor.save')}
+            </Button>
+          </Stack>
+        </Box>
       )}
     </Box>
   );

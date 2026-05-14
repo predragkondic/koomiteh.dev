@@ -44,6 +44,7 @@ import {
   useListAdminPostsQuery,
   useRestoreAdminPostMutation,
 } from "@/api/adminApi";
+import { useConfirm } from "@/components/ConfirmProvider";
 
 type SortKey = "question" | "language" | "level" | "status" | "updated";
 type SortDir = "asc" | "desc";
@@ -80,6 +81,7 @@ function compareRows(a: AdminPostListItem, b: AdminPostListItem, key: SortKey) {
 
 export function AdminPostsListPage() {
   const { t, i18n } = useTranslation("admin");
+  const confirm = useConfirm();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
@@ -114,7 +116,13 @@ export function AdminPostsListPage() {
     : undefined;
 
   async function handleDelete(id: string) {
-    if (!window.confirm(t("confirmDelete"))) return;
+    const ok = await confirm({
+      title: t("confirmDelete.title"),
+      content: t("confirmDelete.content"),
+      confirmLabel: t("confirmDelete.confirmLabel"),
+      variant: "destructive",
+    });
+    if (!ok) return;
     await deletePost(id)
       .unwrap()
       .catch(() => null);

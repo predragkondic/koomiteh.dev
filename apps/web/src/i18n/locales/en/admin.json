@@ -73,7 +73,11 @@
     "saveChanges": "Save changes",
     "saving": "Saving…",
     "cancel": "Cancel",
-    "unsavedWarning": "You have unsaved changes. Discard them?",
+    "unsavedWarning": {
+      "title": "Discard changes?",
+      "content": "You will lose the unsaved changes on this post.",
+      "confirmLabel": "Discard"
+    },
     "errorGeneric": "Failed to save.",
     "errorSlugConflict": "Slug already used for this language.",
     "errorContentIdConflict": "A post with this slug + level already exists.",
@@ -84,7 +88,11 @@
     "title": "Question removed",
     "body": "This question has been removed."
   },
-  "confirmDelete": "Delete this post (soft-delete)?",
+  "confirmDelete": {
+    "title": "Delete post?",
+    "content": "The post will be moved to trash. You can restore it any time.",
+    "confirmLabel": "Delete"
+  },
   "generate": {
     "title": "Generate post",
     "entryButton": "Generate post",

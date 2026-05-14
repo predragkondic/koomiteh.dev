@@ -8,6 +8,7 @@ import { interviewApi } from '@/api/interviewApi';
 import { authApi } from '@/api/authApi';
 import { favoritesApi } from '@/api/favoritesApi';
 import { adminApi } from '@/api/adminApi';
+import { ConfirmProvider } from '@/components/ConfirmProvider';
 
 export function makeStore() {
   const store = configureStore({
@@ -39,7 +40,9 @@ export function renderWithProviders(
 ): RenderResult {
   return render(
     <Provider store={makeStore()}>
-      <MemoryRouter initialEntries={initialEntries}>{ui}</MemoryRouter>
+      <ConfirmProvider>
+        <MemoryRouter initialEntries={initialEntries}>{ui}</MemoryRouter>
+      </ConfirmProvider>
     </Provider>,
   );
 }

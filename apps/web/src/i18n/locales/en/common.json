@@ -15,6 +15,8 @@
     "reset": "Reset",
     "back": "Back home"
   },
+  "cancel": "Cancel",
+  "close": "Close",
   "errors": {
     "loadLanguages": "Languages could not be loaded.",
     "loadPosts": "Questions could not be loaded.",

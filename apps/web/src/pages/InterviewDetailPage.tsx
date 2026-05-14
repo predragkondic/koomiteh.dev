@@ -21,6 +21,7 @@ import {
   useRestoreAdminPostMutation,
 } from "@/api/adminApi";
 import { useGetPostQuery } from "@/api/interviewApi";
+import { useConfirm } from "@/components/ConfirmProvider";
 import { DetailBreadcrumb } from "@/features/interview/DetailBreadcrumb";
 import { DetailPrevNext } from "@/features/interview/DetailPrevNext";
 import { FavoriteButton } from "@/features/interview/FavoriteButton";
@@ -35,7 +36,8 @@ function formatDate(value: string, locale: string): string {
 }
 
 export function InterviewDetailPage() {
-  const { t, i18n } = useTranslation(["interview", "common"]);
+  const { t, i18n } = useTranslation(["interview", "common", "admin"]);
+  const confirm = useConfirm();
   const { language = "", slug = "" } = useParams();
   const { data: meData } = useGetMeQuery();
   const isAdmin = meData?.user?.role === "admin";
@@ -145,7 +147,13 @@ export function InterviewDetailPage() {
   }
 
   async function handleDelete() {
-    if (!window.confirm(t("admin:confirmDelete"))) return;
+    const ok = await confirm({
+      title: t("admin:confirmDelete.title"),
+      content: t("admin:confirmDelete.content"),
+      confirmLabel: t("admin:confirmDelete.confirmLabel"),
+      variant: "destructive",
+    });
+    if (!ok) return;
     await deletePost(frontmatter.id)
       .unwrap()
       .catch(() => null);

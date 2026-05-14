@@ -349,7 +349,11 @@ function DesktopView({
             <col style={{ width: 140 }} />
           </colgroup>
           <TableHead>
-            <TableRow>
+            <TableRow
+              sx={{
+                backgroundColor: "surface.elevated",
+              }}
+            >
               {(
                 [
                   ["question", t("list.columns.question")],
@@ -365,12 +369,24 @@ function DesktopView({
                     direction={sortKey === key ? sortDir : "asc"}
                     onClick={() => cycleSort(key)}
                     aria-label={t("list.a11y.sortBy", { column: label })}
+                    sx={{
+                      color: "text.secondary",
+                      "&:hover": {
+                        color: "text.primary",
+                      },
+                      "&.Mui-active:hover": {
+                        color: "primary.main",
+                      },
+                      "& .MuiTableSortLabel-icon": {
+                        color: "inherit !important",
+                      },
+                    }}
                   >
                     {label}
                   </TableSortLabel>
                 </TableCell>
               ))}
-              <TableCell align="right" sx={{ pr: 1.5 }}>
+              <TableCell align="right" sx={{ textAlign: "center" }}>
                 {t("list.columns.actions")}
               </TableCell>
             </TableRow>
@@ -434,13 +450,15 @@ function DesktopView({
           <Typography variant="body2" color="text.disabled">
             {t("list.pager.info", { shown: totalShown, total: totalAll })}
           </Typography>
-          <Pagination
-            size="small"
-            shape="rounded"
-            count={pageCount}
-            page={currentPage}
-            onChange={(_, p) => setPage(p)}
-          />
+          {pageCount > 1 && (
+            <Pagination
+              size="small"
+              shape="rounded"
+              count={pageCount}
+              page={currentPage}
+              onChange={(_, p) => setPage(p)}
+            />
+          )}
         </Stack>
       </Card>
     </Box>
@@ -821,13 +839,6 @@ function MobileView({
           </Typography>
         </Stack>
         <Box sx={{ flex: 1 }} />
-        <Button
-          variant="outlined"
-          size="small"
-          startIcon={<FilterListIcon sx={{ fontSize: 16 }} />}
-        >
-          {t("list.filter")}
-        </Button>
       </Stack>
 
       {isLoading && (

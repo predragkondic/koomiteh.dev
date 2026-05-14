@@ -126,7 +126,7 @@ const dark = {
     text: {
       primary: 'oklch(0.97 0.004 270)',
       secondary: 'oklch(0.72 0.006 270)',
-      disabled: 'oklch(0.40 0.006 270)',
+      disabled: '#8a8a8a',
     },
     success: { main: '#4cc28a', light: '#7adcae', dark: '#1f8950', contrastText: '#0e2d1c' },
     warning: { main: '#e7ab44', light: '#f3c479', dark: '#a07418', contrastText: '#2b1d05' },
@@ -363,7 +363,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: radius.sm,
-          padding: "2px 8px",
+          padding: "4px 6px",
         },
       },
     },
@@ -738,5 +738,14 @@ export const theme = createTheme({
         }),
       },
     },
+    MuiTableRow:  {
+      styleOverrides: {
+        hover: ({ theme: t }) => ({
+          '&:hover .MuiTableCell-root': {
+            backgroundColor: t.vars.palette.grey[500],
+          },
+        }),        
+    }
   },
+},
 });

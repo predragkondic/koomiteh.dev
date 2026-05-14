@@ -22,6 +22,7 @@ import {
   useGetAdminPostQuery,
   useUpdateAdminPostMutation,
 } from '@/api/adminApi';
+import { useConfirm } from '@/components/ConfirmProvider';
 import { MarkdownBody } from '@/features/interview/MarkdownBody';
 
 const LEVELS = ['junior', 'senior'] as const;
@@ -163,6 +164,7 @@ interface Props {
 
 export function AdminPostEditorPage({ mode }: Props) {
   const { t, i18n } = useTranslation(['admin', 'common']);
+  const confirm = useConfirm();
   const { id = '' } = useParams();
   const navigate = useNavigate();
 
@@ -277,8 +279,16 @@ export function AdminPostEditorPage({ mode }: Props) {
     }
   }
 
-  function handleCancel() {
-    if (isDirty && !window.confirm(t('editor.unsavedWarning'))) return;
+  async function handleCancel() {
+    if (isDirty) {
+      const ok = await confirm({
+        title: t('editor.unsavedWarning.title'),
+        content: t('editor.unsavedWarning.content'),
+        confirmLabel: t('editor.unsavedWarning.confirmLabel'),
+        variant: 'discard',
+      });
+      if (!ok) return;
+    }
     navigate('/admin');
   }
 

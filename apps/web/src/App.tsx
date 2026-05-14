@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
+import { ConfirmProvider } from "@/components/ConfirmProvider";
 import { DevHealthBanner } from "@/components/DevHealthBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { config } from "@/config";
@@ -17,35 +18,37 @@ import { NotFoundPage } from "@/pages/NotFoundPage";
 export function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppShell />}>
-            <Route index element={<Navigate to="/interview" replace />} />
-            <Route path="interview" element={<InterviewLayout />}>
-              <Route index element={<InterviewHubPage />} />
-              <Route path=":language" element={<InterviewListingPage />} />
-              <Route path=":language/:slug" element={<InterviewDetailPage />} />
+      <ConfirmProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppShell />}>
+              <Route index element={<Navigate to="/interview" replace />} />
+              <Route path="interview" element={<InterviewLayout />}>
+                <Route index element={<InterviewHubPage />} />
+                <Route path=":language" element={<InterviewListingPage />} />
+                <Route path=":language/:slug" element={<InterviewDetailPage />} />
+              </Route>
+              <Route path="me/favorites" element={<MyFavoritesPage />} />
+              <Route path="admin" element={<AdminLayout />}>
+                <Route index element={<AdminPostsListPage />} />
+                <Route
+                  path="posts/new"
+                  element={<AdminPostEditorPage mode="new" />}
+                />
+                <Route
+                  path="posts/generate"
+                  element={<AdminPostGeneratePage />}
+                />
+                <Route
+                  path="posts/:id/edit"
+                  element={<AdminPostEditorPage mode="edit" />}
+                />
+              </Route>
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
-            <Route path="me/favorites" element={<MyFavoritesPage />} />
-            <Route path="admin" element={<AdminLayout />}>
-              <Route index element={<AdminPostsListPage />} />
-              <Route
-                path="posts/new"
-                element={<AdminPostEditorPage mode="new" />}
-              />
-              <Route
-                path="posts/generate"
-                element={<AdminPostGeneratePage />}
-              />
-              <Route
-                path="posts/:id/edit"
-                element={<AdminPostEditorPage mode="edit" />}
-              />
-            </Route>
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </ConfirmProvider>
       {config.isDev && <DevHealthBanner />}
     </ErrorBoundary>
   );

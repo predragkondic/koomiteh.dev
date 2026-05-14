@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '@/test/msw-server';
 import { renderWithProviders } from '@/test/render';
@@ -159,7 +159,6 @@ describe('InterviewDetailPage', () => {
   it('keeps the admin on the same permalink and switches to the deleted detail state after delete', async () => {
     let deleted = false;
     let deleteCalls = 0;
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
 
     server.use(
       http.get('http://localhost:3000/auth/me', () =>
@@ -225,6 +224,11 @@ describe('InterviewDetailPage', () => {
       await screen.findByRole('button', { name: /Aktionen/i }),
     );
     fireEvent.click(await screen.findByRole('menuitem', { name: /Löschen/i }));
+
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.click(
+      await within(dialog).findByRole('button', { name: /Löschen/i }),
+    );
     await waitFor(() => expect(deleteCalls).toBe(1));
 
     expect(screen.getByTestId('pathname')).toHaveTextContent(

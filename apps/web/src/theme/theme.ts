@@ -650,8 +650,48 @@ export const theme = createTheme({
           backgroundColor: t.vars.palette.surface.elevated,
           backgroundImage: 'none',
           borderRadius: radius.lg,
-          border: `1px solid ${t.vars.palette.divider}`,
+          border: `1px solid ${t.vars.palette.surface.borderStrong}`,
           boxShadow: '0 24px 56px -20px rgba(0,0,0,0.55)',
+        }),
+      },
+    },
+
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          fontFamily: FONT_SANS,
+          fontSize: '16px',
+          fontWeight: 600,
+          lineHeight: 1.4,
+          paddingTop: 16,
+          paddingBottom: 8,
+          paddingInline: 20,
+          paddingRight: 44,
+        },
+      },
+    },
+
+    MuiDialogContent: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          color: t.vars.palette.text.secondary,
+          paddingInline: 20,
+          paddingBottom: 20,
+          paddingTop: 4,
+          fontSize: '0.875rem',
+          lineHeight: 1.5,
+        }),
+      },
+    },
+
+    MuiDialogActions: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          backgroundColor: t.vars.palette.AppBar.darkBg,
+          borderTop: `1px solid ${t.vars.palette.divider}`,
+          padding: 12,
+          gap: 8,
+          ['& .MuiButton-root.MuiButton-contained']: { color: t.vars.palette.text.primaryChannel },
         }),
       },
     },

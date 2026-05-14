@@ -8,6 +8,14 @@ import type {
   GeneratePostResponse,
 } from '@koomiteh/shared';
 import { config } from '@/config';
+import { interviewApi } from './interviewApi';
+
+const publicPostTags = [
+  { type: 'Post' as const, id: 'LIST' },
+  'PostList' as const,
+  'Manifest' as const,
+  'Tags' as const,
+];
 
 export interface AdminListArgs {
   language?: string;
@@ -55,6 +63,14 @@ export const adminApi = createApi({
         body,
       }),
       invalidatesTags: ['AdminPosts'],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+        } catch {
+          // mutation failed; leave caches as-is
+        }
+      },
     }),
     updateAdminPost: build.mutation<
       AdminPostDetail,
@@ -69,6 +85,14 @@ export const adminApi = createApi({
         'AdminPosts',
         { type: 'AdminPost', id },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+        } catch {
+          // mutation failed; leave caches as-is
+        }
+      },
     }),
     deleteAdminPost: build.mutation<{ ok: true; deleted: boolean }, string>({
       query: (id) => ({
@@ -79,6 +103,14 @@ export const adminApi = createApi({
         'AdminPosts',
         { type: 'AdminPost', id },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+        } catch {
+          // mutation failed; leave caches as-is
+        }
+      },
     }),
     restoreAdminPost: build.mutation<{ ok: true; deleted: boolean }, string>({
       query: (id) => ({
@@ -89,6 +121,14 @@ export const adminApi = createApi({
         'AdminPosts',
         { type: 'AdminPost', id },
       ],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+        } catch {
+          // mutation failed; leave caches as-is
+        }
+      },
     }),
     generatePost: build.mutation<GeneratePostResponse, GeneratePostRequest>({
       query: (body) => ({

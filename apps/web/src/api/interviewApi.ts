@@ -36,25 +36,33 @@ export const interviewApi = createApi({
     baseUrl: config.apiBaseUrl || '/api',
     credentials: 'include',
   }),
+  tagTypes: ['Post', 'PostList', 'Manifest', 'Tags'],
   endpoints: (build) => ({
     getManifest: build.query<Manifest, void>({
       query: () => '/posts/manifest',
+      providesTags: ['Manifest'],
     }),
     searchPosts: build.query<PostListResponse, SearchPostsArgs>({
       query: (args) => {
         const qs = toQueryParams(args).toString();
         return qs ? `/posts?${qs}` : '/posts';
       },
+      providesTags: ['PostList'],
     }),
     getPost: build.query<PostDetail, { language: string; slug: string }>({
       query: ({ language, slug }) =>
         `/posts/by-slug/${encodeURIComponent(language)}/${encodeURIComponent(slug)}`,
+      providesTags: (_res, _err, { language, slug }) => [
+        { type: 'Post', id: `${language}/${slug}` },
+        { type: 'Post', id: 'LIST' },
+      ],
     }),
     getTags: build.query<TagsResponse, { language?: string }>({
       query: ({ language }) =>
         language
           ? `/posts/tags?language=${encodeURIComponent(language)}`
           : '/posts/tags',
+      providesTags: ['Tags'],
     }),
   }),
 });

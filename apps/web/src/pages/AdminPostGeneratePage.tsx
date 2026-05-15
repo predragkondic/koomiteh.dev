@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -11,6 +14,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
@@ -22,6 +26,7 @@ import type { AdminPostCreate, GeneratePostRequest } from "@koomiteh/shared";
 import {
   useCreateAdminPostMutation,
   useGeneratePostMutation,
+  useSuggestTopicsMutation,
 } from "@/api/adminApi";
 import { MdBodyEditor } from "@/components/BodyEditor";
 
@@ -51,6 +56,32 @@ export function AdminPostGeneratePage() {
   const [generateErrorRetryable, setGenerateErrorRetryable] = useState(false);
   const [generate, generateState] = useGeneratePostMutation();
   const [createPost, createState] = useCreateAdminPostMutation();
+  const [suggestTopics, suggestState] = useSuggestTopicsMutation();
+  const [suggestAnchor, setSuggestAnchor] = useState<HTMLElement | null>(null);
+  const [suggestedTopics, setSuggestedTopics] = useState<string[]>([]);
+
+  async function handleSuggestTopics(e: React.MouseEvent<HTMLElement>) {
+    const anchor = e.currentTarget;
+    setErrorMsg(null);
+    setGenerateErrorRetryable(false);
+    try {
+      const result = await suggestTopics({
+        language: form.language,
+        level: form.level,
+      }).unwrap();
+      setSuggestedTopics(result.topics);
+      setSuggestAnchor(anchor);
+    } catch (err) {
+      const code = (err as { data?: { error?: string } }).data?.error;
+      setErrorMsg(mapSuggestErrorCode(code));
+      setSuggestAnchor(null);
+      setSuggestedTopics([]);
+    }
+  }
+
+  function handleCloseSuggestMenu() {
+    setSuggestAnchor(null);
+  }
 
   function mapErrorCode(code: string | undefined): string {
     switch (code) {
@@ -61,6 +92,18 @@ export function AdminPostGeneratePage() {
         return t("generate.error.geminiFailed");
       default:
         return t("generate.error.generic");
+    }
+  }
+
+  function mapSuggestErrorCode(code: string | undefined): string {
+    switch (code) {
+      case "generate_unavailable":
+        return t("generate.suggestTopics.error.unavailable");
+      case "gemini_failed":
+      case "gemini_invalid_output":
+        return t("generate.suggestTopics.error.geminiFailed");
+      default:
+        return t("generate.suggestTopics.error.generic");
     }
   }
 
@@ -209,6 +252,27 @@ export function AdminPostGeneratePage() {
           required
           fullWidth
           sx={{ flex: 2 }}
+          slotProps={{
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label={t("generate.suggestTopics.aria")}
+                    edge="end"
+                    size="small"
+                    onClick={handleSuggestTopics}
+                    disabled={suggestState.isLoading}
+                  >
+                    {suggestState.isLoading ? (
+                      <CircularProgress size={20} />
+                    ) : (
+                      <AutoAwesomeIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
         />
         <FormControl sx={{ flex: 1, minWidth: 160 }}>
           <InputLabel id="generate-language-label">
@@ -286,6 +350,24 @@ export function AdminPostGeneratePage() {
           </Button>
         </Stack>
       </Stack>
+
+      <Menu
+        anchorEl={suggestAnchor}
+        open={Boolean(suggestAnchor) && suggestedTopics.length > 0}
+        onClose={handleCloseSuggestMenu}
+      >
+        {suggestedTopics.map((topic, idx) => (
+          <MenuItem
+            key={`${topic}-${idx}`}
+            onClick={() => {
+              setForm((prev) => ({ ...prev, topic }));
+              handleCloseSuggestMenu();
+            }}
+          >
+            {topic || t("generate.suggestTopics.menuItemFallback", { index: idx + 1 })}
+          </MenuItem>
+        ))}
+      </Menu>
 
       <Dialog
         open={confirmRegenerateOpen}

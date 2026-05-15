@@ -122,6 +122,15 @@
       "unavailable": "Generate is not configured.",
       "geminiFailed": "Gemini did not respond.",
       "retry": "Retry"
+    },
+    "suggestTopics": {
+      "aria": "Suggest topics",
+      "menuItemFallback": "Topic {{index}}",
+      "error": {
+        "generic": "Topic suggestions failed.",
+        "unavailable": "Topic suggestions are not configured.",
+        "geminiFailed": "Gemini did not respond."
+      }
     }
   }
 }

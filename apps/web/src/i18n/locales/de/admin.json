@@ -122,6 +122,15 @@
       "unavailable": "Generate ist nicht konfiguriert.",
       "geminiFailed": "Gemini hat nicht geantwortet.",
       "retry": "Erneut versuchen"
+    },
+    "suggestTopics": {
+      "aria": "Themen-Vorschläge holen",
+      "menuItemFallback": "Thema {{index}}",
+      "error": {
+        "generic": "Themen-Vorschläge fehlgeschlagen.",
+        "unavailable": "Themen-Vorschläge sind nicht konfiguriert.",
+        "geminiFailed": "Gemini hat nicht geantwortet."
+      }
     }
   }
 }

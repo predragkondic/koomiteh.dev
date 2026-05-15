@@ -8,6 +8,17 @@ export const generatePostRequestSchema = z.object({
 });
 export type GeneratePostRequest = z.infer<typeof generatePostRequestSchema>;
 
+export const suggestTopicsRequestSchema = z.object({
+  language: z.string().min(1),
+  level: postLevelSchema,
+});
+export type SuggestTopicsRequest = z.infer<typeof suggestTopicsRequestSchema>;
+
+export const suggestTopicsResponseSchema = z.object({
+  topics: z.array(z.string().min(1)).min(3).max(5),
+});
+export type SuggestTopicsResponse = z.infer<typeof suggestTopicsResponseSchema>;
+
 const TAG_RE = /^[a-z0-9-]+$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 

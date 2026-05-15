@@ -655,6 +655,260 @@ describe('AdminPostGeneratePage', () => {
     });
   });
 
+  it('shows error in top-of-page Alert when suggest-topics fails', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/suggest-topics', () =>
+        HttpResponse.json({ error: 'gemini_failed' }, { status: 502 }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Themen-Vorschläge holen/i }),
+    );
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toBeInTheDocument();
+    expect(alert).toHaveTextContent(/Gemini hat nicht geantwortet/i);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('each adornment click triggers a fresh fetch (no client cache)', async () => {
+    setupAdmin();
+    let callCount = 0;
+    server.use(
+      http.post('http://localhost:3000/admin/posts/suggest-topics', () => {
+        callCount += 1;
+        return HttpResponse.json({
+          topics:
+            callCount === 1
+              ? ['a1', 'a2', 'a3']
+              : ['b1', 'b2', 'b3'],
+        });
+      }),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Themen-Vorschläge holen/i }),
+    );
+    const firstItems = await screen.findAllByRole('menuitem');
+    expect(firstItems[0]).toHaveTextContent('a1');
+
+    fireEvent.keyDown(firstItems[0]!, { key: 'Escape' });
+    await waitFor(() => {
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Themen-Vorschläge holen/i }),
+    );
+    await waitFor(() => {
+      const items = screen.queryAllByRole('menuitem');
+      expect(items[0]).toHaveTextContent('b1');
+    });
+    expect(callCount).toBe(2);
+  });
+
+  it('disables only the suggest button and shows a spinner while suggestions load; other fields stay interactive', async () => {
+    setupAdmin();
+    let resolveResponse: (() => void) | null = null;
+    const responseGate = new Promise<void>((resolve) => {
+      resolveResponse = resolve;
+    });
+    server.use(
+      http.post(
+        'http://localhost:3000/admin/posts/suggest-topics',
+        async () => {
+          await responseGate;
+          return HttpResponse.json({
+            topics: ['a', 'b', 'c'],
+          });
+        },
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    const suggestBtn = screen.getByRole('button', {
+      name: /Themen-Vorschläge holen/i,
+    });
+    fireEvent.click(suggestBtn);
+
+    await waitFor(() => {
+      expect(suggestBtn).toBeDisabled();
+    });
+    expect(suggestBtn.querySelector('[role="progressbar"]')).toBeInTheDocument();
+
+    const topicField = screen.getByLabelText(/Thema/i) as HTMLInputElement;
+    expect(topicField).not.toBeDisabled();
+    fireEvent.change(topicField, { target: { value: 'still works' } });
+    expect(topicField.value).toBe('still works');
+
+    const generateBtn = screen.getByRole('button', { name: /^Generieren$/i });
+    expect(generateBtn).not.toBeDisabled();
+
+    resolveResponse!();
+    await screen.findByRole('menu');
+  });
+
+  it('clicking a suggestion MenuItem replaces topic value and closes the Menu', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/suggest-topics', () =>
+        HttpResponse.json({
+          topics: ['event loop', 'closures', 'prototype chain'],
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    const topicInput = screen.getByLabelText(/Thema/i) as HTMLInputElement;
+    fireEvent.change(topicInput, { target: { value: 'old topic' } });
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Themen-Vorschläge holen/i }),
+    );
+
+    const items = await screen.findAllByRole('menuitem');
+    fireEvent.click(items[1]!);
+
+    await waitFor(() => {
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    });
+    expect((screen.getByLabelText(/Thema/i) as HTMLInputElement).value).toBe(
+      'closures',
+    );
+  });
+
+  it('opens a Menu with one MenuItem per suggestion on success', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/suggest-topics', () =>
+        HttpResponse.json({
+          topics: [
+            'event loop',
+            'closures',
+            'prototype chain',
+            'async iteration',
+          ],
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Themen-Vorschläge holen/i }),
+    );
+
+    const menu = await screen.findByRole('menu');
+    expect(menu).toBeInTheDocument();
+    const items = screen.getAllByRole('menuitem');
+    expect(items).toHaveLength(4);
+    expect(items[0]).toHaveTextContent('event loop');
+    expect(items[3]).toHaveTextContent('async iteration');
+  });
+
+  it('clicking the adornment posts to /admin/posts/suggest-topics with current language+level', async () => {
+    setupAdmin();
+    const seenBodies: unknown[] = [];
+    server.use(
+      http.post(
+        'http://localhost:3000/admin/posts/suggest-topics',
+        async ({ request }) => {
+          seenBodies.push(await request.json());
+          return HttpResponse.json({
+            topics: ['event loop', 'closures', 'prototype chain'],
+          });
+        },
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /Themen-Vorschläge holen/i }),
+    );
+
+    await waitFor(() => {
+      expect(seenBodies.length).toBe(1);
+    });
+    expect(seenBodies[0]).toEqual({
+      language: 'typescript',
+      level: 'junior',
+    });
+  });
+
+  it('renders an "AI suggest" adornment button inside the Topic field', () => {
+    setupAdmin();
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    expect(
+      screen.getByRole('button', { name: /Themen-Vorschläge holen/i }),
+    ).toBeInTheDocument();
+  });
+
   it('retry button in error alert re-runs generate with same inputs', async () => {
     setupAdmin();
     const seen: unknown[] = [];

@@ -57,7 +57,7 @@ const light = {
       disabled: '#A3A4A8',
     },
     input: {
-      background: "#101014",
+      background: "#f0f0f0",
     },
     success: { main: '#1f8950', light: '#4cc28a', dark: '#0f5a32', contrastText: '#ffffff' },
     warning: { main: '#c98a1f', light: '#e7ab44', dark: '#8a5e0f', contrastText: '#ffffff' },
@@ -128,11 +128,13 @@ const dark = {
       secondary: '#A3A4A8',
       disabled: '#8a8a8a',
     },
+        input: {
+      background: "#131314",
+    },
     success: { main: '#4cc28a', light: '#7adcae', dark: '#1f8950', contrastText: '#0e2d1c' },
     warning: { main: '#e7ab44', light: '#f3c479', dark: '#a07418', contrastText: '#2b1d05' },
     error:   { main: '#e96a59', light: '#f3917f', dark: '#a73e30', contrastText: '#2b0f0b' },
     info:    { main: '#62a8ce', light: '#8dc4df', dark: '#2a7da1', contrastText: '#0a1a23' },
-
     level: {
       junior: {
         main: '#55C483',
@@ -566,7 +568,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           borderRadius: radius.md,
-          backgroundColor: t.palette.input.background,
+          backgroundColor: t.vars.palette.input.background,
           fontFamily: FONT_SANS,
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: t.vars.palette.divider,

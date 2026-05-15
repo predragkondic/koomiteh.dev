@@ -50,9 +50,6 @@ declare module '@mui/material/styles' {
       javascript: DomainPaletteColor;
     };
     surface: SurfacePalette;
-    input: {
-      background: string;
-    }
   }
 
   interface PaletteOptions {

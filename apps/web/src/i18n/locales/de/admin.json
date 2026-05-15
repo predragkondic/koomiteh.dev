@@ -104,7 +104,6 @@
     },
     "generateButton": "Generieren",
     "generating": "Generiere…",
-    "regenerateButton": "Neu generieren",
     "confirmRegenerate": {
       "title": "Edits verwerfen?",
       "body": "Beim Neu-Generieren gehen deine Änderungen am Draft verloren.",

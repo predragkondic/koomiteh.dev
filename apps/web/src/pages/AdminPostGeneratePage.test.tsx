@@ -46,6 +46,130 @@ describe('AdminPostGeneratePage', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders Abbrechen, Generieren and Speichern in one action row on initial load', () => {
+    setupAdmin();
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    expect(
+      screen.getByRole('button', { name: /^Abbrechen$/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /^Generieren$/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /^Speichern$/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('Speichern is disabled on initial load and becomes enabled after successful generate', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () =>
+        HttpResponse.json({
+          question: 'Q',
+          slug: 'q',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    expect(screen.getByRole('button', { name: /^Speichern$/i })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
+
+    await screen.findByLabelText(/^Frage/i);
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: /^Speichern$/i }),
+      ).toBeEnabled();
+    });
+  });
+
+  it('exposes exactly one Generieren button after a successful generate (no Regenerate)', async () => {
+    setupAdmin();
+    server.use(
+      http.post('http://localhost:3000/admin/posts/generate', async () =>
+        HttpResponse.json({
+          question: 'Q',
+          slug: 'q',
+          tags: ['t'],
+          bodyMd: '# Body',
+          language: 'typescript',
+          level: 'junior',
+        }),
+      ),
+    );
+
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.change(screen.getByLabelText(/Thema/i), {
+      target: { value: 'closures' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
+
+    await screen.findByLabelText(/^Frage/i);
+
+    expect(screen.getAllByRole('button', { name: /^Generieren$/i })).toHaveLength(1);
+    expect(
+      screen.queryByRole('button', { name: /Neu generieren/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('cancels back to /admin when cancel is clicked before any generation', async () => {
+    setupAdmin();
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/admin"
+          element={<div data-testid="admin-home">ADMIN</div>}
+        />
+        <Route
+          path="/admin/posts/generate"
+          element={<AdminPostGeneratePage />}
+        />
+      </Routes>,
+      { initialEntries: ['/admin/posts/generate'] },
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /^Abbrechen$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('admin-home')).toBeInTheDocument();
+    });
+  });
+
   it('renders the generated draft as editable form fields populated with initial values', async () => {
     setupAdmin();
     server.use(
@@ -334,9 +458,7 @@ describe('AdminPostGeneratePage', () => {
     )) as HTMLInputElement;
     expect(questionField.value).toBe('First question');
 
-    fireEvent.click(
-      screen.getByRole('button', { name: /Neu generieren|Regenerate/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
 
     await waitFor(() => {
       const f = screen.getByLabelText(/^Frage/i) as HTMLInputElement;
@@ -388,9 +510,7 @@ describe('AdminPostGeneratePage', () => {
     )) as HTMLInputElement;
     fireEvent.change(questionField, { target: { value: 'Edited question' } });
 
-    fireEvent.click(
-      screen.getByRole('button', { name: /Neu generieren|Regenerate/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
 
     const dialog = await screen.findByRole('dialog');
     expect(dialog).toBeInTheDocument();
@@ -445,9 +565,7 @@ describe('AdminPostGeneratePage', () => {
     )) as HTMLInputElement;
     fireEvent.change(questionField, { target: { value: 'Edited question' } });
 
-    fireEvent.click(
-      screen.getByRole('button', { name: /Neu generieren|Regenerate/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /^Generieren$/i }));
 
     await screen.findByRole('dialog');
     const cancelBtn = screen.getByRole('button', { name: /^Abbrechen$|^Cancel$/i });

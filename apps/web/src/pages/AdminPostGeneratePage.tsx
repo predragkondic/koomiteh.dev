@@ -254,19 +254,36 @@ export function AdminPostGeneratePage() {
         </FormControl>
       </Stack>
 
-      <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-        <Button
-          variant="contained"
-          onClick={handleGenerate}
-          disabled={isGenerating || form.topic.trim().length === 0}
-          startIcon={
-            isGenerating ? <CircularProgress size={16} /> : undefined
-          }
-        >
-          {isGenerating
-            ? t('generate.generating')
-            : t('generate.generateButton')}
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ mb: 3 }}
+        justifyContent="space-between"
+      >
+        <Button onClick={handleCancel} disabled={isSaving}>
+          {t('editor.cancel')}
         </Button>
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant="outlined"
+            onClick={handleRegenerate}
+            disabled={isGenerating || isSaving || form.topic.trim().length === 0}
+            startIcon={
+              isGenerating ? <CircularProgress size={16} /> : undefined
+            }
+          >
+            {isGenerating
+              ? t('generate.generating')
+              : t('generate.generateButton')}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSave}
+            disabled={!draftForm || isSaving}
+          >
+            {isSaving ? t('editor.saving') : t('editor.save')}
+          </Button>
+        </Stack>
       </Stack>
 
       <Dialog
@@ -375,24 +392,6 @@ export function AdminPostGeneratePage() {
             </Box>
           </Stack>
 
-          <Stack direction="row" spacing={1} sx={{ mt: 3 }} justifyContent="flex-end">
-            <Button onClick={handleCancel} disabled={isSaving}>
-              {t('editor.cancel')}
-            </Button>
-            <Button
-              onClick={handleRegenerate}
-              disabled={isGenerating || isSaving}
-            >
-              {t('generate.regenerateButton')}
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleSave}
-              disabled={isSaving}
-            >
-              {isSaving ? t('editor.saving') : t('editor.save')}
-            </Button>
-          </Stack>
         </Box>
       )}
     </Box>

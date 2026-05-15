@@ -1,24 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
-import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
-import { Marked } from 'marked';
+import { useEffect, useMemo, useState } from "react";
+import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/material/Stack";
+import { Marked } from "marked";
 import {
   createHighlighter,
   type HighlighterGeneric,
   type BundledLanguage,
   type BundledTheme,
-} from 'shiki/bundle/web';
-import { LANGUAGES } from '@koomiteh/shared';
+} from "shiki/bundle/web";
+import { LANGUAGES } from "@koomiteh/shared";
 
 type WebHighlighter = HighlighterGeneric<BundledLanguage, BundledTheme>;
 
 const SHIKI_LANGS = Array.from(
   new Set<string>([
     ...LANGUAGES.map((l) => l.shikiLang),
-    'ts',
-    'js',
-    'tsx',
-    'jsx',
+    "ts",
+    "js",
+    "tsx",
+    "jsx",
   ]),
 );
 
@@ -27,14 +27,17 @@ let highlighterPromise: Promise<WebHighlighter> | null = null;
 function getHighlighter(): Promise<WebHighlighter> {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighter({
-      themes: ['github-light', 'github-dark'],
+      themes: ["github-light", "github-dark"],
       langs: SHIKI_LANGS,
     });
   }
   return highlighterPromise;
 }
 
-function buildMarked(highlighter: WebHighlighter, supported: Set<string>): Marked {
+function buildMarked(
+  highlighter: WebHighlighter,
+  supported: Set<string>,
+): Marked {
   const m = new Marked({ gfm: true, breaks: false, async: false });
   m.use({
     renderer: {
@@ -46,7 +49,7 @@ function buildMarked(highlighter: WebHighlighter, supported: Set<string>): Marke
         }
         return highlighter.codeToHtml(text, {
           lang: language,
-          themes: { light: 'github-light', dark: 'github-dark' },
+          themes: { light: "github-light", dark: "github-dark" },
           defaultColor: false,
         });
       },
@@ -57,11 +60,11 @@ function buildMarked(highlighter: WebHighlighter, supported: Set<string>): Marke
 
 function escapeHtml(s: string): string {
   return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 interface Props {
@@ -90,7 +93,7 @@ export function MarkdownBody({ bodyMd }: Props) {
 
   if (!html) {
     return (
-      <Stack spacing={1} aria-busy>
+      <Stack spacing={2} aria-busy>
         <Skeleton variant="rounded" height={120} />
         <Skeleton variant="rounded" height={80} />
       </Stack>

@@ -47,17 +47,17 @@ const light = {
       contrastText: '#ffffff',
     },
     background: {
-      default: 'oklch(0.985 0.003 270)',
+      default: '#F9FAFC',
       paper: '#ffffff',
     },
-    divider: 'oklch(0.90 0.004 270)',
+    divider: '#DDDEE1',
     text: {
-      primary: 'oklch(0.17 0.005 270)',
-      secondary: 'oklch(0.42 0.006 270)',
-      disabled: 'oklch(0.72 0.006 270)',
+      primary: '#0E0F12',
+      secondary: '#4C4D50',
+      disabled: '#A3A4A8',
     },
     input: {
-      background: "#101014",
+      background: "#f0f0f0",
     },
     success: { main: '#1f8950', light: '#4cc28a', dark: '#0f5a32', contrastText: '#ffffff' },
     warning: { main: '#c98a1f', light: '#e7ab44', dark: '#8a5e0f', contrastText: '#ffffff' },
@@ -67,13 +67,13 @@ const light = {
     // Domain — level
     level: {
       junior: {
-        main: 'oklch(0.50 0.14 155)',
-        soft: 'oklch(0.88 0.06 155 / 0.50)',
+        main: '#00793D',
+        soft: 'rgba(185, 228, 198, 0.5)',
         contrastText: '#ffffff',
       },
       senior: {
-        main: 'oklch(0.50 0.16 285)',
-        soft: 'oklch(0.90 0.07 285 / 0.50)',
+        main: '#5D4FB9',
+        soft: 'rgba(216, 216, 255, 0.5)',
         contrastText: '#ffffff',
       },
     },
@@ -81,24 +81,24 @@ const light = {
     // Domain — language
     language: {
       typescript: {
-        main: 'oklch(0.50 0.15 245)',
-        soft: 'oklch(0.92 0.06 245 / 0.50)',
+        main: '#0068B2',
+        soft: 'rgba(196, 234, 255, 0.5)',
         contrastText: '#ffffff',
       },
       javascript: {
-        main: 'oklch(0.55 0.14 90)',
-        soft: 'oklch(0.94 0.08 90 / 0.55)',
+        main: '#916B00',
+        soft: 'rgba(255, 234, 174, 0.55)',
         contrastText: '#000000',
       },
     },
 
     // App-specific surface helpers (use via theme.palette.surface.*)
     surface: {
-      canvas: 'oklch(0.985 0.003 270)',
-      sunken: 'oklch(0.96 0.004 270)',
+      canvas: '#F9FAFC',
+      sunken: '#F1F2F4',
       elevated: '#ffffff',
-      borderSubtle: 'oklch(0.94 0.003 270)',
-      borderStrong: 'oklch(0.80 0.005 270)',
+      borderSubtle: '#EAEBED',
+      borderStrong: '#BCBEC1',
     },
   },
 };
@@ -119,52 +119,54 @@ const dark = {
       contrastText: '#1a1a1d',
     },
     background: {
-      default: 'oklch(0.16 0.005 270)',
-      paper: 'oklch(0.205 0.005 270)',
+      default: '#0C0D0F',
+      paper: '#161719',
     },
-    divider: 'oklch(0.30 0.006 270)',
+    divider: '#2D2E31',
     text: {
-      primary: 'oklch(0.97 0.004 270)',
-      secondary: 'oklch(0.72 0.006 270)',
+      primary: '#F4F5F8',
+      secondary: '#A3A4A8',
       disabled: '#8a8a8a',
+    },
+        input: {
+      background: "#131314",
     },
     success: { main: '#4cc28a', light: '#7adcae', dark: '#1f8950', contrastText: '#0e2d1c' },
     warning: { main: '#e7ab44', light: '#f3c479', dark: '#a07418', contrastText: '#2b1d05' },
     error:   { main: '#e96a59', light: '#f3917f', dark: '#a73e30', contrastText: '#2b0f0b' },
     info:    { main: '#62a8ce', light: '#8dc4df', dark: '#2a7da1', contrastText: '#0a1a23' },
-
     level: {
       junior: {
-        main: 'oklch(0.74 0.14 155)',
-        soft: 'oklch(0.32 0.06 155 / 0.30)',
-        contrastText: 'oklch(0.10 0.02 155)',
+        main: '#55C483',
+        soft: 'rgba(21, 60, 37, 0.3)',
+        contrastText: '#010502',
       },
       senior: {
-        main: 'oklch(0.72 0.16 285)',
-        soft: 'oklch(0.32 0.08 285 / 0.30)',
-        contrastText: 'oklch(0.10 0.02 285)',
+        main: '#9C93FF',
+        soft: 'rgba(47, 43, 89, 0.3)',
+        contrastText: '#030308',
       },
     },
 
     language: {
       typescript: {
-        main: 'oklch(0.68 0.15 245)',
-        soft: 'oklch(0.30 0.08 245 / 0.30)',
-        contrastText: 'oklch(0.10 0.02 245)',
+        main: '#339FEE',
+        soft: 'rgba(0, 48, 83, 0.3)',
+        contrastText: '#010408',
       },
       javascript: {
-        main: 'oklch(0.82 0.15 90)',
-        soft: 'oklch(0.32 0.08 90 / 0.30)',
-        contrastText: 'oklch(0.10 0.02 90)',
+        main: '#EABF3A',
+        soft: 'rgba(67, 48, 0, 0.3)',
+        contrastText: '#050300',
       },
     },
 
     surface: {
-      canvas: 'oklch(0.16 0.005 270)',
-      sunken: 'oklch(0.135 0.005 270)',
-      elevated: 'oklch(0.245 0.005 270)',
-      borderSubtle: 'oklch(0.25 0.005 270)',
-      borderStrong: 'oklch(0.42 0.008 270)',
+      canvas: '#0C0D0F',
+      sunken: '#07080A',
+      elevated: '#1F2023',
+      borderSubtle: '#212224',
+      borderStrong: '#4B4D52',
     },
   },
 };

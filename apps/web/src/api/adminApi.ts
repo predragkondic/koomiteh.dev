@@ -6,6 +6,8 @@ import type {
   AdminPostUpdate,
   GeneratePostRequest,
   GeneratePostResponse,
+  SuggestTopicsRequest,
+  SuggestTopicsResponse,
 } from '@koomiteh/shared';
 import { config } from '@/config';
 import { interviewApi } from './interviewApi';
@@ -137,6 +139,13 @@ export const adminApi = createApi({
         body,
       }),
     }),
+    suggestTopics: build.mutation<SuggestTopicsResponse, SuggestTopicsRequest>({
+      query: (body) => ({
+        url: '/admin/posts/suggest-topics',
+        method: 'POST',
+        body,
+      }),
+    }),
   }),
 });
 
@@ -148,4 +157,5 @@ export const {
   useDeleteAdminPostMutation,
   useRestoreAdminPostMutation,
   useGeneratePostMutation,
+  useSuggestTopicsMutation,
 } = adminApi;

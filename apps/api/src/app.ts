@@ -12,6 +12,7 @@ import { postsRoute } from './routes/posts.js';
 import { favoritesRoute, myFavoritesRoute } from './routes/favorites.js';
 import { adminRoute } from './routes/admin.js';
 import { adminGenerateRoute } from './routes/admin-generate.js';
+import { adminSuggestTopicsRoute } from './routes/admin-suggest-topics.js';
 
 export function createApp() {
   const app = new Hono();
@@ -45,6 +46,7 @@ export function createApp() {
   app.route('/me', myFavoritesRoute);
   app.route('/admin', adminRoute);
   app.route('/admin/posts/generate', adminGenerateRoute);
+  app.route('/admin/posts/suggest-topics', adminSuggestTopicsRoute);
 
   app.onError((err, c) => {
     const reqId = c.get('requestId');

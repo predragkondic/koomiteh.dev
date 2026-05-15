@@ -41,6 +41,9 @@ declare module '@mui/material/styles' {
   }
 
   interface Palette {
+    input: {
+      background: string;
+    };
     level: {
       junior: DomainPaletteColor;
       senior: DomainPaletteColor;
@@ -50,12 +53,12 @@ declare module '@mui/material/styles' {
       javascript: DomainPaletteColor;
     };
     surface: SurfacePalette;
-    input: {
-      background: string;
-    }
   }
 
   interface PaletteOptions {
+    input?: {
+      background?: string;
+    };
     level?: {
       junior?: Partial<DomainPaletteColor>;
       senior?: Partial<DomainPaletteColor>;

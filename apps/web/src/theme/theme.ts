@@ -568,7 +568,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           borderRadius: radius.md,
-          backgroundColor: t.vars.palette.input.background,
+          backgroundColor: t.palette.input.background,
           fontFamily: FONT_SANS,
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: t.vars.palette.divider,

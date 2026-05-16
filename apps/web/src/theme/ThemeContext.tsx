@@ -38,6 +38,11 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.setAttribute("data-color-scheme", mode);
     window.localStorage.setItem(STORAGE_KEY, mode);
+    const themeColor = mode === "dark" ? "#0C0D0F" : "#F9FAFC";
+    const meta = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]',
+    );
+    if (meta) meta.content = themeColor;
   }, [mode]);
 
   const toggle = useCallback(() => {

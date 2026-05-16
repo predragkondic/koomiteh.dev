@@ -48,7 +48,7 @@ describe('MobileToolbar', () => {
     mockMe(ANON_ME);
     renderToolbar();
 
-    expect(await screen.findByText('koomiteh.dev')).toBeInTheDocument();
+    expect(await screen.findByAltText('koomiteh.dev')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Suche öffnen/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Menü öffnen/i })).toBeInTheDocument();
   });

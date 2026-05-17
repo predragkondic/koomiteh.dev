@@ -33,9 +33,15 @@ export function AppShell() {
   }, []);
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <AppBar position="sticky" color="default" elevation={0}>
-        <Toolbar sx={{ gap: 2 }}>
+        <Toolbar sx={{ gap: 2, maxWidth: 1220, m: "0 auto", width: "100%" }}>
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -52,13 +58,14 @@ export function AppShell() {
                 alignItems: "center",
                 textDecoration: "none",
                 color: "inherit",
+                p: 2,
               }}
             >
               <Box
                 component="img"
                 src={logoUrl}
                 alt={t("appName")}
-                sx={{ height: 32, width: "auto", display: "block" }}
+                sx={{ height: 54, display: "block" }}
               />
             </Box>
             <Box sx={{ flex: 1 }} />

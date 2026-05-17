@@ -54,7 +54,7 @@ export function MobileToolbar({ setPaletteOpen }: MobileToolbarProps) {
           component="img"
           src={logoUrl}
           alt={t("appName")}
-          sx={{ height: 28, width: "auto", display: "block" }}
+          sx={{ height: 42, display: "block" }}
         />
       </Box>
       <Box sx={{ flex: 1 }} />

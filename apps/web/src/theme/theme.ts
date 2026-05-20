@@ -18,7 +18,7 @@ const FONT_MONO =
   "'JetBrains Mono', monospace";
 
 /** Brand accent — magenta. The one loud color. */
-const ACCENT = '#FF2E88';
+const ACCENT = '#c71d31ff';
 
 const radius = {
   xs: 2,
@@ -36,7 +36,7 @@ const light = {
   palette: {
     primary: {
       main: ACCENT,
-      light: '#ff80ad',
+      light: '#e54e60ff',
       dark: '#e10073',
       contrastText: '#ffffff',
     },
@@ -108,8 +108,8 @@ const dark = {
   palette: {
     primary: {
       main: ACCENT,
-      light: '#ff80ad',
-      dark: '#c80064',
+      light: '#e54e60ff',
+      dark: '#df243aff',
       contrastText: '#ffffff',
     },
     secondary: {

@@ -9,15 +9,19 @@ import { useTranslation } from "react-i18next";
 import { CommandPalette } from "@/features/interview/CommandPalette";
 import { useGetMeQuery } from "@/api/authApi";
 import logoUrl from "@/assets/koomiteh-logo.svg";
+import logoFilledUrl from "@/assets/koomiteh-logo-filled.svg";
 import { LanguageToggle } from "./LanguageToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { AuthMenu } from "./AuthMenu";
 import { SearchTrigger } from "./SearchTrigger";
 import { MobileToolbar } from "./MobileToolbar";
+import { useThemeMode } from "@/theme/ThemeContext";
 
 export function AppShell() {
   const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const { mode } = useThemeMode();
+
   const { data: me } = useGetMeQuery();
   const isAdmin = me?.user?.role === "admin";
 
@@ -63,7 +67,7 @@ export function AppShell() {
             >
               <Box
                 component="img"
-                src={logoUrl}
+                src={mode === "dark" ? logoFilledUrl : logoUrl}
                 alt={t("appName")}
                 sx={{ height: 54, display: "block" }}
               />

@@ -94,15 +94,28 @@ describe("AppSidebar", () => {
     renderNav(<AppSidebar />, ["/admin"]);
 
     expect(
-      screen.getByRole("link", { name: /Zurück zum Frontend/i }),
+      await screen.findByRole("link", { name: /Zurück zum Frontend/i }),
     ).toHaveAttribute("href", "/interview");
     expect(
-      await screen.findByRole("link", { name: /Beiträge/i }),
+      screen.getByRole("link", { name: /Beiträge/i }),
     ).toHaveAttribute("href", "/admin");
     expect(screen.getByRole("link", { name: /^User$/i })).toHaveAttribute(
       "href",
       "/admin/users",
     );
+  });
+
+  it("hides admin-mode items for non-staff visiting /admin", async () => {
+    mockMe(USER_ME);
+    renderNav(<AppSidebar />, ["/admin"]);
+
+    expect(
+      await screen.findByRole("link", { name: /^Profil$/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /Zurück zum Frontend/i }),
+    ).toBeNull();
+    expect(screen.queryByRole("link", { name: /^User$/i })).toBeNull();
   });
 });
 
@@ -112,9 +125,9 @@ describe("AppBottomNav", () => {
     renderNav(<AppBottomNav />, ["/interview"]);
 
     expect(
-      await screen.findByRole("link", { name: /Beiträge/i }),
+      await screen.findByRole("link", { name: /^Profil$/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /^Profil$/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Beiträge/i })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Einstellungen/i })).toBeNull();
     expect(
       screen.getByRole("button", { name: /Abmelden/i }),

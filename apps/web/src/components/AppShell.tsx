@@ -18,6 +18,7 @@ import { AppSidebar } from "./Nav/AppSidebar";
 import { AppBottomNav } from "./Nav/AppBottomNav";
 import { Button } from "@mui/material";
 import { useGetMeQuery } from "@/api/authApi";
+import { isStaffRole } from "@/lib/userRole";
 
 const BOTTOM_NAV_HEIGHT = 56;
 
@@ -26,7 +27,7 @@ export function AppShell() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { mode } = useThemeMode();
   const { data: me } = useGetMeQuery();
-  const isAdmin = me?.user?.role === "admin";
+  const isAdmin = isStaffRole(me?.user?.role);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {

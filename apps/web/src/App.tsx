@@ -8,6 +8,7 @@ import { AdminLayout } from "@/pages/AdminLayout";
 import { AdminPostEditorPage } from "@/pages/AdminPostEditorPage";
 import { AdminPostGeneratePage } from "@/pages/AdminPostGeneratePage";
 import { AdminPostsListPage } from "@/pages/AdminPostsListPage";
+import { AdminUsersListPage } from "@/pages/AdminUsersListPage";
 import { InterviewDetailPage } from "@/pages/InterviewDetailPage";
 import { InterviewHubPage } from "@/pages/InterviewHubPage";
 import { InterviewLayout } from "@/pages/InterviewLayout";
@@ -17,7 +18,6 @@ import { MyProfilePage } from "@/pages/MyProfilePage";
 import { MySettingsPage } from "@/pages/MySettingsPage";
 import { UserProfilePage } from "@/pages/UserProfilePage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
-import { PlaceholderPage } from "@/pages/PlaceholderPage";
 
 export function App() {
   return (
@@ -38,12 +38,7 @@ export function App() {
               <Route path="users/:id" element={<UserProfilePage />} />
               <Route path="admin" element={<AdminLayout />}>
                 <Route index element={<AdminPostsListPage />} />
-                <Route
-                  path="users"
-                  element={
-                    <PlaceholderPage titleKey="nav.users" titleNs="admin" />
-                  }
-                />
+                <Route path="users" element={<AdminUsersListPage />} />
                 <Route
                   path="posts/new"
                   element={<AdminPostEditorPage mode="new" />}

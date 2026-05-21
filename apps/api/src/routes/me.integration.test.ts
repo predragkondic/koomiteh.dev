@@ -86,4 +86,25 @@ describe('GET /me/profile', () => {
     expect(typeof body.createdAt).toBe('string');
     expect(new Date(body.createdAt).toISOString()).toBe(body.createdAt);
   });
+
+  it('401 for suspended user (session also invalidated)', async () => {
+    const userId = await createTestUser('blocked');
+    const cookie = await loginAs(userId);
+    await db
+      .update(users)
+      .set({ suspendedAt: new Date() })
+      .where(sql`${users.id} = ${userId}`);
+
+    const first = await call<{ error: string }>('/me/profile', { cookie });
+    expect(first.status).toBe(401);
+    expect(first.body.error).toBe('unauthorized');
+
+    await db
+      .update(users)
+      .set({ suspendedAt: null })
+      .where(sql`${users.id} = ${userId}`);
+
+    const second = await call<{ error: string }>('/me/profile', { cookie });
+    expect(second.status).toBe(401);
+  });
 });

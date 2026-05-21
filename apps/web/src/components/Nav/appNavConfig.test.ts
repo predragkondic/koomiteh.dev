@@ -3,6 +3,7 @@ import type { Me } from '@/api/authApi';
 import {
   buildAdminNavItems,
   buildFrontendNavItems,
+  buildNavItems,
   flattenNavItemsForMobile,
   getAppNavMode,
 } from './appNavConfig';
@@ -80,6 +81,28 @@ describe('buildAdminNavItems', () => {
     const exit = items.find((i) => i.key === 'exit');
     expect(exit?.kind).toBe('link');
     if (exit?.kind === 'link') expect(exit.to).toBe('/interview');
+  });
+});
+
+describe('buildNavItems', () => {
+  it('falls back to frontend nav for non-staff users on /admin paths', () => {
+    const keys = buildNavItems('admin', USER).map((i) => i.key);
+    expect(keys).not.toContain('users');
+    expect(keys).not.toContain('exit');
+  });
+
+  it('falls back to frontend nav for anonymous visitors on /admin paths', () => {
+    const keys = buildNavItems('admin', null).map((i) => i.key);
+    expect(keys).not.toContain('users');
+    expect(keys).not.toContain('exit');
+  });
+
+  it('returns admin nav for staff in admin mode', () => {
+    expect(buildNavItems('admin', ADMIN).map((i) => i.key)).toEqual([
+      'exit',
+      'posts',
+      'users',
+    ]);
   });
 });
 

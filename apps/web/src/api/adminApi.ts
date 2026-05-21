@@ -39,13 +39,33 @@ function toQueryParams(args: AdminListArgs): URLSearchParams {
   return params;
 }
 
+export type AdminUserRole = 'user' | 'admin' | 'superadmin';
+
+export interface AdminUserListItem {
+  id: string;
+  displayName: string;
+  avatarUrl: string | null;
+  githubLogin: string;
+  role: AdminUserRole;
+  createdAt: string;
+  suspendedAt: string | null;
+}
+
+export interface AdminUserListResponse {
+  items: AdminUserListItem[];
+  page: number;
+  pageSize: number;
+  total: number;
+  pageCount: number;
+}
+
 export const adminApi = createApi({
   reducerPath: 'adminApi',
   baseQuery: fetchBaseQuery({
     baseUrl: config.apiBaseUrl || '/api',
     credentials: 'include',
   }),
-  tagTypes: ['AdminPosts', 'AdminPost'],
+  tagTypes: ['AdminPosts', 'AdminPost', 'AdminUsers'],
   endpoints: (build) => ({
     listAdminPosts: build.query<AdminPostListResponse, AdminListArgs>({
       query: (args) => {
@@ -146,6 +166,30 @@ export const adminApi = createApi({
         body,
       }),
     }),
+    listAdminUsers: build.query<AdminUserListResponse, void>({
+      query: () => '/admin/users',
+      providesTags: ['AdminUsers'],
+    }),
+    suspendAdminUser: build.mutation<
+      { ok: true; suspended: boolean },
+      string
+    >({
+      query: (id) => ({
+        url: `/admin/users/${encodeURIComponent(id)}/suspend`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['AdminUsers'],
+    }),
+    unsuspendAdminUser: build.mutation<
+      { ok: true; suspended: boolean },
+      string
+    >({
+      query: (id) => ({
+        url: `/admin/users/${encodeURIComponent(id)}/unsuspend`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['AdminUsers'],
+    }),
   }),
 });
 
@@ -158,4 +202,7 @@ export const {
   useRestoreAdminPostMutation,
   useGeneratePostMutation,
   useSuggestTopicsMutation,
+  useListAdminUsersQuery,
+  useSuspendAdminUserMutation,
+  useUnsuspendAdminUserMutation,
 } = adminApi;

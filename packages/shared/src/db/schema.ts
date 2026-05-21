@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
-export const userRole = pgEnum('user_role', ['user', 'admin']);
+export const userRole = pgEnum('user_role', ['user', 'admin', 'superadmin']);
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -23,6 +23,7 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
+  suspendedAt: timestamp('suspended_at', { withTimezone: true }),
   deletedAt: timestamp('deleted_at', { withTimezone: true }),
 });
 

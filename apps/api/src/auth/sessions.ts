@@ -48,7 +48,7 @@ export async function validateSessionToken(
 
   const row = rows[0];
   if (!row) return { session: null, user: null };
-  if (row.user.deletedAt) {
+  if (row.user.deletedAt || row.user.suspendedAt) {
     await db.delete(sessions).where(eq(sessions.id, id));
     return { session: null, user: null };
   }

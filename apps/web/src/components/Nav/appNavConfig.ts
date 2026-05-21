@@ -150,5 +150,8 @@ export function buildNavItems(
   mode: AppNavMode,
   user: Me | null | undefined,
 ): NavItem[] {
-  return mode === 'admin' ? buildAdminNavItems() : buildFrontendNavItems(user);
+  if (mode === 'admin' && user && isStaffRole(user.role)) {
+    return buildAdminNavItems();
+  }
+  return buildFrontendNavItems(user);
 }

@@ -766,7 +766,24 @@ export const theme = createTheme({
       },
     },
 
-    // List (used in CommandPalette)
+    // List (CommandPalette + sidebar nav rail)
+
+    MuiListSubheader: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          fontFamily: t.typography.fontFamilyMono,
+          fontSize: '0.625rem',
+          fontWeight: 600,
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          color: t.vars.palette.text.disabled,
+          lineHeight: 1,
+          padding: '0 8px 4px',
+          background: 'transparent',
+          position: 'static',
+        }),
+      },
+    },
 
     MuiListItemButton: {
       styleOverrides: {
@@ -776,6 +793,64 @@ export const theme = createTheme({
             backgroundColor: t.vars.palette.background.default,
             outline: `1px solid rgba(${t.vars.palette.primary.mainChannel} / 0.45)`,
             '&:hover': { backgroundColor: t.vars.palette.background.default },
+          },
+
+          // Sidebar nav rail — see docs/handoff/design_handoff_sidebar
+          '.nav-rail &': {
+            height: 32,
+            paddingInline: 10,
+            borderRadius: 6,
+            gap: 10,
+            color: t.vars.palette.text.secondary,
+            fontSize: '0.84375rem',
+            fontWeight: 500,
+            position: 'relative',
+            transition: 'background-color 120ms ease, color 120ms ease',
+
+            '& .MuiListItemIcon-root': {
+              minWidth: 0,
+              color: t.vars.palette.text.disabled,
+            },
+
+            '&:hover': {
+              backgroundColor: `color-mix(in oklab, ${t.vars.palette.text.primary} 4%, transparent)`,
+              color: t.vars.palette.text.primary,
+            },
+            '&:hover .MuiListItemIcon-root': {
+              color: t.vars.palette.text.secondary,
+            },
+
+            '&.Mui-selected': {
+              backgroundColor: `color-mix(in oklab, ${t.vars.palette.primary.main} 12%, transparent)`,
+              color: t.vars.palette.text.primary,
+              outline: 'none',
+              '&:hover': {
+                backgroundColor: `color-mix(in oklab, ${t.vars.palette.primary.main} 16%, transparent)`,
+              },
+            },
+            '&.Mui-selected .MuiListItemIcon-root': {
+              color: t.vars.palette.primary.main,
+            },
+
+            '&.Mui-selected::before': {
+              content: '""',
+              position: 'absolute',
+              left: -10,
+              top: 6,
+              bottom: 6,
+              width: 3,
+              borderRadius: '0 3px 3px 0',
+              backgroundColor: t.vars.palette.primary.main,
+            },
+          },
+
+          '.nav-rail--nested .MuiListItemButton-root': {
+            height: 28,
+            fontSize: '0.8125rem',
+          },
+
+          '.nav-rail--nested .MuiListItemButton-root.Mui-selected::before': {
+            left: -19,
           },
         }),
       },

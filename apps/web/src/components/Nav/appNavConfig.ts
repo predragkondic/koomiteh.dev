@@ -35,15 +35,27 @@ function matchPrefix(pathname: string, prefix: string): boolean {
 
 export function buildFrontendNavItems(user: Me | null | undefined): NavItem[] {
   const items: NavItem[] = [
-    {
+
+  ];
+
+    if (user && isStaffRole(user.role)) {
+    items.push({
+      kind: 'link',
+      key: 'admin',
+      labelKey: 'title',
+      labelNs: 'admin',
+      to: '/admin',
+      isActive: (pathname) => matchPrefix(pathname, '/admin'),
+    });
+  }
+  items.push(    {
       kind: 'link',
       key: 'posts',
       labelKey: 'nav.posts',
       labelNs: 'common',
       to: '/interview',
       isActive: (pathname) => matchPrefix(pathname, '/interview'),
-    },
-  ];
+    },);
 
   if (user) {
     items.push({
@@ -52,10 +64,7 @@ export function buildFrontendNavItems(user: Me | null | undefined): NavItem[] {
       labelKey: 'nav.profile',
       labelNs: 'common',
       to: '/me',
-      isActive: (pathname) =>
-        pathname === '/me' ||
-        matchPrefix(pathname, '/me/favorites') ||
-        matchPrefix(pathname, '/me/settings'),
+      isActive: (pathname) => pathname === '/me',
       children: [
         {
           kind: 'link',
@@ -77,16 +86,7 @@ export function buildFrontendNavItems(user: Me | null | undefined): NavItem[] {
     });
   }
 
-  if (user && isStaffRole(user.role)) {
-    items.push({
-      kind: 'link',
-      key: 'admin',
-      labelKey: 'title',
-      labelNs: 'admin',
-      to: '/admin',
-      isActive: (pathname) => matchPrefix(pathname, '/admin'),
-    });
-  }
+
 
   if (user) {
     items.push({

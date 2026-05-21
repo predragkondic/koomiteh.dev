@@ -14,8 +14,8 @@ import { AuthMenu } from "./AuthMenu";
 import { SearchTrigger } from "./SearchTrigger";
 import { MobileToolbar } from "./MobileToolbar";
 import { useThemeMode } from "@/theme/ThemeContext";
-import { AppSidebar } from "./nav/AppSidebar";
-import { AppBottomNav } from "./nav/AppBottomNav";
+import { AppSidebar } from "./Nav/AppSidebar";
+import { AppBottomNav } from "./Nav/AppBottomNav";
 import { Button } from "@mui/material";
 import { useGetMeQuery } from "@/api/authApi";
 

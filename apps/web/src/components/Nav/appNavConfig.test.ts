@@ -57,6 +57,9 @@ describe('buildFrontendNavItems', () => {
         'favorites',
         'settings',
       ]);
+      expect(profile.isActive('/me')).toBe(true);
+      expect(profile.isActive('/me/settings')).toBe(false);
+      expect(profile.isActive('/me/favorites')).toBe(false);
     }
   });
 

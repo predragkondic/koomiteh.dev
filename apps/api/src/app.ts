@@ -6,11 +6,12 @@ import { logger } from './logger.js';
 import { Sentry } from './sentry.js';
 import { requestId } from './middleware/request-id.js';
 import { originCheck } from './middleware/origin-check.js';
-import { healthRoute } from './routes/health.js';
-import { authRoute } from './routes/auth.js';
-import { postsRoute } from './routes/posts.js';
-import { favoritesRoute, myFavoritesRoute } from './routes/favorites.js';
-import { adminRoute } from './routes/admin.js';
+import { healthRoute } from './routes/health';
+import { authRoute } from './routes/auth';
+import { postsRoute } from './routes/posts';
+import { favoritesRoute } from './routes/favorites';
+import { meRoute } from './routes/me.js';
+import { adminRoute } from './routes/admin';
 import { adminGenerateRoute } from './routes/admin-generate.js';
 import { adminSuggestTopicsRoute } from './routes/admin-suggest-topics.js';
 
@@ -43,7 +44,7 @@ export function createApp() {
   app.route('/auth', authRoute);
   app.route('/posts', postsRoute);
   app.route('/favorites', favoritesRoute);
-  app.route('/me', myFavoritesRoute);
+  app.route('/me', meRoute);
   app.route('/admin', adminRoute);
   app.route('/admin/posts/generate', adminGenerateRoute);
   app.route('/admin/posts/suggest-topics', adminSuggestTopicsRoute);

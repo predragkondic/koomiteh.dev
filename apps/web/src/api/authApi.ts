@@ -17,6 +17,15 @@ export type Me = {
 
 export type MeResponse = { user: Me | null };
 
+export type MyProfile = {
+  id: string;
+  githubLogin: string;
+  displayName: string;
+  avatarUrl: string | null;
+  role: 'user' | 'admin' | 'superadmin';
+  createdAt: string;
+};
+
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: config.apiBaseUrl || '/api',
   credentials: 'include',
@@ -37,20 +46,24 @@ const baseQueryWithReauth: BaseQueryFn<
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Me'],
+  tagTypes: ['Me', 'MyProfile'],
   endpoints: (build) => ({
     getMe: build.query<MeResponse, void>({
       query: () => '/auth/me',
       providesTags: ['Me'],
     }),
+    getMyProfile: build.query<MyProfile, void>({
+      query: () => '/me/profile',
+      providesTags: ['MyProfile'],
+    }),
     logout: build.mutation<{ ok: true }, void>({
       query: () => ({ url: '/auth/logout', method: 'POST' }),
-      invalidatesTags: ['Me'],
+      invalidatesTags: ['Me', 'MyProfile'],
     }),
   }),
 });
 
-export const { useGetMeQuery, useLogoutMutation } = authApi;
+export const { useGetMeQuery, useGetMyProfileQuery, useLogoutMutation } = authApi;
 
 export function loginUrl(): string {
   return config.apiBaseUrl ? `${config.apiBaseUrl}/auth/github` : '/api/auth/github';

@@ -13,6 +13,8 @@ import { InterviewHubPage } from "@/pages/InterviewHubPage";
 import { InterviewLayout } from "@/pages/InterviewLayout";
 import { InterviewListingPage } from "@/pages/InterviewListingPage";
 import { MyFavoritesPage } from "@/pages/MyFavoritesPage";
+import { MyProfilePage } from "@/pages/MyProfilePage";
+import { MySettingsPage } from "@/pages/MySettingsPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 
@@ -30,18 +32,8 @@ export function App() {
                 <Route path=":language/:slug" element={<InterviewDetailPage />} />
               </Route>
               <Route path="me/favorites" element={<MyFavoritesPage />} />
-              <Route
-                path="me/settings"
-                element={
-                  <PlaceholderPage titleKey="nav.settings" titleNs="common" />
-                }
-              />
-              <Route
-                path="me"
-                element={
-                  <PlaceholderPage titleKey="nav.profile" titleNs="common" />
-                }
-              />
+              <Route path="me/settings" element={<MySettingsPage />} />
+              <Route path="me" element={<MyProfilePage />} />
               <Route path="admin" element={<AdminLayout />}>
                 <Route index element={<AdminPostsListPage />} />
                 <Route

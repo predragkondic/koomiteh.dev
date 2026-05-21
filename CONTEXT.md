@@ -45,7 +45,10 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 ### Entities
 
 - **Post.** Ein Lern-Beitrag im Frage-Antwort-Format. Hat `language`, `level`, `tags`, `bodyMd`. Vom Admin geschrieben (`trusted MD` — nicht sanitized). Soft-Delete-fähig (Permalink stabil).
-- **User.** Authentifizierte Person, identifiziert über GitHub-OAuth. Hat `role: 'user' | 'admin'`. GDPR-Soft-Delete: anonymisiert, `githubId = NULL`, `displayName = '[deleted]'`.
+- **User.** Authentifizierte Person, identifiziert über GitHub-OAuth. Hat `role: 'user' | 'admin' | 'superadmin'` und einen Lifecycle-Zustand (siehe **Suspended User**, Soft-Delete). GDPR-Soft-Delete: anonymisiert, `githubId = NULL`, `displayName = '[deleted]'`.
+- **Suspended User.** User mit `suspendedAt != NULL`. Kann sich nicht einloggen (OAuth-Callback weist ab) und keine Writes ausführen (Comments, Reactions, Favorites → 403). Lesen public Content bleibt möglich (kein Session-Bedarf). Reversibel durch "Freischalten" (`suspendedAt = NULL`). Vom **Suspension Actor** gesetzt.
+- **Suspension Actor.** Rollenbasierte Sperr-Befugnis: `admin` kann nur `role='user'` sperren; `superadmin` kann `user` + `admin` sperren, aber **nicht** sich selbst und **nicht** andere Superadmins. Self-Sperre und Cross-Superadmin-Sperre liefern 403.
+- **Superadmin.** User mit `role='superadmin'`. Ausschließlich per SQL gesetzt (analog zum First-Admin-Pattern). Kein UI-Promotion-Flow. Zweck: Admins sperren/freischalten können, Notfall-Eingriff bei Kompromittierung.
 - **Session.** Server-side Authentifizierungs-Anker. Lebt in `sessions`-Tabelle, `id` im httpOnly-Cookie. Ablauf via `expiresAt`. Logout = Hard-Delete der Row.
 - **Favorite.** Many-to-Many zwischen User und Post. Composite-PK `(userId, postId)`. Hard-Delete (Toggle-Operation).
 - **Comment.** Public-User-Antwort auf einen Post. Markdown-Body (`untrusted MD` — server-sanitized). Speichert `bodyMd` (raw Input) und `bodyHtmlSafe` (sanitized HTML, ohne Code-Highlighting). Soft-Delete (`deleted_at`, Body wird "[deleted]"). Flat structure — kein Threading.
@@ -58,6 +61,7 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 - **DB authoritative.** Nach einmaligem MD-Seed aus `content/interview/*.md` ist die Datenbank die einzige Wahrheitsquelle. Kein Re-Import. Edits laufen über das Admin-UI. Siehe ADR-0002.
 - **Phased Rollout.** Migration vom statischen JSON-Stack zum DB-Backend in 10 vertical-slice PRs. Jeder PR ist deploy-bar, ein PR-Merge erhöht das Feature-Set inkrementell. Tracked als GitHub-Issues `Slice 1` bis `Slice 10`.
 - **Soft-Delete vs Hard-Delete.** Mixed-Strategie: Posts/Comments/Users → Soft-Delete (Permalink-Stabilität, GDPR). Favorites/Reactions → Hard-Delete (Toggle-Operations, kein Audit-Wert).
+- **User-Lifecycle-Zustände.** Drei orthogonale Timestamp-Spalten auf `users`: `suspendedAt` (admin-imposed, reversibel), `deletedAt` (GDPR-Soft-Delete, anonymisiert). Bewusst **kein** Status-Enum — Zustände sind orthogonal, ein User kann z.B. später sowohl `hiddenAt` als auch `suspendedAt` haben. Weitere Lifecycle-Spalten (`hiddenAt`, `confirmedAt`) kommen lazy, wenn ihre Features gebaut werden.
 - **Render-Asymmetrie.** Posts werden frontend-seitig mit shiki gerendert (trusted Source). Comments werden backend-seitig sanitized und gerendert (XSS-Mitigation), Code-Highlighting aber trotzdem frontend-seitig (Konsistenz mit Posts). Siehe ADR-0004.
 
 ### Frontend-State-Aufteilung
@@ -83,9 +87,11 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 
 ## Operations
 
-- **First admin assignment.** Nach erstem Login muss der eigene User-Row manuell auf `role='admin'` gesetzt werden:
+- **First admin assignment.** Nach erstem Login muss der eigene User-Row manuell auf `role='admin'` oder `role='superadmin'` gesetzt werden:
   ```sql
   UPDATE users SET role = 'admin' WHERE github_login = '<your-github-login>';
+  -- Für Superadmin (kann Admins sperren):
+  UPDATE users SET role = 'superadmin' WHERE github_login = '<your-github-login>';
   ```
 - **Initial content seed.** Einmalig nach erstem Deploy: `npm run -w @koomiteh/api db:seed` läuft `content/interview/*.md` durch Zod, upsertet in `posts`. Idempotent. Danach ist die DB authoritativ — `content/`-Verzeichnis kann archiviert oder gelöscht werden.
 - **Per-PR Test-DB.** GitHub-Action erstellt Neon-Branch pro PR, läuft Migrations + Tests, teardown bei PR-Close. Production-DB ist die `main`-Branch in Neon.

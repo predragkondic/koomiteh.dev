@@ -39,7 +39,11 @@
     "menuLabel": "Account menu"
   },
   "nav": {
-    "menuLabel": "Open menu"
+    "menuLabel": "Open menu",
+    "posts": "Posts",
+    "profile": "Profile",
+    "favorited": "Favorited",
+    "settings": "Settings"
   },
   "favorites": {
     "addAria": "Add to favorites",

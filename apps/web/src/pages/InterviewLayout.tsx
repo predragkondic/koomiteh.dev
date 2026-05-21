@@ -1,19 +1,19 @@
-import { Outlet, useMatch, useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import { useGetManifestQuery } from '@/api/interviewApi';
+import { Outlet, useMatch, useNavigate } from "react-router-dom";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import { useGetManifestQuery } from "@/api/interviewApi";
+import DefaultPage from "./Layout/DefaultPage";
 
 export function InterviewLayout() {
   const { data } = useGetManifestQuery();
   const navigate = useNavigate();
-  const match = useMatch('/interview/:language/*');
+  const match = useMatch("/interview/:language/*");
   const activeLang = match?.params.language ?? false;
 
   const showTabs = !!data && data.languages.length >= 2;
 
   return (
-    <Box>
+    <DefaultPage titleKey="">
       {showTabs && (
         <Tabs
           value={activeLang ?? false}
@@ -26,6 +26,6 @@ export function InterviewLayout() {
         </Tabs>
       )}
       <Outlet />
-    </Box>
+    </DefaultPage>
   );
 }

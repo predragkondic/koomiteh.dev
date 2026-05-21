@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useGetMeQuery } from '@/api/authApi';
+import { isStaffRole } from '@/lib/userRole';
 import { NotFoundPage } from './NotFoundPage';
 
 export function AdminLayout() {
@@ -17,7 +18,7 @@ export function AdminLayout() {
     );
   }
 
-  if (data?.user?.role !== 'admin') {
+  if (!isStaffRole(data?.user?.role)) {
     return <NotFoundPage />;
   }
 

@@ -12,7 +12,7 @@ export type Me = {
   githubLogin: string;
   displayName: string;
   avatarUrl: string | null;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'superadmin';
 };
 
 export type MeResponse = { user: Me | null };

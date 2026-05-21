@@ -1,5 +1,10 @@
 {
   "title": "Admin",
+  "nav": {
+    "posts": "Beiträge",
+    "users": "User",
+    "exitToFrontend": "Zurück zum Frontend"
+  },
   "list": {
     "title": "Alle Beiträge",
     "newButton": "Neuer Beitrag",

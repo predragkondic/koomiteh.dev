@@ -11,6 +11,7 @@ import { authRoute } from './routes/auth';
 import { postsRoute } from './routes/posts';
 import { favoritesRoute } from './routes/favorites';
 import { meRoute } from './routes/me.js';
+import { usersRoute } from './routes/users.js';
 import { adminRoute } from './routes/admin';
 import { adminGenerateRoute } from './routes/admin-generate.js';
 import { adminSuggestTopicsRoute } from './routes/admin-suggest-topics.js';
@@ -45,6 +46,7 @@ export function createApp() {
   app.route('/posts', postsRoute);
   app.route('/favorites', favoritesRoute);
   app.route('/me', meRoute);
+  app.route('/users', usersRoute);
   app.route('/admin', adminRoute);
   app.route('/admin/posts/generate', adminGenerateRoute);
   app.route('/admin/posts/suggest-topics', adminSuggestTopicsRoute);

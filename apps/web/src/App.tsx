@@ -15,6 +15,7 @@ import { InterviewListingPage } from "@/pages/InterviewListingPage";
 import { MyFavoritesPage } from "@/pages/MyFavoritesPage";
 import { MyProfilePage } from "@/pages/MyProfilePage";
 import { MySettingsPage } from "@/pages/MySettingsPage";
+import { UserProfilePage } from "@/pages/UserProfilePage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { PlaceholderPage } from "@/pages/PlaceholderPage";
 
@@ -34,6 +35,7 @@ export function App() {
               <Route path="me/favorites" element={<MyFavoritesPage />} />
               <Route path="me/settings" element={<MySettingsPage />} />
               <Route path="me" element={<MyProfilePage />} />
+              <Route path="users/:id" element={<UserProfilePage />} />
               <Route path="admin" element={<AdminLayout />}>
                 <Route index element={<AdminPostsListPage />} />
                 <Route

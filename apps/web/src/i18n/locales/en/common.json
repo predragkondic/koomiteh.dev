@@ -50,7 +50,8 @@
     "comingSoon": "Settings coming soon."
   },
   "profile": {
-    "memberSince": "Member since {{date}}"
+    "memberSince": "Member since {{date}}",
+    "deleted": "This user has been deleted."
   },
   "favorites": {
     "addAria": "Add to favorites",

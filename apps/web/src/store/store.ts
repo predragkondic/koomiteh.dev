@@ -4,6 +4,7 @@ import { interviewApi } from '@/api/interviewApi';
 import { authApi } from '@/api/authApi';
 import { favoritesApi } from '@/api/favoritesApi';
 import { adminApi } from '@/api/adminApi';
+import { usersApi } from '@/api/usersApi';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [favoritesApi.reducerPath]: favoritesApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
+    [usersApi.reducerPath]: usersApi.reducer,
   },
   middleware: (getDefault) =>
     getDefault().concat(
@@ -18,6 +20,7 @@ export const store = configureStore({
       authApi.middleware,
       favoritesApi.middleware,
       adminApi.middleware,
+      usersApi.middleware,
     ),
 });
 

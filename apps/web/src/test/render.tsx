@@ -8,6 +8,7 @@ import { interviewApi } from '@/api/interviewApi';
 import { authApi } from '@/api/authApi';
 import { favoritesApi } from '@/api/favoritesApi';
 import { adminApi } from '@/api/adminApi';
+import { usersApi } from '@/api/usersApi';
 import { ConfirmProvider } from '@/components/ConfirmProvider';
 
 export function makeStore() {
@@ -17,6 +18,7 @@ export function makeStore() {
       [authApi.reducerPath]: authApi.reducer,
       [favoritesApi.reducerPath]: favoritesApi.reducer,
       [adminApi.reducerPath]: adminApi.reducer,
+      [usersApi.reducerPath]: usersApi.reducer,
     },
     middleware: (getDefault) =>
       getDefault().concat(
@@ -24,6 +26,7 @@ export function makeStore() {
         authApi.middleware,
         favoritesApi.middleware,
         adminApi.middleware,
+        usersApi.middleware,
       ),
   });
   setupListeners(store.dispatch);

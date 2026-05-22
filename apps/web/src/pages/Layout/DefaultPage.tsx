@@ -22,7 +22,7 @@ export default function DefaultPage({
         mx: "auto",
         width: "100%",
         padding: {
-          xs: 8,
+          xs: 4,
         },
       }}
     >

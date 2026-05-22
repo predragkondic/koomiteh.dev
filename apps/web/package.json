@@ -12,12 +12,10 @@
     "icons": "bash scripts/build-icons.sh"
   },
   "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
     "@fontsource/roboto": "^5.2.10",
     "@koomiteh/shared": "workspace:*",
-    "@mui/icons-material": "^6.5.0",
-    "@mui/material": "^6.5.0",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "^9.0.1",
     "@reduxjs/toolkit": "^2.11.2",
     "@sentry/react": "^10.51.0",
     "i18next": "^26.0.8",

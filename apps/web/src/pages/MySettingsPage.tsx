@@ -8,7 +8,9 @@ export function MySettingsPage() {
   return (
     <DefaultPage titleKey="nav.settings">
       <RequireAuth>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>
           {t("common:settings.comingSoon")}
         </Typography>
       </RequireAuth>

@@ -28,7 +28,9 @@ function ProfileBody() {
 
   if (error && "status" in error && error.status === 410) {
     return (
-      <Typography variant="body1" color="text.secondary">
+      <Typography variant="body1" sx={{
+        color: "text.secondary"
+      }}>
         {t("common:profile.deleted")}
       </Typography>
     );
@@ -46,7 +48,9 @@ function ProfileView({ profile }: { profile: PublicUserProfile }) {
   }).format(new Date(profile.createdAt));
 
   return (
-    <Stack direction="row" spacing={3} alignItems="center">
+    <Stack direction="row" spacing={3} sx={{
+      alignItems: "center"
+    }}>
       <Avatar
         src={profile.avatarUrl ?? undefined}
         alt={profile.displayName}
@@ -55,11 +59,15 @@ function ProfileView({ profile }: { profile: PublicUserProfile }) {
       <Stack spacing={0.5}>
         <Typography variant="h5">{profile.displayName}</Typography>
         {profile.githubLogin && (
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             {profile.githubLogin}
           </Typography>
         )}
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{
+          color: "text.secondary"
+        }}>
           {t("common:profile.memberSince", { date: memberSince })}
         </Typography>
       </Stack>

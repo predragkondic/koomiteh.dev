@@ -127,7 +127,6 @@ export function InterviewListingPage() {
         onRemoveQ={() => writeState({ ...filter, q: '', page: 1 })}
         onResetAll={onResetAll}
       />
-
       {isIndexLoading ? (
         <ListingSkeleton ariaLabel={t('loading.listing')} />
       ) : totalFiltered === 0 ? (
@@ -136,10 +135,11 @@ export function InterviewListingPage() {
         <>
           <Typography
             variant="body2"
-            color="text.secondary"
-            sx={{ pb: 2 }}
             aria-live="polite"
-          >
+            sx={{
+              color: "text.secondary",
+              pb: 2
+            }}>
             {t('results', { count: totalFiltered })}
           </Typography>
           <CardGrid>
@@ -148,7 +148,11 @@ export function InterviewListingPage() {
             ))}
           </CardGrid>
           {pageCount > 1 && (
-            <Stack alignItems="center" sx={{ pt: 4 }}>
+            <Stack
+              sx={{
+                alignItems: "center",
+                pt: 4
+              }}>
               <Pagination
                 count={pageCount}
                 page={page}
@@ -208,7 +212,9 @@ function PostCard({ post }: { post: PostFrontmatter }) {
             <Typography variant="h6" component="h2">
               {post.question}
             </Typography>
-            <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={0.5} useFlexGap sx={{
+              flexWrap: "wrap"
+            }}>
               {visibleTags.map((t) => (
                 <Chip key={t} label={t} size="small" variant="outlined" />
               ))}
@@ -246,7 +252,9 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <Typography variant="h6" gutterBottom>
         {t('empty.title')}
       </Typography>
-      <Typography variant="body2" color="text.secondary" gutterBottom>
+      <Typography variant="body2" gutterBottom sx={{
+        color: "text.secondary"
+      }}>
         {t('empty.body')}
       </Typography>
       <Button onClick={onReset} sx={{ mt: 2 }}>

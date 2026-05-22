@@ -38,12 +38,13 @@ export function ActiveFilterChips({
     <Stack
       direction="row"
       spacing={1}
-      flexWrap="wrap"
       useFlexGap
-      sx={{ pb: 2 }}
       role="region"
       aria-label={t('activeFilters.regionLabel')}
-    >
+      sx={{
+        flexWrap: "wrap",
+        pb: 2
+      }}>
       {hasQ && (
         <Chip
           label={t('activeFilters.search', { value: filter.q })}

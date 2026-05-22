@@ -29,7 +29,7 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import BlockIcon from "@mui/icons-material/Block";
-import CheckCircleIcon from "@mui/icons-material/CheckCircleOutline";
+import CheckCircleIcon from "@mui/icons-material/CheckCircleOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import VisibilityIcon from "@mui/icons-material/VisibilityOutlined";
 import { useTranslation } from "react-i18next";
@@ -279,7 +279,6 @@ function DesktopView({
           {t("users.loadError")}
         </Alert>
       )}
-
       <Card variant="outlined" sx={{ overflow: "hidden" }}>
         <Table sx={{ tableLayout: "fixed" }}>
           <colgroup>
@@ -338,14 +337,13 @@ function DesktopView({
               <TableRow>
                 <TableCell colSpan={5}>
                   <Stack
-                    alignItems="center"
                     sx={{
+                      alignItems: "center",
                       py: 14,
                       gap: 1,
                       color: "text.disabled",
-                      fontSize: 13.5,
-                    }}
-                  >
+                      fontSize: 13.5
+                    }}>
                     <Typography variant="body2">{t("users.empty")}</Typography>
                   </Stack>
                 </TableCell>
@@ -369,17 +367,18 @@ function DesktopView({
 
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
           sx={{
+            alignItems: "center",
+            justifyContent: "space-between",
             px: 4,
             py: 3,
             borderTop: 1,
             borderColor: "divider",
-            bgcolor: "surface.elevated",
-          }}
-        >
-          <Typography variant="body2" color="text.disabled">
+            bgcolor: "surface.elevated"
+          }}>
+          <Typography variant="body2" sx={{
+            color: "text.disabled"
+          }}>
             {t("users.pager.info", { shown: totalShown, total: totalAll })}
           </Typography>
           {pageCount > 1 && (
@@ -428,7 +427,9 @@ function UserRow({
       sx={isSuspended ? { backgroundColor: "action.hover" } : undefined}
     >
       <TableCell>
-        <Stack direction="row" alignItems="center" spacing={1.5}>
+        <Stack direction="row" spacing={1.5} sx={{
+          alignItems: "center"
+        }}>
           <Avatar
             src={row.avatarUrl ?? undefined}
             alt={row.displayName}
@@ -662,7 +663,6 @@ function MobileView({
           ))}
         </Box>
       )}
-
       {error && (
         <Box sx={{ px: 2, py: 2 }}>
           <Alert
@@ -677,7 +677,6 @@ function MobileView({
           </Alert>
         </Box>
       )}
-
       {items && items.length === 0 && (
         <Box
           sx={{
@@ -688,12 +687,13 @@ function MobileView({
             borderColor: "divider",
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             {t("users.empty")}
           </Typography>
         </Box>
       )}
-
       {items && items.length > 0 && (
         <Box sx={{ borderTop: 1, borderColor: "divider" }}>
           {items.map((user) => (
@@ -707,7 +707,6 @@ function MobileView({
           ))}
         </Box>
       )}
-
       <Menu
         anchorEl={menu?.anchorEl ?? null}
         open={Boolean(menu)}
@@ -817,15 +816,14 @@ function MobileUserRow({
         </Typography>
         <Stack
           direction="row"
-          alignItems="center"
           spacing={1}
           sx={{
+            alignItems: "center",
             mt: "4px",
             fontFamily: "fontFamilyMono",
             fontSize: "10.5px",
-            color: "text.disabled",
-          }}
-        >
+            color: "text.disabled"
+          }}>
           <Box component="span">{t(`users.roles.${user.role}`)}</Box>
           <Box component="span" sx={{ opacity: 0.5 }}>
             ·

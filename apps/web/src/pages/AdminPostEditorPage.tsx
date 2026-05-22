@@ -91,10 +91,12 @@ function FieldLabel({
   return (
     <Stack
       direction="row"
-      justifyContent="space-between"
-      alignItems="baseline"
-      sx={{ mb: 2, gap: 2 }}
-    >
+      sx={{
+        justifyContent: "space-between",
+        alignItems: "baseline",
+        mb: 2,
+        gap: 2
+      }}>
       <Typography variant="body2" sx={{ fontWeight: 500 }}>
         {label}
         {required ? (
@@ -106,9 +108,10 @@ function FieldLabel({
       {hint ? (
         <Typography
           variant="overline"
-          color="text.disabled"
-          sx={{ textAlign: "right" }}
-        >
+          sx={{
+            color: "text.disabled",
+            textAlign: "right"
+          }}>
           {hint}
         </Typography>
       ) : null}
@@ -121,17 +124,17 @@ function LoadingLayout() {
     <Box sx={{ maxWidth: 1240, mx: "auto", px: { xs: 3, md: 8 }, py: 7 }}>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="flex-end"
-        sx={{ mb: 6 }}
-      >
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          mb: 6
+        }}>
         <Skeleton variant="rounded" width={220} height={44} />
         <Stack direction="row" spacing={1.25}>
           <Skeleton variant="rounded" width={96} height={36} />
           <Skeleton variant="rounded" width={144} height={36} />
         </Stack>
       </Stack>
-
       <Box
         sx={{
           display: "grid",
@@ -333,10 +336,12 @@ export function AdminPostEditorPage({ mode }: Props) {
     <Box sx={{ maxWidth: 1240, mx: "auto", px: { xs: 3, md: 8 }, py: 7 }}>
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="flex-end"
-        sx={{ mb: 6, gap: 2 }}
-      >
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "flex-end",
+          mb: 6,
+          gap: 2
+        }}>
         <Typography variant="h2" component="h1">
           {title}
         </Typography>
@@ -353,13 +358,11 @@ export function AdminPostEditorPage({ mode }: Props) {
           </Button>
         </Stack>
       </Stack>
-
       {errorMsg ? (
         <Alert severity="error" sx={{ mb: 4 }}>
           {errorMsg}
         </Alert>
       ) : null}
-
       <Box
         sx={{
           display: "grid",
@@ -381,7 +384,9 @@ export function AdminPostEditorPage({ mode }: Props) {
               multiline
               fullWidth
               required
-              inputProps={{ "aria-label": t("editor.fields.question") }}
+              slotProps={{
+                htmlInput: { "aria-label": t("editor.fields.question") }
+              }}
             />
           </Box>
 
@@ -405,13 +410,13 @@ export function AdminPostEditorPage({ mode }: Props) {
                   tags: normalizeTags(nextValue.map((tag) => String(tag))),
                 }));
               }}
-              renderTags={(value, getTagProps) =>
+              renderValue={(value, getItemProps) =>
                 value.map((option, index) => (
                   <Chip
                     label={option}
                     size="small"
                     variant="tag"
-                    {...getTagProps({ index })}
+                    {...getItemProps({ index })}
                   />
                 ))
               }
@@ -420,10 +425,6 @@ export function AdminPostEditorPage({ mode }: Props) {
                   {...params}
                   placeholder="Add tag…"
                   helperText={t("editor.fields.tagsHelper")}
-                  inputProps={{
-                    ...params.inputProps,
-                    "aria-label": t("editor.fields.tags"),
-                  }}
                   onKeyDown={(event) => {
                     if (
                       (event.key === "Enter" || event.key === ",") &&
@@ -435,6 +436,14 @@ export function AdminPostEditorPage({ mode }: Props) {
                   }}
                   onBlur={() => {
                     if (tagDraft.trim().length > 0) commitTag(tagDraft);
+                  }}
+                  slotProps={{
+                    ...params.slotProps,
+
+                    htmlInput: {
+                      ...params.slotProps.htmlInput,
+                      "aria-label": t("editor.fields.tags"),
+                    }
                   }}
                 />
               )}
@@ -482,7 +491,9 @@ export function AdminPostEditorPage({ mode }: Props) {
                 helperText={t("editor.fields.slugHelper")}
                 fullWidth
                 required
-                inputProps={{ "aria-label": t("editor.fields.slug") }}
+                slotProps={{
+                  htmlInput: { "aria-label": t("editor.fields.slug") }
+                }}
               />
             </Box>
 
@@ -495,7 +506,9 @@ export function AdminPostEditorPage({ mode }: Props) {
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, language: e.target.value }))
                 }
-                inputProps={{ "aria-label": t("editor.fields.language") }}
+                slotProps={{
+                  htmlInput: { "aria-label": t("editor.fields.language") }
+                }}
               >
                 {LANGUAGES.map((language) => (
                   <MenuItem key={language.id} value={language.id}>
@@ -517,7 +530,9 @@ export function AdminPostEditorPage({ mode }: Props) {
                     level: e.target.value as "junior" | "senior",
                   }))
                 }
-                inputProps={{ "aria-label": t("editor.fields.level") }}
+                slotProps={{
+                  htmlInput: { "aria-label": t("editor.fields.level") }
+                }}
               >
                 {LEVELS.map((level) => (
                   <MenuItem key={level} value={level}>
@@ -530,27 +545,38 @@ export function AdminPostEditorPage({ mode }: Props) {
             <Divider />
 
             <Stack spacing={2.5}>
-              <Stack direction="row" justifyContent="space-between" spacing={2}>
-                <Typography variant="body2" color="text.secondary">
+              <Stack direction="row" spacing={2} sx={{
+                justifyContent: "space-between"
+              }}>
+                <Typography variant="body2" sx={{
+                  color: "text.secondary"
+                }}>
                   {t("editor.status")}
                 </Typography>
                 <Typography
                   variant="body2"
-                  color="text.primary"
-                  sx={{ fontWeight: 500 }}
-                >
+                  sx={{
+                    color: "text.primary",
+                    fontWeight: 500
+                  }}>
                   {statusLabel}
                 </Typography>
               </Stack>
-              <Stack direction="row" justifyContent="space-between" spacing={2}>
-                <Typography variant="body2" color="text.secondary">
+              <Stack direction="row" spacing={2} sx={{
+                justifyContent: "space-between"
+              }}>
+                <Typography variant="body2" sx={{
+                  color: "text.secondary"
+                }}>
                   {t("editor.lastEdited")}
                 </Typography>
                 <Typography
                   variant="body2"
-                  color="text.primary"
-                  sx={{ fontWeight: 500, textAlign: "right" }}
-                >
+                  sx={{
+                    color: "text.primary",
+                    fontWeight: 500,
+                    textAlign: "right"
+                  }}>
                   {lastEditedLabel}
                 </Typography>
               </Stack>

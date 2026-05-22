@@ -106,7 +106,9 @@ export function FilterBar({
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={2}
-        alignItems={{ md: 'center' }}
+        sx={{
+          alignItems: { md: 'center' }
+        }}
       >
         {searchDisabled && searchDisabledReason ? (
           <Tooltip title={searchDisabledReason}>

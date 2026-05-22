@@ -238,7 +238,7 @@ export const theme = createTheme({
       fontFamily: FONT_SANS,
       fontSize: '0.9375rem', // 15px
       lineHeight: 1.55,
-      fontWEIGHT: 100,
+      fontWeight: 100,
     },
     body2: {
       fontFamily: FONT_SANS,

@@ -44,7 +44,12 @@ export function InterviewHubPage() {
       <Typography variant="h2" component="h1" gutterBottom>
         {t("hub.title")}
       </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ pb: 3 }}>
+      <Typography
+        variant="body1"
+        sx={{
+          color: "text.secondary",
+          pb: 3
+        }}>
         {t("hub.subtitle")}
       </Typography>
       <Box
@@ -80,7 +85,9 @@ function LanguageTile({ lang }: { lang: ManifestLanguage }) {
             <Typography variant="h6" component="h2">
               {lang.displayName}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" sx={{
+              color: "text.secondary"
+            }}>
               {t("questions", { count: lang.count })}
             </Typography>
           </Stack>

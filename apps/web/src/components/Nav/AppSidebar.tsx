@@ -86,14 +86,13 @@ export function AppSidebar({
       <>
         <Stack
           direction={"row"}
-          justifyContent={isCollapsed ? "center" : "space-between"}
           sx={{
+            justifyContent: isCollapsed ? "center" : "space-between",
             alignItems: "center",
             pt: 2,
             pb: 1,
-            pr: isCollapsed ? 0 : 2,
-          }}
-        >
+            pr: isCollapsed ? 0 : 2
+          }}>
           {!isCollapsed && (
             <Box>
               <LanguageToggle />

@@ -162,21 +162,36 @@ function PaletteBody({
   const { t } = useTranslation(["common", "interview"]);
   if (searchError) {
     return (
-      <Typography color="error.main" sx={{ pt: 2, px: 1 }}>
+      <Typography
+        sx={{
+          color: "error.main",
+          pt: 2,
+          px: 1
+        }}>
         {t("common:search.indexError")}
       </Typography>
     );
   }
   if (q.trim() === "") {
     return (
-      <Typography color="text.secondary" sx={{ pt: 2, px: 1 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          pt: 2,
+          px: 1
+        }}>
         {t("common:search.promptHint")}
       </Typography>
     );
   }
   if (hits.length === 0) {
     return (
-      <Typography color="text.secondary" sx={{ pt: 2, px: 1 }}>
+      <Typography
+        sx={{
+          color: "text.secondary",
+          pt: 2,
+          px: 1
+        }}>
         {t("common:search.noHits")}
       </Typography>
     );

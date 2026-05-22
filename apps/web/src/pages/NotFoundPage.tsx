@@ -15,7 +15,9 @@ export function NotFoundPage({ scope = 'app' }: Props) {
       <Typography variant="h4" gutterBottom>
         {t('notFound.title')}
       </Typography>
-      <Typography variant="body1" color="text.secondary" gutterBottom>
+      <Typography variant="body1" gutterBottom sx={{
+        color: "text.secondary"
+      }}>
         {t(`notFound.${scope}` as const)}
       </Typography>
       <Button component={RouterLink} to="/" sx={{ mt: 2 }}>

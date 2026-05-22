@@ -32,7 +32,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
-import DeleteIcon from "@mui/icons-material/DeleteOutline";
+import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import EditIcon from "@mui/icons-material/EditOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import RestoreIcon from "@mui/icons-material/RestoreOutlined";
@@ -271,10 +271,11 @@ function DesktopView({
     <DefaultPage titleKey="list.title" titleNs="admin">
       <Stack
         direction="row"
-        alignItems="center"
-        justifyContent={"space-between"}
-        sx={{ mb: 4 }}
-      >
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 4
+        }}>
         <FormControlLabel
           control={
             <Switch
@@ -317,7 +318,6 @@ function DesktopView({
           </Tooltip>
         </Stack>
       </Stack>
-
       {error && (
         <Alert
           severity="error"
@@ -331,7 +331,6 @@ function DesktopView({
           {t("list.loadError")}
         </Alert>
       )}
-
       <Card variant="outlined" sx={{ overflow: "hidden" }}>
         <Table sx={{ tableLayout: "fixed" }}>
           <colgroup>
@@ -401,14 +400,13 @@ function DesktopView({
               <TableRow>
                 <TableCell colSpan={6}>
                   <Stack
-                    alignItems="center"
                     sx={{
+                      alignItems: "center",
                       py: 14,
                       gap: 1,
                       color: "text.disabled",
-                      fontSize: 13.5,
-                    }}
-                  >
+                      fontSize: 13.5
+                    }}>
                     <Typography variant="body2">{t("list.empty")}</Typography>
                   </Stack>
                 </TableCell>
@@ -431,17 +429,18 @@ function DesktopView({
 
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
           sx={{
+            alignItems: "center",
+            justifyContent: "space-between",
             px: 4,
             py: 3,
             borderTop: 1,
             borderColor: "divider",
-            bgcolor: "surface.elevated",
-          }}
-        >
-          <Typography variant="body2" color="text.disabled">
+            bgcolor: "surface.elevated"
+          }}>
+          <Typography variant="body2" sx={{
+            color: "text.disabled"
+          }}>
             {t("list.pager.info", { shown: totalShown, total: totalAll })}
           </Typography>
           {pageCount > 1 && (
@@ -745,14 +744,22 @@ function MobileView({
     // span the full mobile viewport. Container px is 16px at xs/sm, so
     // mx: -2 (=-16px) cancels it exactly.
     <DefaultPage titleKey="list.title" titleNs="admin">
-      <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
-        <Stack direction="row" alignItems="center">
-          <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "center",
+          mb: 4
+        }}>
+        <Stack direction="row" sx={{
+          alignItems: "center"
+        }}>
+          <Stack direction="row" spacing={1} sx={{
+            alignItems: "center"
+          }}>
             <Switch
               size="small"
               checked={includeDeleted}
               onChange={(_, v) => onToggleDeleted(v)}
-              inputProps={{ "aria-label": t("list.showDeleted") }}
               sx={{
                 "& .MuiSwitch-track": {
                   backgroundColor: "surface.borderStrong",
@@ -767,8 +774,13 @@ function MobileView({
                   opacity: 1,
                 },
               }}
+              slotProps={{
+                input: { "aria-label": t("list.showDeleted") }
+              }}
             />
-            <Typography variant="body2" color="text.primary">
+            <Typography variant="body2" sx={{
+              color: "text.primary"
+            }}>
               {t("list.showDeleted")}
             </Typography>
           </Stack>
@@ -809,7 +821,6 @@ function MobileView({
           <AddIcon sx={{ fontSize: 18 }} />
         </IconButton>
       </Stack>
-
       {isLoading && (
         <Box
           sx={{ borderTop: 1, borderColor: "divider" }}
@@ -844,7 +855,6 @@ function MobileView({
           ))}
         </Box>
       )}
-
       {error && (
         <Box sx={{ px: 2, py: 2 }}>
           <Alert
@@ -859,7 +869,6 @@ function MobileView({
           </Alert>
         </Box>
       )}
-
       {items && items.length === 0 && (
         <Box
           sx={{
@@ -870,12 +879,13 @@ function MobileView({
             borderColor: "divider",
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{
+            color: "text.secondary"
+          }}>
             {t("list.empty")}
           </Typography>
         </Box>
       )}
-
       {items && items.length > 0 && (
         <Box sx={{ borderTop: 1, borderColor: "divider" }}>
           {items.map((post) => (
@@ -889,7 +899,6 @@ function MobileView({
           ))}
         </Box>
       )}
-
       <Menu
         anchorEl={menu?.anchorEl ?? null}
         open={Boolean(menu)}
@@ -1011,15 +1020,14 @@ function MobilePostRow({
         </Typography>
         <Stack
           direction="row"
-          alignItems="center"
           spacing={1}
           sx={{
+            alignItems: "center",
             mt: "4px",
             fontFamily: "fontFamilyMono",
             fontSize: "10.5px",
-            color: "text.disabled",
-          }}
-        >
+            color: "text.disabled"
+          }}>
           <Box component="span">{post.language}</Box>
           <Box component="span" sx={{ opacity: 0.5 }}>
             ·

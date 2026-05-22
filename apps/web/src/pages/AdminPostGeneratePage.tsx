@@ -220,7 +220,6 @@ export function AdminPostGeneratePage() {
       <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
         {t("generate.title")}
       </Typography>
-
       {errorMsg && (
         <Alert
           severity="error"
@@ -241,7 +240,6 @@ export function AdminPostGeneratePage() {
           {errorMsg}
         </Alert>
       )}
-
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 2 }}>
         <TextField
           label={t("generate.fields.topic")}
@@ -316,13 +314,13 @@ export function AdminPostGeneratePage() {
           </Select>
         </FormControl>
       </Stack>
-
       <Stack
         direction="row"
         spacing={1}
-        sx={{ mb: 3 }}
-        justifyContent="space-between"
-      >
+        sx={{
+          justifyContent: "space-between",
+          mb: 3
+        }}>
         <Button onClick={handleCancel} disabled={isSaving}>
           {t("editor.cancel")}
         </Button>
@@ -350,7 +348,6 @@ export function AdminPostGeneratePage() {
           </Button>
         </Stack>
       </Stack>
-
       <Menu
         anchorEl={suggestAnchor}
         open={Boolean(suggestAnchor) && suggestedTopics.length > 0}
@@ -368,7 +365,6 @@ export function AdminPostGeneratePage() {
           </MenuItem>
         ))}
       </Menu>
-
       <Dialog
         open={confirmRegenerateOpen}
         onClose={handleCancelRegenerate}
@@ -391,7 +387,6 @@ export function AdminPostGeneratePage() {
           </Button>
         </DialogActions>
       </Dialog>
-
       {draftForm && (
         <Box>
           <TextField

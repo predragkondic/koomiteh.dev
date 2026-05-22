@@ -37,7 +37,12 @@ export function Dialog({
       <DialogTitle sx={titleColor ? { color: titleColor } : undefined}>
         {title}
         {subtitle && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "text.secondary",
+              mt: 0.5
+            }}>
             {subtitle}
           </Typography>
         )}

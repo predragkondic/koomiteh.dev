@@ -56,7 +56,9 @@ export function RelatedQuestions({ currentId, language, tags }: Props) {
                   <Typography variant="subtitle1" component="h3">
                     {p.question}
                   </Typography>
-                  <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  <Stack direction="row" spacing={0.5} useFlexGap sx={{
+                    flexWrap: "wrap"
+                  }}>
                     {p.tags.map((t) => (
                       <Chip key={t} label={t} size="small" variant="outlined" />
                     ))}

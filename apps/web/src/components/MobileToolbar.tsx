@@ -22,10 +22,11 @@ export function MobileToolbar({
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      justifyContent="space-between"
-      width="100%"
-    >
+      sx={{
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%"
+      }}>
       <Box>
         <IconButton
           size="small"

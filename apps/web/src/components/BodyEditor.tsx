@@ -29,10 +29,13 @@ export function MdBodyEditor({
     <Card variant="outlined">
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ px: 3.5, py: 2.5, gap: 2 }}
-      >
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "center",
+          px: 3.5,
+          py: 2.5,
+          gap: 2
+        }}>
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
           {t("editor.body")}
         </Typography>

@@ -24,8 +24,12 @@ export function RequireAuth({ children }: RequireAuthProps) {
 function LoginPrompt() {
   const { t } = useTranslation(["common"]);
   return (
-    <Stack alignItems="flex-start" spacing={2}>
-      <Typography variant="body2" color="text.secondary">
+    <Stack spacing={2} sx={{
+      alignItems: "flex-start"
+    }}>
+      <Typography variant="body2" sx={{
+        color: "text.secondary"
+      }}>
         {t("common:auth.loginPrompt")}
       </Typography>
       <Button variant="contained" component="a" href={loginUrl()}>

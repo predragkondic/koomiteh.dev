@@ -51,7 +51,9 @@ export function DetailPrevNext({ currentId, language }: Props) {
     `/interview/${language}/${p.slug}${search}`;
 
   return (
-    <Stack direction="row" spacing={1} justifyContent="space-between">
+    <Stack direction="row" spacing={1} sx={{
+      justifyContent: "space-between"
+    }}>
       <NavButton target={prev} label={t('detail.prev')} linkFor={linkFor} />
       <NavButton target={next} label={t('detail.next')} linkFor={linkFor} />
     </Stack>

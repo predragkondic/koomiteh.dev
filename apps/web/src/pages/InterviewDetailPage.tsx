@@ -109,7 +109,9 @@ export function InterviewDetailPage() {
           <Typography variant="h4" gutterBottom>
             {t("admin:gone.title")}
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" sx={{
+            color: "text.secondary"
+          }}>
             {t("admin:gone.body")}
           </Typography>
         </Box>
@@ -193,7 +195,9 @@ export function InterviewDetailPage() {
           {t("admin:gone.body")}
         </Alert>
       ) : null}
-      <Stack direction="row" spacing={1} alignItems="flex-start">
+      <Stack direction="row" spacing={1} sx={{
+        alignItems: "flex-start"
+      }}>
         <Typography variant="h3" component="h1" sx={{ flex: 1 }}>
           {frontmatter.question}
         </Typography>
@@ -247,12 +251,16 @@ export function InterviewDetailPage() {
         ) : null}
       </Stack>
       <MarkdownBody bodyMd={bodyMd} />
-      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} useFlexGap sx={{
+        flexWrap: "wrap"
+      }}>
         {frontmatter.tags.map((tag) => (
           <Chip key={tag} label={tag} size="small" variant="outlined" />
         ))}
       </Stack>
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" sx={{
+        color: "text.secondary"
+      }}>
         {t("detail.updated", {
           date: formatDate(frontmatter.updatedAt, locale),
         })}

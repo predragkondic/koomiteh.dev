@@ -1,16 +1,16 @@
 import type { ReactElement } from "react";
 import Box from "@mui/material/Box";
 import ArrowBackOutlined from "@mui/icons-material/ArrowBackOutlined";
-import FormatListBulletedOutlined from "@mui/icons-material/FormatListBulletedOutlined";
 import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
 import ManageAccounts from "@mui/icons-material/ManageAccounts";
 import PersonOutlineOutlined from "@mui/icons-material/PersonOutlineOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import ShieldOutlined from "@mui/icons-material/ShieldOutlined";
 import StarBorderOutlined from "@mui/icons-material/StarBorderOutlined";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 
-const ICONS: Record<string, ReactElement> = {
-  posts: <FormatListBulletedOutlined />,
+const NAV_ICONS: Record<string, ReactElement> = {
+  posts: <MenuBookIcon />,
   profile: <PersonOutlineOutlined />,
   favorites: <StarBorderOutlined />,
   settings: <SettingsOutlined />,
@@ -27,9 +27,9 @@ export function NavIcon({
   navKey: string;
   nested?: boolean;
 }) {
-  const icon = ICONS[navKey];
+  const icon = NAV_ICONS[navKey];
   if (!icon) return null;
-  const size = nested ? 14 : 16;
+  const size = nested ? 22 : 24;
   return (
     <Box
       sx={{
@@ -48,5 +48,5 @@ export function NavIcon({
 
 /** Bottom nav: default MUI icon sizing. */
 export function getNavIcon(key: string): ReactElement | null {
-  return ICONS[key] ?? null;
+  return NAV_ICONS[key] ?? null;
 }

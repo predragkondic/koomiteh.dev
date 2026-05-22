@@ -65,9 +65,10 @@ describe("AppSidebar", () => {
     const profile = await screen.findByRole("link", { name: /^Profil$/i });
     expect(profile).toHaveAttribute("href", "/me");
     expect(profile.className).not.toMatch(/Mui-selected/);
-    expect(
-      screen.getByRole("link", { name: /Beiträge/i }),
-    ).toHaveAttribute("href", "/interview");
+    expect(screen.getByRole("link", { name: /Beiträge/i })).toHaveAttribute(
+      "href",
+      "/interview",
+    );
     const settings = screen.getByRole("link", { name: /Einstellungen/i });
     expect(settings).toHaveAttribute("href", "/me/settings");
     expect(settings.className).toMatch(/Mui-selected/);
@@ -94,11 +95,12 @@ describe("AppSidebar", () => {
     renderNav(<AppSidebar />, ["/admin"]);
 
     expect(
-      await screen.findByRole("link", { name: /Zurück zum Frontend/i }),
+      await screen.findByRole("link", { name: /Exit Admin/i }),
     ).toHaveAttribute("href", "/interview");
-    expect(
-      screen.getByRole("link", { name: /Beiträge/i }),
-    ).toHaveAttribute("href", "/admin");
+    expect(screen.getByRole("link", { name: /Beiträge/i })).toHaveAttribute(
+      "href",
+      "/admin",
+    );
     expect(screen.getByRole("link", { name: /^User$/i })).toHaveAttribute(
       "href",
       "/admin/users",
@@ -112,9 +114,7 @@ describe("AppSidebar", () => {
     expect(
       await screen.findByRole("link", { name: /^Profil$/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: /Zurück zum Frontend/i }),
-    ).toBeNull();
+    expect(screen.queryByRole("link", { name: /Exit Admin/i })).toBeNull();
     expect(screen.queryByRole("link", { name: /^User$/i })).toBeNull();
   });
 });

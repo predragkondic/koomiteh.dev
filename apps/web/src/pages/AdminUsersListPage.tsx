@@ -146,30 +146,32 @@ export function AdminUsersListPage() {
 
   if (isMobile) {
     return (
-      <MobileView
-        items={data?.items ?? null}
-        isLoading={isLoading}
-        error={Boolean(error)}
-        onRetry={() => refetch()}
-        locale={locale}
-        actor={actor}
-        menu={menu}
-        onOpenMenu={openMenu}
-        onCloseMenu={closeMenu}
-        activeUser={activeUser}
-        onView={(target) => {
-          closeMenu();
-          navigate(`/users/${target.id}`);
-        }}
-        onSuspend={async (target) => {
-          closeMenu();
-          await handleSuspend(target);
-        }}
-        onUnsuspend={async (target) => {
-          closeMenu();
-          await handleUnsuspend(target);
-        }}
-      />
+      <DefaultPage titleKey="users.title" titleNs="admin">
+        <MobileView
+          items={data?.items ?? null}
+          isLoading={isLoading}
+          error={Boolean(error)}
+          onRetry={() => refetch()}
+          locale={locale}
+          actor={actor}
+          menu={menu}
+          onOpenMenu={openMenu}
+          onCloseMenu={closeMenu}
+          activeUser={activeUser}
+          onView={(target) => {
+            closeMenu();
+            navigate(`/users/${target.id}`);
+          }}
+          onSuspend={async (target) => {
+            closeMenu();
+            await handleSuspend(target);
+          }}
+          onUnsuspend={async (target) => {
+            closeMenu();
+            await handleUnsuspend(target);
+          }}
+        />
+      </DefaultPage>
     );
   }
 
@@ -344,9 +346,7 @@ function DesktopView({
                       fontSize: 13.5,
                     }}
                   >
-                    <Typography variant="body2">
-                      {t("users.empty")}
-                    </Typography>
+                    <Typography variant="body2">{t("users.empty")}</Typography>
                   </Stack>
                 </TableCell>
               </TableRow>
@@ -628,34 +628,12 @@ function MobileView({
   onUnsuspend,
 }: MobileViewProps) {
   const { t } = useTranslation("admin");
-  const total = items?.length ?? 0;
   const activeIsSuspended =
     activeUser !== undefined && activeUser.suspendedAt !== null;
   const activeCanAct = activeUser ? canActOn(actor, activeUser) : false;
 
   return (
-    <Box sx={{ mx: { xs: -2, sm: -3 }, mt: -4 }}>
-      <Stack
-        direction="row"
-        alignItems="baseline"
-        spacing={1.25}
-        sx={{ px: 2, pt: 2.5, pb: 1.5 }}
-      >
-        <Typography variant="h2" component="h1">
-          {t("users.title")}
-        </Typography>
-        <Typography
-          component="span"
-          sx={{
-            fontFamily: "fontFamilyMono",
-            fontSize: 12,
-            color: "text.disabled",
-          }}
-        >
-          {total}
-        </Typography>
-      </Stack>
-
+    <Box>
       {isLoading && (
         <Box
           sx={{ borderTop: 1, borderColor: "divider" }}

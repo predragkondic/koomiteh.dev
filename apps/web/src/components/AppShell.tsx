@@ -103,24 +103,16 @@ export function AppShell() {
       </AppBar>
       <Box sx={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
         <AppSidebar />
-        <Box
-          component="main"
+        <Container
           sx={{
-            minWidth: {
-              md: 1220,
-            },
-            display: "flex",
-            flexDirection: "column",
-            pb: {
-              xs: `${BOTTOM_NAV_HEIGHT}px`,
+            padding: {
+              xs: 2,
               md: 0,
             },
           }}
         >
-          <Container sx={{ py: 4, flex: 1 }}>
-            <Outlet />
-          </Container>
-        </Box>
+          <Outlet />
+        </Container>
       </Box>
       <AppBottomNav />
       <CommandPalette

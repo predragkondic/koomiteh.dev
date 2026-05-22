@@ -737,7 +737,6 @@ function MobileView({
   onRestore,
 }: MobileViewProps) {
   const { t } = useTranslation("admin");
-  const total = items?.length ?? 0;
   const activeIsDeleted =
     activePost !== undefined && activePost.deletedAt !== null;
 
@@ -745,26 +744,36 @@ function MobileView({
     // Break out of AppShell's <Container> horizontal padding so list rows
     // span the full mobile viewport. Container px is 16px at xs/sm, so
     // mx: -2 (=-16px) cancels it exactly.
-    <Box sx={{ mx: { xs: -2, sm: -3 }, mt: -4 }}>
-      <Stack
-        direction="row"
-        alignItems="baseline"
-        spacing={1.25}
-        sx={{ px: 2, pt: 2.5, pb: 1.5 }}
-      >
-        <Typography variant="h2" component="h1">
-          {t("list.title")}
-        </Typography>
-        <Typography
-          component="span"
-          sx={{
-            fontFamily: "fontFamilyMono",
-            fontSize: 12,
-            color: "text.disabled",
-          }}
-        >
-          {total}
-        </Typography>
+    <DefaultPage titleKey="list.title" titleNs="admin">
+      <Stack direction="row" alignItems="center" sx={{ mb: 4 }}>
+        <Stack direction="row" alignItems="center">
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Switch
+              size="small"
+              checked={includeDeleted}
+              onChange={(_, v) => onToggleDeleted(v)}
+              inputProps={{ "aria-label": t("list.showDeleted") }}
+              sx={{
+                "& .MuiSwitch-track": {
+                  backgroundColor: "surface.borderStrong",
+                  opacity: 1,
+                },
+                "& .MuiSwitch-thumb": {
+                  backgroundColor: "#fff",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.25)",
+                },
+                "& .Mui-checked + .MuiSwitch-track": {
+                  backgroundColor: "primary.main",
+                  opacity: 1,
+                },
+              }}
+            />
+            <Typography variant="body2" color="text.primary">
+              {t("list.showDeleted")}
+            </Typography>
+          </Stack>
+          <Box sx={{ flex: 1 }} />
+        </Stack>
         <Box sx={{ flex: 1 }} />
         <IconButton
           component={RouterLink}
@@ -799,40 +808,6 @@ function MobileView({
         >
           <AddIcon sx={{ fontSize: 18 }} />
         </IconButton>
-      </Stack>
-
-      <Stack
-        direction="row"
-        alignItems="center"
-        spacing={1.5}
-        sx={{ px: 2, pb: 1.5 }}
-      >
-        <Stack direction="row" alignItems="center" spacing={1}>
-          <Switch
-            size="small"
-            checked={includeDeleted}
-            onChange={(_, v) => onToggleDeleted(v)}
-            inputProps={{ "aria-label": t("list.showDeleted") }}
-            sx={{
-              "& .MuiSwitch-track": {
-                backgroundColor: "surface.borderStrong",
-                opacity: 1,
-              },
-              "& .MuiSwitch-thumb": {
-                backgroundColor: "#fff",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.25)",
-              },
-              "& .Mui-checked + .MuiSwitch-track": {
-                backgroundColor: "primary.main",
-                opacity: 1,
-              },
-            }}
-          />
-          <Typography variant="body2" color="text.primary">
-            {t("list.showDeleted")}
-          </Typography>
-        </Stack>
-        <Box sx={{ flex: 1 }} />
       </Stack>
 
       {isLoading && (
@@ -956,7 +931,7 @@ function MobileView({
           </MenuItem>
         )}
       </Menu>
-    </Box>
+    </DefaultPage>
   );
 }
 

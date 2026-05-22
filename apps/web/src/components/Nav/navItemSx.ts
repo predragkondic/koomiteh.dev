@@ -24,6 +24,7 @@ export const NAV_SUBMENU_SX: SxProps<Theme> = {
 export const NAV_RAIL_SCROLL_SX: SxProps<Theme> = {
   flex: 1,
   overflowY: 'auto',
+  overflowX: 'hidden',
   px: 2.5,
   py: 3.5,
   display: 'flex',

@@ -171,7 +171,7 @@ export function InterviewDetailPage() {
   }
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 720, mx: "auto" }}>
+    <Stack spacing={8} sx={{ maxWidth: 720, }}>
       <DetailBreadcrumb
         language={frontmatter.language}
         level={frontmatter.level}

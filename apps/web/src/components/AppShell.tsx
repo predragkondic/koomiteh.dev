@@ -49,7 +49,7 @@ export function AppShell() {
       }}
     >
       <AppBar position="sticky" color="default" elevation={0}>
-        <Toolbar sx={{ gap: 2, maxWidth: 1220, m: "0 auto", width: "100%" }}>
+        <Toolbar sx={{ gap: 2, maxWidth: 1440, width: "100%" }}>
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -101,13 +101,14 @@ export function AppShell() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Box sx={{ display: "flex", flex: 1, minHeight: 0 }}>
+      <Box sx={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
         <AppSidebar />
         <Box
           component="main"
           sx={{
-            flex: 1,
-            minWidth: 0,
+            minWidth: {
+              md: 1220,
+            },
             display: "flex",
             flexDirection: "column",
             pb: {
@@ -116,7 +117,7 @@ export function AppShell() {
             },
           }}
         >
-          <Container sx={{ py: 4, flex: 1, maxWidth: 1220 }}>
+          <Container sx={{ py: 4, flex: 1 }}>
             <Outlet />
           </Container>
         </Box>

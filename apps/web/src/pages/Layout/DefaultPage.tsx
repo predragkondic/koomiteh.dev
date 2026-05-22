@@ -19,11 +19,12 @@ export default function DefaultPage({
   return (
     <Box
       sx={{
-        maxWidth: 1280,
         mx: "auto",
         width: "100%",
-        pt: 9,
+        pt: 8,
+        pr: 8,
         pb: 20,
+        pl: 8,
       }}
     >
       <Typography variant="h2" component="h1">

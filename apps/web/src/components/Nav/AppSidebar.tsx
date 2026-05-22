@@ -17,6 +17,7 @@ export function AppSidebar() {
         display: { xs: "none", md: "block" },
         width: SIDEBAR_WIDTH,
         flexShrink: 0,
+        overflow: "hidden",
         "& .MuiDrawer-paper": {
           width: SIDEBAR_WIDTH,
           boxSizing: "border-box",

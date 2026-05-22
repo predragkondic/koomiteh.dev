@@ -15,6 +15,7 @@ import {
   useLogoutMutation,
   loginUrl,
 } from '@/api/authApi';
+import { isStaffRole } from '@/lib/userRole';
 
 export function AuthMenu() {
   const { t } = useTranslation();
@@ -91,7 +92,7 @@ export function AuthMenu() {
         >
           <ListItemText>{t('favorites.navLabel')}</ListItemText>
         </MenuItem>
-        {user.role === 'admin' && (
+        {isStaffRole(user.role) && (
           <MenuItem
             component={RouterLink}
             to="/admin"

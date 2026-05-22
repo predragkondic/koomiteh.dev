@@ -14,6 +14,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { loginUrl, useGetMeQuery, useLogoutMutation } from "@/api/authApi";
+import { isStaffRole } from "@/lib/userRole";
 import logoUrl from "@/assets/koomiteh-logo.svg";
 import { LanguageToggle } from "./LanguageToggle";
 import { SearchTrigger } from "./SearchTrigger";
@@ -27,7 +28,7 @@ export function MobileToolbar({ setPaletteOpen }: MobileToolbarProps) {
   const { t } = useTranslation();
   const { data } = useGetMeQuery();
   const user = data?.user;
-  const isAdmin = user?.role === "admin";
+  const isAdmin = isStaffRole(user?.role);
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 

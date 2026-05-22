@@ -36,10 +36,22 @@
   "auth": {
     "login": "Mit GitHub anmelden",
     "logout": "Abmelden",
-    "menuLabel": "Account-Menü"
+    "menuLabel": "Account-Menü",
+    "loginPrompt": "Melde dich an, um diese Seite zu sehen."
   },
   "nav": {
-    "menuLabel": "Menü öffnen"
+    "menuLabel": "Menü öffnen",
+    "posts": "Beiträge",
+    "profile": "Profil",
+    "favorited": "Favoriten",
+    "settings": "Einstellungen"
+  },
+  "settings": {
+    "comingSoon": "Einstellungen kommen bald."
+  },
+  "profile": {
+    "memberSince": "Mitglied seit {{date}}",
+    "deleted": "Dieser User wurde gelöscht."
   },
   "favorites": {
     "addAria": "Zu Favoriten hinzufügen",

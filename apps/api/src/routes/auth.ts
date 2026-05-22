@@ -122,6 +122,12 @@ authRoute.get('/github/callback', async (c) => {
     const profile = await fetchGithubUser(tokens.accessToken());
     const user = await upsertUser(profile);
 
+    if (user.suspendedAt) {
+      const url = new URL(env.appBaseUrl);
+      url.searchParams.set('error', 'suspended');
+      return c.redirect(url.toString());
+    }
+
     const token = generateSessionToken();
     const session = await createSession(token, user.id);
     setSessionCookie(c, token, session.expiresAt);

@@ -45,6 +45,7 @@ import {
   useRestoreAdminPostMutation,
 } from "@/api/adminApi";
 import { useConfirm } from "@/components/ConfirmProvider";
+import DefaultPage from "./Layout/DefaultPage";
 
 type SortKey = "question" | "language" | "level" | "status" | "updated";
 type SortDir = "asc" | "desc";
@@ -267,25 +268,24 @@ function DesktopView({
   );
 
   return (
-    <Box
-      sx={{
-        maxWidth: 1280,
-        mx: "auto",
-        width: "100%",
-        pt: 9,
-        pb: 20,
-      }}
-    >
+    <DefaultPage titleKey="list.title" titleNs="admin">
       <Stack
         direction="row"
         alignItems="center"
-        justifyContent="space-between"
-        sx={{ mb: 2 }}
+        justifyContent={"space-between"}
+        sx={{ mb: 4 }}
       >
-        <Typography variant="h2" component="h1">
-          {t("list.title")}
-        </Typography>
-        <Stack direction="row" spacing={2}>
+        <FormControlLabel
+          control={
+            <Switch
+              color="primary"
+              checked={includeDeleted}
+              onChange={(_, v) => onToggleDeleted(v)}
+            />
+          }
+          label={t("list.showDeleted")}
+        />
+        <Stack direction={"row"} spacing={4}>
           <Tooltip title={t("list.aiButton")}>
             <Fab
               size="small"
@@ -316,19 +316,6 @@ function DesktopView({
             </Fab>
           </Tooltip>
         </Stack>
-      </Stack>
-
-      <Stack direction="row" sx={{ mb: 5.5 }}>
-        <FormControlLabel
-          control={
-            <Switch
-              color="primary"
-              checked={includeDeleted}
-              onChange={(_, v) => onToggleDeleted(v)}
-            />
-          }
-          label={t("list.showDeleted")}
-        />
       </Stack>
 
       {error && (
@@ -468,7 +455,7 @@ function DesktopView({
           )}
         </Stack>
       </Card>
-    </Box>
+    </DefaultPage>
   );
 }
 
@@ -765,7 +752,7 @@ function MobileView({
         spacing={1.25}
         sx={{ px: 2, pt: 2.5, pb: 1.5 }}
       >
-        <Typography variant="h3" component="h1">
+        <Typography variant="h2" component="h1">
           {t("list.title")}
         </Typography>
         <Typography

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import Toolbar from "@mui/material/Toolbar";
 import { Link as RouterLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CommandPalette } from "@/features/interview/CommandPalette";
-import { useGetMeQuery } from "@/api/authApi";
 import logoUrl from "@/assets/koomiteh-logo.svg";
 import logoFilledUrl from "@/assets/koomiteh-logo-filled.svg";
 import { LanguageToggle } from "./LanguageToggle";
@@ -16,14 +14,20 @@ import { AuthMenu } from "./AuthMenu";
 import { SearchTrigger } from "./SearchTrigger";
 import { MobileToolbar } from "./MobileToolbar";
 import { useThemeMode } from "@/theme/ThemeContext";
+import { AppSidebar } from "./Nav/AppSidebar";
+import { AppBottomNav } from "./Nav/AppBottomNav";
+import { Button } from "@mui/material";
+import { useGetMeQuery } from "@/api/authApi";
+import { isStaffRole } from "@/lib/userRole";
+
+const BOTTOM_NAV_HEIGHT = 56;
 
 export function AppShell() {
   const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { mode } = useThemeMode();
-
   const { data: me } = useGetMeQuery();
-  const isAdmin = me?.user?.role === "admin";
+  const isAdmin = isStaffRole(me?.user?.role);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -72,7 +76,7 @@ export function AppShell() {
                 sx={{ height: 54, display: "block" }}
               />
             </Box>
-            <Box sx={{ flex: 1 }} />
+            <Box sx={{ flex: 1 }} />{" "}
             {isAdmin && (
               <Button
                 component={RouterLink}
@@ -97,9 +101,27 @@ export function AppShell() {
           </Box>
         </Toolbar>
       </AppBar>
-      <Container component="main" sx={{ py: 4, flex: 1 }}>
-        <Outlet />
-      </Container>
+      <Box sx={{ display: "flex", flex: 1, minHeight: 0 }}>
+        <AppSidebar />
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            minWidth: 0,
+            display: "flex",
+            flexDirection: "column",
+            pb: {
+              xs: `${BOTTOM_NAV_HEIGHT}px`,
+              md: 0,
+            },
+          }}
+        >
+          <Container sx={{ py: 4, flex: 1, maxWidth: 1220 }}>
+            <Outlet />
+          </Container>
+        </Box>
+      </Box>
+      <AppBottomNav />
       <CommandPalette
         open={paletteOpen}
         onClose={() => setPaletteOpen(false)}
@@ -107,3 +129,5 @@ export function AppShell() {
     </Box>
   );
 }
+
+export { BOTTOM_NAV_HEIGHT };

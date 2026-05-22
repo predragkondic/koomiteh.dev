@@ -58,7 +58,7 @@ export async function requireAdmin(c: Context, next: Next): Promise<Response | v
   if (!user) {
     return c.json({ error: 'unauthorized' }, 401);
   }
-  if (user.role !== 'admin') {
+  if (user.role !== 'admin' && user.role !== 'superadmin') {
     return c.json({ error: 'forbidden' }, 403);
   }
   await next();

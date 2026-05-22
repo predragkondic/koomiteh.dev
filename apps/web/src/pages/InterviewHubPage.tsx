@@ -1,22 +1,22 @@
-import { Link as RouterLink, Navigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardContent from '@mui/material/CardContent';
-import Skeleton from '@mui/material/Skeleton';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { useTranslation } from 'react-i18next';
-import { useGetManifestQuery } from '@/api/interviewApi';
-import type { ManifestLanguage } from '@/types';
+import { Link as RouterLink, Navigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardContent from "@mui/material/CardContent";
+import Skeleton from "@mui/material/Skeleton";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
+import { useTranslation } from "react-i18next";
+import { useGetManifestQuery } from "@/api/interviewApi";
+import type { ManifestLanguage } from "@/types";
 
 export function InterviewHubPage() {
-  const { t } = useTranslation(['interview', 'common']);
+  const { t } = useTranslation(["interview", "common"]);
   const { data, isLoading, error, refetch } = useGetManifestQuery();
 
-  if (isLoading) return <HubSkeleton ariaLabel={t('loading.hub')} />;
+  if (isLoading) return <HubSkeleton ariaLabel={t("loading.hub")} />;
 
   if (error) {
     return (
@@ -24,11 +24,11 @@ export function InterviewHubPage() {
         severity="error"
         action={
           <Button color="inherit" size="small" onClick={() => refetch()}>
-            {t('common:actions.retry')}
+            {t("common:actions.retry")}
           </Button>
         }
       >
-        {t('common:errors.loadLanguages')}
+        {t("common:errors.loadLanguages")}
       </Alert>
     );
   }
@@ -41,20 +41,20 @@ export function InterviewHubPage() {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1" gutterBottom>
-        {t('hub.title')}
+      <Typography variant="h2" component="h1" gutterBottom>
+        {t("hub.title")}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ pb: 3 }}>
-        {t('hub.subtitle')}
+        {t("hub.subtitle")}
       </Typography>
       <Box
         sx={{
-          display: 'grid',
+          display: "grid",
           gap: 2,
           gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
+            xs: "1fr",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
           },
         }}
       >
@@ -67,13 +67,13 @@ export function InterviewHubPage() {
 }
 
 function LanguageTile({ lang }: { lang: ManifestLanguage }) {
-  const { t } = useTranslation('interview');
+  const { t } = useTranslation("interview");
   return (
     <Card variant="outlined">
       <CardActionArea
         component={RouterLink}
         to={`/interview/${lang.id}`}
-        sx={{ height: '100%', alignItems: 'flex-start' }}
+        sx={{ height: "100%", alignItems: "flex-start" }}
       >
         <CardContent>
           <Stack spacing={1}>
@@ -81,7 +81,7 @@ function LanguageTile({ lang }: { lang: ManifestLanguage }) {
               {lang.displayName}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {t('questions', { count: lang.count })}
+              {t("questions", { count: lang.count })}
             </Typography>
           </Stack>
         </CardContent>
@@ -97,12 +97,12 @@ function HubSkeleton({ ariaLabel }: { ariaLabel: string }) {
       aria-label={ariaLabel}
       aria-busy
       sx={{
-        display: 'grid',
+        display: "grid",
         gap: 2,
         gridTemplateColumns: {
-          xs: '1fr',
-          sm: 'repeat(2, 1fr)',
-          md: 'repeat(3, 1fr)',
+          xs: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(3, 1fr)",
         },
       }}
     >

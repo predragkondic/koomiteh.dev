@@ -1,5 +1,48 @@
 {
   "title": "Admin",
+  "nav": {
+    "posts": "Beiträge",
+    "users": "User",
+    "exitToFrontend": "Zurück zum Frontend"
+  },
+  "users": {
+    "title": "Alle User",
+    "loadError": "User konnten nicht geladen werden.",
+    "loading": "Lade User…",
+    "empty": "Keine User gefunden.",
+    "columns": {
+      "user": "User",
+      "role": "Rolle",
+      "memberSince": "Mitglied seit",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "roles": {
+      "user": "User",
+      "admin": "Admin",
+      "superadmin": "Superadmin"
+    },
+    "statusActive": "Aktiv",
+    "statusSuspended": "Gesperrt",
+    "actions": {
+      "suspend": "Sperren",
+      "unsuspend": "Freischalten",
+      "viewProfile": "Profil ansehen"
+    },
+    "actionDisabled": "Für deine Rolle nicht erlaubt",
+    "confirmSuspend": {
+      "title": "User sperren?",
+      "content": "Der User kann sich nicht mehr einloggen oder Kommentare schreiben. Du kannst die Sperre später aufheben.",
+      "confirmLabel": "Sperren"
+    },
+    "pager": {
+      "info": "{{shown}} von {{total}} Usern"
+    },
+    "a11y": {
+      "actions": "Aktionen",
+      "sortBy": "Sortieren nach {{column}}"
+    }
+  },
   "list": {
     "title": "Alle Beiträge",
     "newButton": "Neuer Beitrag",

@@ -133,6 +133,21 @@ describe('POST /favorites/:postId', () => {
     });
     expect(status).toBe(404);
   });
+
+  it('rejects suspended user (no favorite written)', async () => {
+    const userId = await createTestUser('eve');
+    const cookie = await loginAs(userId);
+    await db.execute(
+      sql`UPDATE ${users} SET suspended_at = now() WHERE id = ${userId}`,
+    );
+    const { status } = await call('/favorites/typescript-junior-closures', {
+      method: 'POST',
+      cookie,
+    });
+    expect([401, 403]).toContain(status);
+    const rows = await db.select().from(favorites);
+    expect(rows).toHaveLength(0);
+  });
 });
 
 describe('DELETE /favorites/:postId', () => {

@@ -43,7 +43,9 @@ const favoritesRateLimit = rateLimit({
   keyFn: perUserKey,
 });
 
-async function resolvePostId(contentId: string): Promise<string | null> {
+async function resolvePostId(contentId?: string): Promise<string | null> {
+  if(!contentId) return null;
+
   const rows = await db
     .select({ id: posts.id })
     .from(posts)
@@ -91,6 +93,9 @@ favoritesRoute.delete(
   },
 );
 
+// Mounted indirectly via routes/me.ts — Hono ignores a second
+// `app.route('/me', ...)` with the same prefix, so all /me/* sub-apps
+// must compose through a single mount point.
 export const myFavoritesRoute = new Hono();
 
 myFavoritesRoute.get('/favorites', requireAuth, async (c) => {

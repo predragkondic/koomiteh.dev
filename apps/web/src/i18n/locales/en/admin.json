@@ -1,5 +1,48 @@
 {
   "title": "Admin",
+  "nav": {
+    "posts": "Posts",
+    "users": "Users",
+    "exitToFrontend": "Back to frontend"
+  },
+  "users": {
+    "title": "All users",
+    "loadError": "Failed to load users.",
+    "loading": "Loading users…",
+    "empty": "No users found.",
+    "columns": {
+      "user": "User",
+      "role": "Role",
+      "memberSince": "Member since",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "roles": {
+      "user": "User",
+      "admin": "Admin",
+      "superadmin": "Superadmin"
+    },
+    "statusActive": "Active",
+    "statusSuspended": "Suspended",
+    "actions": {
+      "suspend": "Suspend",
+      "unsuspend": "Unsuspend",
+      "viewProfile": "View profile"
+    },
+    "actionDisabled": "Not allowed for your role",
+    "confirmSuspend": {
+      "title": "Suspend user?",
+      "content": "The user will no longer be able to sign in or post comments. You can unsuspend them later.",
+      "confirmLabel": "Suspend"
+    },
+    "pager": {
+      "info": "{{shown}} of {{total}} users"
+    },
+    "a11y": {
+      "actions": "Actions",
+      "sortBy": "Sort by {{column}}"
+    }
+  },
   "list": {
     "title": "All posts",
     "newButton": "New post",

@@ -15,6 +15,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useTranslation } from "react-i18next";
 import type { PostGoneResponse } from "@koomiteh/shared";
 import { useGetMeQuery } from "@/api/authApi";
+import { isStaffRole } from "@/lib/userRole";
 import {
   useDeleteAdminPostMutation,
   useGetAdminPostQuery,
@@ -40,7 +41,7 @@ export function InterviewDetailPage() {
   const confirm = useConfirm();
   const { language = "", slug = "" } = useParams();
   const { data: meData } = useGetMeQuery();
-  const isAdmin = meData?.user?.role === "admin";
+  const isAdmin = isStaffRole(meData?.user?.role);
   const { data, isLoading, error, refetch } = useGetPostQuery({
     language,
     slug,

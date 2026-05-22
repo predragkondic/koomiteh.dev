@@ -9,10 +9,13 @@ import { originCheck } from './middleware/origin-check.js';
 import { healthRoute } from './routes/health.js';
 import { authRoute } from './routes/auth.js';
 import { postsRoute } from './routes/posts.js';
-import { favoritesRoute, myFavoritesRoute } from './routes/favorites.js';
+import { favoritesRoute } from './routes/favorites.js';
+import { meRoute } from './routes/me.js';
+import { usersRoute } from './routes/users.js';
 import { adminRoute } from './routes/admin.js';
 import { adminGenerateRoute } from './routes/admin-generate.js';
 import { adminSuggestTopicsRoute } from './routes/admin-suggest-topics.js';
+import { adminUsersRoute } from './routes/admin-users.js';
 
 export function createApp() {
   const app = new Hono();
@@ -43,7 +46,9 @@ export function createApp() {
   app.route('/auth', authRoute);
   app.route('/posts', postsRoute);
   app.route('/favorites', favoritesRoute);
-  app.route('/me', myFavoritesRoute);
+  app.route('/me', meRoute);
+  app.route('/users', usersRoute);
+  app.route('/admin/users', adminUsersRoute);
   app.route('/admin', adminRoute);
   app.route('/admin/posts/generate', adminGenerateRoute);
   app.route('/admin/posts/suggest-topics', adminSuggestTopicsRoute);

@@ -36,10 +36,22 @@
   "auth": {
     "login": "Sign in with GitHub",
     "logout": "Sign out",
-    "menuLabel": "Account menu"
+    "menuLabel": "Account menu",
+    "loginPrompt": "Sign in to view this page."
   },
   "nav": {
-    "menuLabel": "Open menu"
+    "menuLabel": "Open menu",
+    "posts": "Posts",
+    "profile": "Profile",
+    "favorited": "Favorited",
+    "settings": "Settings"
+  },
+  "settings": {
+    "comingSoon": "Settings coming soon."
+  },
+  "profile": {
+    "memberSince": "Member since {{date}}",
+    "deleted": "This user has been deleted."
   },
   "favorites": {
     "addAria": "Add to favorites",

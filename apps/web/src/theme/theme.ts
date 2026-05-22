@@ -99,6 +99,7 @@ const light = {
       elevated: '#ffffff',
       borderSubtle: '#EAEBED',
       borderStrong: '#BCBEC1',
+      dialogWrapper: 'rgba(211, 211, 211, 0.8)',
     },
   },
 };
@@ -167,6 +168,7 @@ const dark = {
       elevated: '#1F2023',
       borderSubtle: '#212224',
       borderStrong: '#4B4D52',
+      dialogWrapper: 'rgba(41, 41, 41, 0.6)',
     },
   },
 };
@@ -270,13 +272,25 @@ export const theme = createTheme({
     // Surfaces
 
     MuiCssBaseline: {
-      styleOverrides: {
+      styleOverrides: (t) => ({
         body: {
           fontFeatureSettings: '"ss01", "ss02", "cv11"',
           textRendering: 'optimizeLegibility',
           WebkitFontSmoothing: 'antialiased',
         },
-      },
+        '.nav-rail': {
+          flex: 1,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          paddingInline: t.spacing(2),
+          paddingBlock: t.spacing(3),
+          display: 'flex',
+          flexDirection: 'column',
+        },
+        '.nav-rail.nav-rail--collapsed': {
+          paddingInline: 0,
+        },
+      }),
     },
 
     MuiPaper: {
@@ -378,7 +392,6 @@ export const theme = createTheme({
           backgroundColor: t.vars.palette.background.default,
           border: `1px solid ${t.vars.palette.divider}`,
           borderRadius: radius.md,
-          padding: 2,
           gap: 2,
         }),
         grouped: {
@@ -648,8 +661,13 @@ export const theme = createTheme({
 
     MuiDialog: {
       styleOverrides: {
+        root: ({ theme: t }) => ({
+            backgroundColor: t.vars.palette.surface.dialogWrapper,
+        }),
         paper: ({ theme: t }) => ({
-          backgroundColor: t.vars.palette.surface.elevated,
+          position: 'absolute',
+          top: '10%',
+        
           backgroundImage: 'none',
           borderRadius: radius.lg,
           border: `1px solid ${t.vars.palette.surface.borderStrong}`,
@@ -765,26 +783,6 @@ export const theme = createTheme({
         }),
       },
     },
-
-    // List (CommandPalette + sidebar nav rail)
-
-    MuiListSubheader: {
-      styleOverrides: {
-        root: ({ theme: t }) => ({
-          fontFamily: t.typography.fontFamilyMono,
-          fontSize: '0.625rem',
-          fontWeight: 600,
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          color: t.vars.palette.text.disabled,
-          lineHeight: 1,
-          padding: '0 8px 4px',
-          background: 'transparent',
-          position: 'static',
-        }),
-      },
-    },
-
     MuiListItemButton: {
       styleOverrides: {
         root: ({ theme: t }) => ({
@@ -794,7 +792,6 @@ export const theme = createTheme({
             outline: `1px solid rgba(${t.vars.palette.primary.mainChannel} / 0.45)`,
             '&:hover': { backgroundColor: t.vars.palette.background.default },
           },
-
           // Sidebar nav rail — see docs/handoff/design_handoff_sidebar
           '.nav-rail &': {
             height: 32,
@@ -802,11 +799,9 @@ export const theme = createTheme({
             borderRadius: 6,
             gap: 10,
             color: t.vars.palette.text.secondary,
-            fontSize: '0.84375rem',
-            fontWeight: 500,
             position: 'relative',
             transition: 'background-color 120ms ease, color 120ms ease',
-
+            fontSize: '24px',
             '& .MuiListItemIcon-root': {
               minWidth: 0,
               color: t.vars.palette.text.disabled,
@@ -846,7 +841,6 @@ export const theme = createTheme({
 
           '.nav-rail--nested .MuiListItemButton-root': {
             height: 28,
-            fontSize: '0.8125rem',
           },
 
           '.nav-rail--nested .MuiListItemButton-root.Mui-selected::before': {
@@ -861,8 +855,51 @@ export const theme = createTheme({
           '&:hover .MuiTableCell-root': {
             backgroundColor: t.vars.palette.grey[500],
           },
-        }),        
+        }),
     }
   },
+
+    MuiList: {
+      styleOverrides: {
+        root: {
+          '&.nav-rail--nested': {
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1px',
+            paddingTop: '2px',
+            paddingBottom: '4px',
+            paddingLeft: '20px',
+            marginLeft: '4px',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              left: 13,
+              top: 4,
+              bottom: 4,
+              width: 1,
+            },
+          },
+        },
+      },
+    },
+
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          '&.nav-rail-chevron': {
+            width: 18,
+            height: 18,
+            display: 'grid',
+            placeItems: 'center',
+            color: t.vars.palette.text.disabled,
+            transition: 'transform 150ms ease',
+          },
+          '&.nav-rail-chevron.nav-rail-chevron--open': {
+            transform: 'rotate(90deg)',
+          },
+        }),
+      },
+    },
 },
 });

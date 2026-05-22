@@ -44,7 +44,9 @@
     "posts": "Posts",
     "profile": "Profile",
     "favorited": "Favorited",
-    "settings": "Settings"
+    "settings": "Settings",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar"
   },
   "settings": {
     "comingSoon": "Settings coming soon."

@@ -44,7 +44,9 @@
     "posts": "Beiträge",
     "profile": "Profil",
     "favorited": "Favoriten",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "expandSidebar": "Seitenleiste ausklappen",
+    "collapseSidebar": "Seitenleiste einklappen"
   },
   "settings": {
     "comingSoon": "Einstellungen kommen bald."

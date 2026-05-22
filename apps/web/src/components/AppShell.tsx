@@ -8,26 +8,20 @@ import { useTranslation } from "react-i18next";
 import { CommandPalette } from "@/features/interview/CommandPalette";
 import logoUrl from "@/assets/koomiteh-logo.svg";
 import logoFilledUrl from "@/assets/koomiteh-logo-filled.svg";
-import { LanguageToggle } from "./LanguageToggle";
-import { ThemeToggle } from "./ThemeToggle";
 import { AuthMenu } from "./AuthMenu";
 import { SearchTrigger } from "./SearchTrigger";
 import { MobileToolbar } from "./MobileToolbar";
 import { useThemeMode } from "@/theme/ThemeContext";
 import { AppSidebar } from "./Nav/AppSidebar";
 import { AppBottomNav } from "./Nav/AppBottomNav";
-import { Button } from "@mui/material";
-import { useGetMeQuery } from "@/api/authApi";
-import { isStaffRole } from "@/lib/userRole";
 
 const BOTTOM_NAV_HEIGHT = 56;
 
 export function AppShell() {
   const { t } = useTranslation();
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { mode } = useThemeMode();
-  const { data: me } = useGetMeQuery();
-  const isAdmin = isStaffRole(me?.user?.role);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -76,33 +70,26 @@ export function AppShell() {
                 sx={{ height: 54, display: "block" }}
               />
             </Box>
-            <Box sx={{ flex: 1 }} />{" "}
-            {isAdmin && (
-              <Button
-                component={RouterLink}
-                to="/admin"
-                size="small"
-                color="inherit"
-                sx={{ textTransform: "none" }}
-              >
-                {t("admin:title")}
-              </Button>
-            )}
+            <Box sx={{ flex: 1 }} />
             <SearchTrigger
               onClick={() => setPaletteOpen(true)}
               withShortcutHint
             />
-            <LanguageToggle />
-            <ThemeToggle />
             <AuthMenu />
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" }, width: "100%" }}>
-            <MobileToolbar setPaletteOpen={setPaletteOpen} />
+            <MobileToolbar
+              setPaletteOpen={setPaletteOpen}
+              onOpenNav={() => setMobileNavOpen(true)}
+            />
           </Box>
         </Toolbar>
       </AppBar>
       <Box sx={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}>
-        <AppSidebar />
+        <AppSidebar
+          mobileOpen={mobileNavOpen}
+          onMobileClose={() => setMobileNavOpen(false)}
+        />
         <Container
           sx={{
             margin: {

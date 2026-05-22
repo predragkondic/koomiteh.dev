@@ -1,101 +1,40 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { http, HttpResponse, type JsonBodyType } from 'msw';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
-import { server } from '@/test/msw-server';
+import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders } from '@/test/render';
 import { AppThemeProvider } from '@/theme/ThemeContext';
 import { MobileToolbar } from './MobileToolbar';
 
 function renderToolbar(
-  props: { setPaletteOpen?: Dispatch<SetStateAction<boolean>> } = {},
+  props: {
+    setPaletteOpen?: Dispatch<SetStateAction<boolean>>;
+    onOpenNav?: () => void;
+  } = {},
 ) {
   return renderWithProviders(
     <AppThemeProvider>
-      <MobileToolbar setPaletteOpen={props.setPaletteOpen ?? (() => undefined)} />
+      <MobileToolbar
+        setPaletteOpen={props.setPaletteOpen ?? (() => undefined)}
+        onOpenNav={props.onOpenNav ?? (() => undefined)}
+      />
     </AppThemeProvider>,
   );
 }
 
-const ANON_ME = { user: null };
-const USER_ME = {
-  user: {
-    id: 'u1',
-    githubLogin: 'alice',
-    displayName: 'Alice',
-    avatarUrl: null,
-    role: 'user' as const,
-  },
-};
-const ADMIN_ME = {
-  user: {
-    id: 'u2',
-    githubLogin: 'root',
-    displayName: 'Root',
-    avatarUrl: null,
-    role: 'admin' as const,
-  },
-};
-
-function mockMe(body: JsonBodyType) {
-  server.use(
-    http.get('http://localhost:3000/auth/me', () => HttpResponse.json(body)),
-  );
-}
-
 describe('MobileToolbar', () => {
-  it('renders the appName logo, search icon and burger button', async () => {
-    mockMe(ANON_ME);
+  it('renders the burger button, the search trigger and the logo', () => {
     renderToolbar();
-
-    expect(await screen.findByAltText('koomiteh.dev')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Suche öffnen/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Menü öffnen/i })).toBeInTheDocument();
-  });
-
-  it('opens the menu on burger click and closes it again when login is clicked', async () => {
-    mockMe(ANON_ME);
-    renderToolbar();
-
-    fireEvent.click(screen.getByRole('button', { name: /Menü öffnen/i }));
-
-    const login = await screen.findByRole('menuitem', {
-      name: /Mit GitHub anmelden/i,
-    });
-    expect(login).toBeInTheDocument();
-
-    fireEvent.click(login);
-
-    await waitFor(() => {
-      expect(
-        screen.queryByRole('menuitem', { name: /Mit GitHub anmelden/i }),
-      ).toBeNull();
-    });
-  });
-
-  it('shows Favorites and Logout when signed in as user, hides Admin', async () => {
-    mockMe(USER_ME);
-    renderToolbar();
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: /Menü öffnen/i }),
-      ).toBeInTheDocument(),
-    );
-    fireEvent.click(screen.getByRole('button', { name: /Menü öffnen/i }));
 
     expect(
-      await screen.findByRole('menuitem', { name: /Favoriten/i }),
+      screen.getByRole('button', { name: /Menü öffnen/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: /Abmelden/i })).toBeInTheDocument();
-    expect(screen.queryByRole('menuitem', { name: /Admin/i })).toBeNull();
     expect(
-      screen.queryByRole('menuitem', { name: /Mit GitHub anmelden/i }),
-    ).toBeNull();
+      screen.getByRole('button', { name: /Suche öffnen/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByAltText('koomiteh.dev')).toBeInTheDocument();
   });
 
-  it('invokes setPaletteOpen(true) when the search icon is clicked', async () => {
-    mockMe(ANON_ME);
+  it('invokes setPaletteOpen(true) when the search trigger is clicked', () => {
     const setPaletteOpen = vi.fn();
     renderToolbar({ setPaletteOpen });
 
@@ -104,19 +43,12 @@ describe('MobileToolbar', () => {
     expect(setPaletteOpen).toHaveBeenCalledWith(true);
   });
 
-  it('shows the Admin menu item only when role is admin', async () => {
-    mockMe(ADMIN_ME);
-    renderToolbar();
+  it('invokes onOpenNav when the burger button is clicked', () => {
+    const onOpenNav = vi.fn();
+    renderToolbar({ onOpenNav });
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: /Menü öffnen/i }),
-      ).toBeInTheDocument(),
-    );
     fireEvent.click(screen.getByRole('button', { name: /Menü öffnen/i }));
 
-    expect(
-      await screen.findByRole('menuitem', { name: /Admin/i }),
-    ).toBeInTheDocument();
+    expect(onOpenNav).toHaveBeenCalledTimes(1);
   });
 });

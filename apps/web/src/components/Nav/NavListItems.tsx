@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import ChevronRightOutlined from "@mui/icons-material/ChevronRightOutlined";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
@@ -7,51 +7,18 @@ import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Tooltip from "@mui/material/Tooltip";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLogoutMutation } from "@/api/authApi";
 import type { NavItem, NavLabelNs } from "./appNavConfig";
 import { NavIcon } from "./navIcons";
-import {
-  NAV_RAIL_CHEVRON_SX,
-  NAV_RAIL_SCROLL_SX,
-  NAV_SUBMENU_SX,
-} from "./navItemSx";
 
-export const SIDEBAR_WIDTH = 240;
+const chevronClass = (open: boolean) =>
+  `nav-rail-chevron${open ? " nav-rail-chevron--open" : ""}`;
 
-const NAV_COLLAPSED_STORAGE_KEY = "nav.collapsed";
-
-function loadCollapsed(): Record<string, true> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.localStorage.getItem(NAV_COLLAPSED_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    if (!parsed || typeof parsed !== "object") return {};
-    const result: Record<string, true> = {};
-    for (const [key, value] of Object.entries(
-      parsed as Record<string, unknown>,
-    )) {
-      if (value === true) result[key] = true;
-    }
-    return result;
-  } catch {
-    return {};
-  }
-}
-
-function saveCollapsed(state: Record<string, true>) {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(
-      NAV_COLLAPSED_STORAGE_KEY,
-      JSON.stringify(state),
-    );
-  } catch {
-    // ignore storage errors (private mode, quota, etc.)
-  }
-}
+export const SIDEBAR_WIDTH = 280;
+export const SIDEBAR_COLLAPSED_WIDTH = 64;
 
 function useNavLabel() {
   const { t } = useTranslation(["common", "admin"]);
@@ -60,29 +27,37 @@ function useNavLabel() {
 
 interface NavListItemsProps {
   items: NavItem[];
+  collapsed?: boolean;
 }
 
-export function NavListItems({ items }: NavListItemsProps) {
+export function NavListItems({ items, collapsed = false }: NavListItemsProps) {
   const label = useNavLabel();
   const { pathname } = useLocation();
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
-  const [collapsed, setCollapsed] =
-    useState<Record<string, true>>(loadCollapsed);
+  const [overrides, setOverrides] = useState<Set<string>>(() => new Set());
 
-  const toggleExpanded = (key: string) => {
-    setCollapsed((prev) => {
-      const next = { ...prev };
-      if (next[key]) {
-        delete next[key];
-      } else {
-        next[key] = true;
-      }
-      saveCollapsed(next);
+  useEffect(() => {
+    setOverrides(new Set());
+  }, [pathname]);
+
+  const toggleOverride = (key: string) => {
+    setOverrides((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   };
 
+  const collapsedButtonSx = collapsed
+    ? { justifyContent: "center", px: 1 }
+    : undefined;
+  const collapsedIconSx = collapsed
+    ? { minWidth: 0, justifyContent: "center" }
+    : undefined;
+
   const renderTrailing = (item: NavItem, isOpen: boolean) => {
+    if (collapsed) return null;
     if (item.kind !== "link") return null;
 
     if (item.children?.length) {
@@ -93,58 +68,89 @@ export function NavListItems({ items }: NavListItemsProps) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleExpanded(item.key);
+            toggleOverride(item.key);
           }}
           sx={{ p: 0, color: "inherit" }}
         >
-          <ChevronRightOutlined sx={NAV_RAIL_CHEVRON_SX(isOpen)} />
+          <ChevronRightOutlined className={chevronClass(isOpen)} />
         </IconButton>
       );
     }
 
     if (item.key === "admin") {
-      return <ChevronRightOutlined sx={NAV_RAIL_CHEVRON_SX(false)} />;
+      return <ChevronRightOutlined className={chevronClass(false)} />;
     }
 
     return null;
   };
 
+  const wrapTooltip = (node: React.ReactElement, title: string) =>
+    collapsed ? (
+      <Tooltip title={title} placement="right">
+        {node}
+      </Tooltip>
+    ) : (
+      node
+    );
+
   const renderItem = (item: NavItem, nested = false) => {
     if (item.kind === "logout") {
-      return (
+      const itemLabel = label(item.labelKey, item.labelNs);
+      const button = (
         <ListItemButton
-          key={item.key}
           disabled={isLoggingOut}
           onClick={() => logout()}
+          sx={collapsedButtonSx}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={collapsedIconSx}>
             <NavIcon navKey={item.key} />
           </ListItemIcon>
-          <ListItemText primary={label(item.labelKey, item.labelNs)} />
+          {!collapsed && <ListItemText primary={itemLabel} />}
         </ListItemButton>
+      );
+      return (
+        <Fragment key={item.key}>
+          {collapsed ? (
+            <Tooltip title={itemLabel} placement="right">
+              <span>{button}</span>
+            </Tooltip>
+          ) : (
+            button
+          )}
+        </Fragment>
       );
     }
 
     const active = item.isActive(pathname);
     const hasChildren = Boolean(item.children?.length);
-    const isOpen = !collapsed[item.key];
+    const hasActiveChild = Boolean(
+      item.children?.some((child) => child.isActive(pathname)),
+    );
+    const autoOpen = active || hasActiveChild;
+    const isOpen = overrides.has(item.key) ? !autoOpen : autoOpen;
+    const itemLabel = label(item.labelKey, item.labelNs);
+
+    const button = (
+      <ListItemButton
+        component={RouterLink}
+        to={item.to}
+        selected={active}
+        sx={collapsedButtonSx}
+      >
+        <ListItemIcon sx={collapsedIconSx}>
+          <NavIcon navKey={item.key} nested={nested} />
+        </ListItemIcon>
+        {!collapsed && <ListItemText primary={itemLabel} />}
+        {renderTrailing(item, isOpen)}
+      </ListItemButton>
+    );
 
     return (
       <Fragment key={item.key}>
-        <ListItemButton component={RouterLink} to={item.to} selected={active}>
-          <ListItemIcon>
-            <NavIcon navKey={item.key} nested={nested} />
-          </ListItemIcon>
-          <ListItemText primary={label(item.labelKey, item.labelNs)} />
-          {renderTrailing(item, isOpen)}
-        </ListItemButton>
-        {hasChildren && item.children ? (
+        {wrapTooltip(button, itemLabel)}
+        {!collapsed && hasChildren && item.children ? (
           <Collapse in={isOpen} timeout="auto" unmountOnExit>
-            <List
-              disablePadding
-              className="nav-rail--nested"
-              sx={NAV_SUBMENU_SX}
-            >
+            <List disablePadding className="nav-rail--nested">
               {item.children.map((child) => {
                 const childActive = child.isActive(pathname);
                 return (
@@ -171,8 +177,10 @@ export function NavListItems({ items }: NavListItemsProps) {
   };
 
   return (
-    <Box className="nav-rail" sx={NAV_RAIL_SCROLL_SX}>
-      <List disablePadding className="nav-rail" component="nav">
+    <Box
+      className={`nav-rail${collapsed ? " nav-rail--collapsed" : ""}`}
+    >
+      <List disablePadding component="nav">
         {items.map((item) => renderItem(item))}
       </List>
     </Box>

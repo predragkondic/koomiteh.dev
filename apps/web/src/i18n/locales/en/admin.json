@@ -3,7 +3,7 @@
   "nav": {
     "posts": "Posts",
     "users": "Users",
-    "exitToFrontend": "Back to frontend"
+    "exitToFrontend": "Exit Admin"
   },
   "users": {
     "title": "All users",

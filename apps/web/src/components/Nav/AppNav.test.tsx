@@ -1,13 +1,19 @@
 import type { ReactElement } from "react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { http, HttpResponse, type JsonBodyType } from "msw";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { Routes, Route } from "react-router-dom";
 import { server } from "@/test/msw-server";
 import { renderWithProviders } from "@/test/render";
 import { AppThemeProvider } from "@/theme/ThemeContext";
 import { AppSidebar } from "./AppSidebar";
 import { AppBottomNav } from "./AppBottomNav";
+
+const SIDEBAR_COLLAPSED_STORAGE_KEY = "nav.sidebar.collapsed";
+
+beforeEach(() => {
+  window.localStorage.removeItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
+});
 
 function mockMe(body: JsonBodyType) {
   server.use(
@@ -65,9 +71,10 @@ describe("AppSidebar", () => {
     const profile = await screen.findByRole("link", { name: /^Profil$/i });
     expect(profile).toHaveAttribute("href", "/me");
     expect(profile.className).not.toMatch(/Mui-selected/);
-    expect(
-      screen.getByRole("link", { name: /Beiträge/i }),
-    ).toHaveAttribute("href", "/interview");
+    expect(screen.getByRole("link", { name: /Beiträge/i })).toHaveAttribute(
+      "href",
+      "/interview",
+    );
     const settings = screen.getByRole("link", { name: /Einstellungen/i });
     expect(settings).toHaveAttribute("href", "/me/settings");
     expect(settings.className).toMatch(/Mui-selected/);
@@ -94,11 +101,12 @@ describe("AppSidebar", () => {
     renderNav(<AppSidebar />, ["/admin"]);
 
     expect(
-      await screen.findByRole("link", { name: /Zurück zum Frontend/i }),
+      await screen.findByRole("link", { name: /Exit Admin/i }),
     ).toHaveAttribute("href", "/interview");
-    expect(
-      screen.getByRole("link", { name: /Beiträge/i }),
-    ).toHaveAttribute("href", "/admin");
+    expect(screen.getByRole("link", { name: /Beiträge/i })).toHaveAttribute(
+      "href",
+      "/admin",
+    );
     expect(screen.getByRole("link", { name: /^User$/i })).toHaveAttribute(
       "href",
       "/admin/users",
@@ -112,10 +120,39 @@ describe("AppSidebar", () => {
     expect(
       await screen.findByRole("link", { name: /^Profil$/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: /Zurück zum Frontend/i }),
-    ).toBeNull();
+    expect(screen.queryByRole("link", { name: /Exit Admin/i })).toBeNull();
     expect(screen.queryByRole("link", { name: /^User$/i })).toBeNull();
+  });
+
+  it("shows the language and theme toggles when expanded", async () => {
+    mockMe(USER_ME);
+    renderNav(<AppSidebar />, ["/interview"]);
+
+    await screen.findByRole("link", { name: /^Profil$/i });
+    expect(screen.getByRole("group", { name: /Sprache/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Switch to (dark|light) mode/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the language and theme toggles when collapsed and toggles via the menu button", async () => {
+    window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, "1");
+    mockMe(USER_ME);
+    renderNav(<AppSidebar />, ["/interview"]);
+
+    await screen.findByRole("button", { name: /Seitenleiste ausklappen/i });
+    expect(screen.queryByRole("group", { name: /Sprache/i })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: /Switch to (dark|light) mode/i }),
+    ).toBeNull();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Seitenleiste ausklappen/i }),
+    );
+
+    expect(
+      await screen.findByRole("group", { name: /Sprache/i }),
+    ).toBeInTheDocument();
   });
 });
 

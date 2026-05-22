@@ -15,7 +15,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { loginUrl, useGetMeQuery, useLogoutMutation } from "@/api/authApi";
 import { isStaffRole } from "@/lib/userRole";
-import logoUrl from "@/assets/koomiteh-logo.svg";
+import logoUrl from "@/assets/koomiteh-logo-filled.svg";
 import { LanguageToggle } from "./LanguageToggle";
 import { SearchTrigger } from "./SearchTrigger";
 import { ThemeToggle } from "./ThemeToggle";

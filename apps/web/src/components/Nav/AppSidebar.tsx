@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -14,7 +14,14 @@ import {
   SIDEBAR_COLLAPSED_WIDTH,
   SIDEBAR_WIDTH,
 } from "./NavListItems";
-import { Divider } from "@mui/material";
+import { Divider, Stack } from "@mui/material";
+import { LanguageToggle } from "../LanguageToggle";
+import { ThemeToggle } from "../ThemeToggle";
+
+export interface AppSidebarProps {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
 
 const SIDEBAR_COLLAPSED_STORAGE_KEY = "nav.sidebar.collapsed";
 
@@ -40,13 +47,21 @@ function saveCollapsed(collapsed: boolean) {
   }
 }
 
-export function AppSidebar() {
+export function AppSidebar({
+  mobileOpen = false,
+  onMobileClose,
+}: AppSidebarProps = {}) {
   const { pathname } = useLocation();
   const { data } = useGetMeQuery();
   const { t } = useTranslation();
   const mode = getAppNavMode(pathname);
   const items = buildNavItems(mode, data?.user);
   const [collapsed, setCollapsed] = useState<boolean>(loadCollapsed);
+
+  useEffect(() => {
+    if (mobileOpen) onMobileClose?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const toggle = () => {
     setCollapsed((prev) => {
@@ -60,68 +75,109 @@ export function AppSidebar() {
   const toggleLabel = collapsed
     ? t("nav.expandSidebar")
     : t("nav.collapseSidebar");
+  const closeLabel = t("nav.menuLabel");
+
+  const renderContent = (variant: "permanent" | "temporary") => {
+    const isMobile = variant === "temporary";
+    const isCollapsed = isMobile ? false : collapsed;
+    const handleClick = isMobile ? onMobileClose : toggle;
+    const label = isMobile ? closeLabel : toggleLabel;
+    return (
+      <>
+        <Stack
+          direction={"row"}
+          justifyContent={isCollapsed ? "center" : "space-between"}
+          sx={{
+            alignItems: "center",
+            pt: 2,
+            pb: 1,
+            pr: isCollapsed ? 0 : 2,
+          }}
+        >
+          {!isCollapsed && (
+            <Box>
+              <LanguageToggle />
+              <ThemeToggle />
+            </Box>
+          )}
+          <Box>
+            <Tooltip title={label} placement="right">
+              <IconButton
+                size="small"
+                onClick={handleClick}
+                aria-label={label}
+                aria-expanded={isMobile ? mobileOpen : !collapsed}
+                sx={{
+                  color: "text.secondary",
+                  "&:hover": {
+                    color: "text.primary",
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                {isCollapsed ? <Menu /> : <MenuOpen />}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Stack>
+        <Divider />
+        <NavListItems items={items} collapsed={isCollapsed} />
+      </>
+    );
+  };
 
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        display: { xs: "none", md: "block" },
-        width,
-        flexShrink: 0,
-        overflow: "hidden",
-        transition: (theme) =>
-          theme.transitions.create("width", {
-            duration: theme.transitions.duration.shorter,
-          }),
-        "& .MuiDrawer-paper": {
+    <>
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: "none", md: "block" },
           width,
-          boxSizing: "border-box",
-          position: "relative",
-          borderRight: 1,
-          borderColor: "divider",
-          bgcolor: "background.default",
-          pl: collapsed ? 0 : 4,
-          display: "flex",
-          flexDirection: "column",
-          overflowX: "hidden",
+          flexShrink: 0,
+          overflow: "hidden",
           transition: (theme) =>
-            theme.transitions.create(["width", "padding-left"], {
+            theme.transitions.create("width", {
               duration: theme.transitions.duration.shorter,
             }),
-        },
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: collapsed ? "center" : "flex-end",
-          alignItems: "center",
-          pt: 2,
-
-          pb: 1,
-          pr: collapsed ? 0 : 2,
+          "& .MuiDrawer-paper": {
+            width,
+            boxSizing: "border-box",
+            position: "relative",
+            borderRight: 1,
+            borderColor: "divider",
+            bgcolor: "background.default",
+            pl: collapsed ? 0 : 4,
+            display: "flex",
+            flexDirection: "column",
+            overflowX: "hidden",
+            transition: (theme) =>
+              theme.transitions.create(["width", "padding-left"], {
+                duration: theme.transitions.duration.shorter,
+              }),
+          },
         }}
       >
-        <Tooltip title={toggleLabel} placement="right">
-          <IconButton
-            size="small"
-            onClick={toggle}
-            aria-label={toggleLabel}
-            aria-expanded={!collapsed}
-            sx={{
-              color: "text.secondary",
-              "&:hover": {
-                color: "text.primary",
-                backgroundColor: "transparent",
-              },
-            }}
-          >
-            {collapsed ? <Menu /> : <MenuOpen />}
-          </IconButton>
-        </Tooltip>
-      </Box>
-      <Divider />
-      <NavListItems items={items} collapsed={collapsed} />
-    </Drawer>
+        {renderContent("permanent")}
+      </Drawer>
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={onMobileClose}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": {
+            width: SIDEBAR_WIDTH,
+            boxSizing: "border-box",
+            bgcolor: "background.default",
+            pl: 4,
+            display: "flex",
+            flexDirection: "column",
+          },
+        }}
+      >
+        {renderContent("temporary")}
+      </Drawer>
+    </>
   );
 }

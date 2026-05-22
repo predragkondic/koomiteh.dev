@@ -38,6 +38,7 @@ declare module '@mui/material/styles' {
     borderSubtle: string;
     /** hover/focus rest state on outlined surfaces */
     borderStrong: string;
+    dialogWrapper: string;
   }
 
   interface Palette {

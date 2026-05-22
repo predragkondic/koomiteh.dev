@@ -1,5 +1,4 @@
 import { createTheme } from '@mui/material/styles';
-import { FontStyle } from 'shiki/textmate';
 
 // Type augmentations for palette.level.*, palette.language.*, palette.surface.*,
 // and typography.fontFamilyMono live in `./mui.d.ts` — picked up automatically
@@ -100,6 +99,7 @@ const light = {
       elevated: '#ffffff',
       borderSubtle: '#EAEBED',
       borderStrong: '#BCBEC1',
+      dialogWrapper: 'rgba(211, 211, 211, 0.8)',
     },
   },
 };
@@ -168,6 +168,7 @@ const dark = {
       elevated: '#1F2023',
       borderSubtle: '#212224',
       borderStrong: '#4B4D52',
+      dialogWrapper: 'rgba(41, 41, 41, 0.6)',
     },
   },
 };
@@ -391,7 +392,6 @@ export const theme = createTheme({
           backgroundColor: t.vars.palette.background.default,
           border: `1px solid ${t.vars.palette.divider}`,
           borderRadius: radius.md,
-          padding: 2,
           gap: 2,
         }),
         grouped: {
@@ -661,8 +661,13 @@ export const theme = createTheme({
 
     MuiDialog: {
       styleOverrides: {
+        root: ({ theme: t }) => ({
+            backgroundColor: t.vars.palette.surface.dialogWrapper,
+        }),
         paper: ({ theme: t }) => ({
-          backgroundColor: t.vars.palette.surface.elevated,
+          position: 'absolute',
+          top: '10%',
+        
           backgroundImage: 'none',
           borderRadius: radius.lg,
           border: `1px solid ${t.vars.palette.surface.borderStrong}`,

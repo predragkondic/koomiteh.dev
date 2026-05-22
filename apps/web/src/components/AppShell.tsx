@@ -105,9 +105,9 @@ export function AppShell() {
         <AppSidebar />
         <Container
           sx={{
-            padding: {
-              xs: 2,
-              md: 0,
+            margin: {
+              xs: 0,
+              md: 2,
             },
           }}
         >

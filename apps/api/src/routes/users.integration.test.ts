@@ -25,7 +25,11 @@ async function call<T = unknown>(
 
 async function createTestUser(
   githubLogin: string,
-  overrides: { deletedAt?: Date | null } = {},
+  overrides: {
+    deletedAt?: Date | null;
+    suspendedAt?: Date | null;
+    role?: 'user' | 'admin' | 'superadmin';
+  } = {},
 ): Promise<string> {
   const rows = await db
     .insert(users)
@@ -112,6 +116,51 @@ describe('GET /users/:id', () => {
 
     expect(status).toBe(404);
     expect(body.error).toBe('not_found');
+  });
+
+  it('returns 404 for a malformed (non-UUID) id', async () => {
+    const viewerId = await createTestUser('viewer');
+    const cookie = await loginAs(viewerId);
+
+    const { status, body } = await call<{ error: string }>(
+      `/users/not-a-uuid`,
+      { cookie },
+    );
+
+    expect(status).toBe(404);
+    expect(body.error).toBe('not_found');
+  });
+
+  it('returns 404 when target is suspended (regular viewer)', async () => {
+    const targetId = await createTestUser('shadow', {
+      suspendedAt: new Date('2026-02-01T00:00:00.000Z'),
+    });
+    const viewerId = await createTestUser('viewer');
+    const cookie = await loginAs(viewerId);
+
+    const { status, body } = await call<{ error: string }>(
+      `/users/${targetId}`,
+      { cookie },
+    );
+
+    expect(status).toBe(404);
+    expect(body.error).toBe('not_found');
+  });
+
+  it('returns the profile when target is suspended and viewer is admin', async () => {
+    const targetId = await createTestUser('shadow', {
+      suspendedAt: new Date('2026-02-01T00:00:00.000Z'),
+    });
+    const adminId = await createTestUser('boss', { role: 'admin' });
+    const cookie = await loginAs(adminId);
+
+    const { status, body } = await call<PublicProfile>(`/users/${targetId}`, {
+      cookie,
+    });
+
+    expect(status).toBe(200);
+    expect(body.id).toBe(targetId);
+    expect(body.githubLogin).toBe('shadow');
   });
 
   it('returns 410 Gone with [deleted]-state for soft-deleted user', async () => {

@@ -135,7 +135,7 @@ function LoadingLayout() {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) 260px" },
+          gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1fr) 260px" },
           gap: 5.5,
           alignItems: "start",
         }}
@@ -363,7 +363,7 @@ export function AdminPostEditorPage({ mode }: Props) {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "minmax(0, 1fr) 260px" },
+          gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1fr) 260px" },
           gap: 5.5,
           alignItems: "start",
         }}

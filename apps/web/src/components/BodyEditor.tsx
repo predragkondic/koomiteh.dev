@@ -59,7 +59,7 @@ export function MdBodyEditor({
         sx={{
           display: "grid",
           gridTemplateColumns: {
-            xs: "1fr",
+            xs: "minmax(0, 1fr)",
             md: viewMode === "split" ? "minmax(0, 1fr) minmax(0, 1fr)" : "1fr",
           },
           minHeight: 200,
@@ -103,7 +103,7 @@ export function MdBodyEditor({
           </Box>
         ) : null}
         {viewMode !== "editor" ? (
-          <Box sx={{ p: 4 }}>
+          <Box sx={{ p: 4, minWidth: 0, overflowX: "auto" }}>
             <MarkdownBody bodyMd={value} />
           </Box>
         ) : null}

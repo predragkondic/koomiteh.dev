@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { AppThemeProvider } from '@/theme/ThemeContext';
-import { ConfirmProvider, useConfirm } from './ConfirmProvider';
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { AppThemeProvider } from "@/theme/ThemeContext";
+import { ConfirmProvider, useConfirm } from "./ConfirmProvider";
 
 type HarnessOptions = {
   cancelLabel?: string;
@@ -18,12 +18,12 @@ function TestHarness({
     <button
       onClick={async () => {
         const result = await confirm({
-          title: 'Beitrag löschen?',
+          title: "Beitrag löschen?",
           subtitle,
-          content: 'Der Beitrag wird in den Papierkorb verschoben.',
-          confirmLabel: 'Löschen',
+          content: "Der Beitrag wird in den Papierkorb verschoben.",
+          confirmLabel: "Löschen",
           cancelLabel,
-          variant: 'destructive',
+          variant: "destructive",
         });
         onResult(result);
       }}
@@ -50,23 +50,23 @@ function renderHarness(
   );
 }
 
-describe('useConfirm', () => {
-  it('resolves true and closes when the confirm button is clicked', async () => {
+describe("useConfirm", () => {
+  it("resolves true and closes when the confirm button is clicked", async () => {
     const onResult = vi.fn();
     renderHarness(onResult);
 
-    fireEvent.click(screen.getByText('trigger'));
+    fireEvent.click(screen.getByText("trigger"));
 
-    expect(await screen.findByText('Beitrag löschen?')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Löschen' }));
+    expect(await screen.findByText("Beitrag löschen?")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Löschen" }));
 
     await waitFor(() => expect(onResult).toHaveBeenCalledWith(true));
     await waitFor(() =>
-      expect(screen.queryByText('Beitrag löschen?')).toBeNull(),
+      expect(screen.queryByText("Beitrag löschen?")).toBeNull(),
     );
   });
 
-  it('rejects a second concurrent confirm() immediately with false', async () => {
+  it("rejects a second concurrent confirm() immediately with false", async () => {
     const firstResult = vi.fn();
     const secondResult = vi.fn();
 
@@ -78,10 +78,10 @@ describe('useConfirm', () => {
             onClick={async () => {
               firstResult(
                 await confirm({
-                  title: 'Erster Dialog',
-                  content: 'X',
-                  confirmLabel: 'OK',
-                  variant: 'default',
+                  title: "Erster Dialog",
+                  content: "X",
+                  confirmLabel: "OK",
+                  variant: "default",
                 }),
               );
             }}
@@ -92,10 +92,10 @@ describe('useConfirm', () => {
             onClick={async () => {
               secondResult(
                 await confirm({
-                  title: 'Zweiter Dialog',
-                  content: 'Y',
-                  confirmLabel: 'OK',
-                  variant: 'default',
+                  title: "Zweiter Dialog",
+                  content: "Y",
+                  confirmLabel: "OK",
+                  variant: "default",
                 }),
               );
             }}
@@ -114,59 +114,60 @@ describe('useConfirm', () => {
       </AppThemeProvider>,
     );
 
-    fireEvent.click(screen.getByText('first'));
-    expect(await screen.findByText('Erster Dialog')).toBeInTheDocument();
+    fireEvent.click(screen.getByText("first"));
+    expect(await screen.findByText("Erster Dialog")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('second'));
+    fireEvent.click(screen.getByText("second"));
 
     await waitFor(() => expect(secondResult).toHaveBeenCalledWith(false));
-    expect(screen.queryByText('Zweiter Dialog')).toBeNull();
-    expect(screen.getByText('Erster Dialog')).toBeInTheDocument();
+    expect(screen.queryByText("Zweiter Dialog")).toBeNull();
+    expect(screen.getByText("Erster Dialog")).toBeInTheDocument();
     expect(firstResult).not.toHaveBeenCalled();
   });
 
-  it('renders the subtitle when provided', async () => {
+  it("renders the subtitle when provided", async () => {
     const onResult = vi.fn();
-    renderHarness(onResult, { subtitle: 'Wird wieder zum Entwurf.' });
+    renderHarness(onResult, { subtitle: "Wird wieder zum Entwurf." });
 
-    fireEvent.click(screen.getByText('trigger'));
+    fireEvent.click(screen.getByText("trigger"));
 
     expect(
-      await screen.findByText('Wird wieder zum Entwurf.'),
+      await screen.findByText("Wird wieder zum Entwurf."),
     ).toBeInTheDocument();
   });
 
-  it('omits the subtitle when not provided', async () => {
+  it("omits the subtitle when not provided", async () => {
     const onResult = vi.fn();
     renderHarness(onResult);
 
-    fireEvent.click(screen.getByText('trigger'));
-    await screen.findByText('Beitrag löschen?');
+    fireEvent.click(screen.getByText("trigger"));
+    await screen.findByText("Beitrag löschen?");
 
-    expect(screen.queryByText('Wird wieder zum Entwurf.')).toBeNull();
+    expect(screen.queryByText("Wird wieder zum Entwurf.")).toBeNull();
   });
 
-  it('uses filled error styling for the destructive variant', async () => {
+  it("uses filled error styling for the destructive variant", async () => {
     const onResult = vi.fn();
     renderHarness(onResult);
 
-    fireEvent.click(screen.getByText('trigger'));
+    fireEvent.click(screen.getByText("trigger"));
 
-    const button = await screen.findByRole('button', { name: 'Löschen' });
-    expect(button.className).toMatch(/MuiButton-containedError/);
+    const button = await screen.findByRole("button", { name: "Löschen" });
+    expect(button.className).toMatch(/MuiButton-contained/);
+    expect(button.className).toMatch(/MuiButton-colorError/);
   });
 
-  it('uses outlined styling for the discard variant', async () => {
+  it("uses outlined styling for the discard variant", async () => {
     function DiscardHarness() {
       const confirm = useConfirm();
       return (
         <button
           onClick={() => {
             void confirm({
-              title: 'Verwerfen?',
-              content: 'Du verlierst alles.',
-              confirmLabel: 'Verwerfen',
-              variant: 'discard',
+              title: "Verwerfen?",
+              content: "Du verlierst alles.",
+              confirmLabel: "Verwerfen",
+              variant: "discard",
             });
           }}
         >
@@ -183,9 +184,9 @@ describe('useConfirm', () => {
       </AppThemeProvider>,
     );
 
-    fireEvent.click(screen.getByText('trigger'));
+    fireEvent.click(screen.getByText("trigger"));
 
-    const button = await screen.findByRole('button', { name: 'Verwerfen' });
+    const button = await screen.findByRole("button", { name: "Verwerfen" });
     expect(button.className).toMatch(/MuiButton-outlined/);
   });
 
@@ -193,75 +194,75 @@ describe('useConfirm', () => {
     const onResult = vi.fn();
     renderHarness(onResult);
 
-    fireEvent.click(screen.getByText('trigger'));
+    fireEvent.click(screen.getByText("trigger"));
 
-    expect(await screen.findByText('Beitrag löschen?')).toBeInTheDocument();
+    expect(await screen.findByText("Beitrag löschen?")).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Abbrechen' }),
+      screen.getByRole("button", { name: "Abbrechen" }),
     ).toBeInTheDocument();
   });
 
-  it('resolves false when the backdrop is clicked', async () => {
+  it("resolves false when the backdrop is clicked", async () => {
     const onResult = vi.fn();
     renderHarness(onResult);
 
-    fireEvent.click(screen.getByText('trigger'));
-    expect(await screen.findByText('Beitrag löschen?')).toBeInTheDocument();
+    fireEvent.click(screen.getByText("trigger"));
+    expect(await screen.findByText("Beitrag löschen?")).toBeInTheDocument();
 
-    const backdrop = document.querySelector('.MuiBackdrop-root');
-    if (!backdrop) throw new Error('Backdrop not found');
+    const backdrop = document.querySelector(".MuiBackdrop-root");
+    if (!backdrop) throw new Error("Backdrop not found");
     fireEvent.click(backdrop);
 
     await waitFor(() => expect(onResult).toHaveBeenCalledWith(false));
     await waitFor(() =>
-      expect(screen.queryByText('Beitrag löschen?')).toBeNull(),
+      expect(screen.queryByText("Beitrag löschen?")).toBeNull(),
     );
   });
 
-  it('resolves false when the close icon is clicked', async () => {
+  it("resolves false when the close icon is clicked", async () => {
     const onResult = vi.fn();
     renderHarness(onResult);
 
-    fireEvent.click(screen.getByText('trigger'));
-    expect(await screen.findByText('Beitrag löschen?')).toBeInTheDocument();
+    fireEvent.click(screen.getByText("trigger"));
+    expect(await screen.findByText("Beitrag löschen?")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /Schließen/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Schließen/i }));
 
     await waitFor(() => expect(onResult).toHaveBeenCalledWith(false));
     await waitFor(() =>
-      expect(screen.queryByText('Beitrag löschen?')).toBeNull(),
+      expect(screen.queryByText("Beitrag löschen?")).toBeNull(),
     );
   });
 
-  it('resolves false when Escape is pressed', async () => {
+  it("resolves false when Escape is pressed", async () => {
     const onResult = vi.fn();
     renderHarness(onResult);
 
-    fireEvent.click(screen.getByText('trigger'));
-    expect(await screen.findByText('Beitrag löschen?')).toBeInTheDocument();
+    fireEvent.click(screen.getByText("trigger"));
+    expect(await screen.findByText("Beitrag löschen?")).toBeInTheDocument();
 
     fireEvent.keyDown(document.activeElement ?? document.body, {
-      key: 'Escape',
+      key: "Escape",
     });
 
     await waitFor(() => expect(onResult).toHaveBeenCalledWith(false));
     await waitFor(() =>
-      expect(screen.queryByText('Beitrag löschen?')).toBeNull(),
+      expect(screen.queryByText("Beitrag löschen?")).toBeNull(),
     );
   });
 
-  it('resolves false and closes when the cancel button is clicked', async () => {
+  it("resolves false and closes when the cancel button is clicked", async () => {
     const onResult = vi.fn();
-    renderHarness(onResult, { cancelLabel: 'Abbrechen' });
+    renderHarness(onResult, { cancelLabel: "Abbrechen" });
 
-    fireEvent.click(screen.getByText('trigger'));
+    fireEvent.click(screen.getByText("trigger"));
 
-    expect(await screen.findByText('Beitrag löschen?')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Abbrechen' }));
+    expect(await screen.findByText("Beitrag löschen?")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Abbrechen" }));
 
     await waitFor(() => expect(onResult).toHaveBeenCalledWith(false));
     await waitFor(() =>
-      expect(screen.queryByText('Beitrag löschen?')).toBeNull(),
+      expect(screen.queryByText("Beitrag löschen?")).toBeNull(),
     );
   });
 });

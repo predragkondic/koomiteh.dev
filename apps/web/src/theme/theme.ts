@@ -192,62 +192,63 @@ export const theme = createTheme({
   typography: {
     fontFamily: FONT_SANS,
     fontFamilyMono: FONT_MONO,
+    fontWeightLight: 400,
     fontWeightMedium: 500,
     fontWeightBold: 600,
+    fontSize: 14,
 
     h1: {
       fontFamily: FONT_HEADING,
       fontWeight: 600,
       lineHeight: 1.05,
-      letterSpacing: '-0.03em',
+
     },
     h2: {
       fontFamily: FONT_HEADING,
-      fontSize: '2rem', // 32px
+      // fontSize: '2rem', // 32px
       fontWeight: 600,
-      lineHeight: 1.12,
-      letterSpacing: '-0.025em',
+      lineHeight: 1.12,        
+
     },
     h3: {
       fontFamily: FONT_HEADING,
-      fontSize: '1.375rem', // 22px
+      // fontSize: '1.375rem', // 22px
       fontWeight: 600,
       lineHeight: 1.25,
-      letterSpacing: '-0.02em',
     },
     h4: {
       fontFamily: FONT_SANS,
-      fontSize: '1.375rem', // 17px
+      // fontSize: '1.375rem', // 17px
       fontWeight: 500,
       lineHeight: 1.35,
-      letterSpacing: '-0.015em',
     },
     h5: {
       fontFamily: FONT_SANS,
-      fontSize: '0.9375rem',
+      // fontSize: '0.9375rem',
       fontWeight: 500,
       lineHeight: 1.4,
     },
     h6: {
       fontFamily: FONT_SANS,
-      fontSize: '0.875rem',
+      // fontSize: '0.875rem',
       fontWeight: 500,
       lineHeight: 1.4,
     },
     body1: {
       fontFamily: FONT_SANS,
-      fontSize: '0.9375rem', // 15px
-      lineHeight: 1.55,
-      fontWeight: 100,
+      lineHeight: 1.5,
+      fontWeight: 400,
+      fontSize: "1.15rem",
+
     },
     body2: {
       fontFamily: FONT_SANS,
-      fontSize: '0.8125rem', // 13px
+      // fontSize: '0.9375rem', // 15px      
       lineHeight: 1.5,
     },
     caption: {
       fontFamily: FONT_MONO,
-      fontSize: '0.6875rem', // 11px
+      // fontSize: '0.6875rem', // 11px
       fontWeight: 500,
       letterSpacing: '0.08em',
       lineHeight: 1.4,
@@ -255,7 +256,7 @@ export const theme = createTheme({
     },
     overline: {
       fontFamily: FONT_MONO,
-      fontSize: '0.625rem',
+      // fontSize: '0.625rem',
       fontWeight: 500,
       letterSpacing: '0.1em',
       textTransform: 'uppercase',
@@ -355,9 +356,9 @@ export const theme = createTheme({
           textTransform: 'none',
           fontWeight: 500,
         },
-        sizeSmall: { paddingInline: 10, height: 28, fontSize: '0.78125rem' },
-        sizeMedium: { paddingInline: 14, height: 36, fontSize: '0.84375rem' },
-        sizeLarge: { paddingInline: 18, height: 44, fontSize: '0.9375rem' },
+        sizeSmall: { paddingInline: 10, height: 28 },// fontSize: '0.78125rem' },
+        sizeMedium: { paddingInline: 14, height: 36},// fontSize: '0.84375rem' },
+        sizeLarge: { paddingInline: 18, height: 44}, // fontSize: '0.9375rem' },
         outlined: ({ theme: t }) => ({
           borderColor: t.vars.palette.divider,
           '&:hover': {
@@ -411,7 +412,7 @@ export const theme = createTheme({
           paddingInline: 12,
           fontFamily: FONT_SANS,
           fontWeight: 500,
-          fontSize: '0.78125rem',
+          // fontSize: '0.78125rem',
           textTransform: 'none',
           letterSpacing: '-0.005em',
           color: t.vars.palette.text.secondary,
@@ -439,19 +440,14 @@ export const theme = createTheme({
         {
           props: { variant: 'tag' },
           style: ({ theme: t }) => ({
-            height: 26,
-            borderRadius: radius.pill,
-            fontFamily: t.typography.fontFamilyMono,
-            fontSize: '0.71875rem',
-            fontWeight: 500,
-            letterSpacing: '0.01em',
+
+            // fontSize: '0.71875rem',
             backgroundColor: `rgba(${t.vars.palette.primary.mainChannel} / 0.10)`,
             border: `1px solid rgba(${t.vars.palette.primary.mainChannel} / 0.22)`,
             color:
               t.palette.mode === 'dark' ? '#FF8ABA' : t.vars.palette.primary.dark,
-            '& .MuiChip-label': { paddingInline: 8 },
             '& .MuiChip-deleteIcon': {
-              fontSize: 14,
+              // fontSize: 14,
               color: t.vars.palette.text.disabled,
               marginRight: 4,
             },
@@ -459,18 +455,11 @@ export const theme = createTheme({
         },
         {
           props: { variant: 'level', color: 'junior' },
-          style: ({ theme: t }) => ({
-            height: 22,
-            borderRadius: radius.pill,
-            fontFamily: FONT_SANS,
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            letterSpacing: 0,
+          style: ({ theme: t }) => ({            
             backgroundColor: t.vars.palette.level.junior.soft,
             color: t.vars.palette.level.junior.main,
             border: `1px solid color-mix(in oklab, ${t.vars.palette.level.junior.main} 35%, transparent)`,
             '& .MuiChip-label': {
-              paddingInline: 8,
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
@@ -480,17 +469,11 @@ export const theme = createTheme({
         {
           props: { variant: 'level', color: 'senior' },
           style: ({ theme: t }) => ({
-            height: 22,
-            borderRadius: radius.pill,
-            fontFamily: FONT_SANS,
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            letterSpacing: 0,
+            // fontSize: '0.75rem',
             backgroundColor: t.vars.palette.level.senior.soft,
             color: t.vars.palette.level.senior.main,
             border: `1px solid color-mix(in oklab, ${t.vars.palette.level.senior.main} 35%, transparent)`,
             '& .MuiChip-label': {
-              paddingInline: 8,
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
@@ -500,51 +483,42 @@ export const theme = createTheme({
         {
           props: { variant: 'status', color: 'active' },
           style: ({ theme: t }) => ({
-            height: 22,
-            borderRadius: radius.pill,
-            fontFamily: FONT_SANS,
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            letterSpacing: 0,
+            // fontSize: '0.75rem',
             backgroundColor: `color-mix(in oklab, ${t.vars.palette.success.main} 18%, transparent)`,
             color: t.vars.palette.success.main,
             border: `1px solid color-mix(in oklab, ${t.vars.palette.success.main} 35%, transparent)`,
-            '& .MuiChip-label': { paddingInline: 8 },
           }),
         },
         {
           props: { variant: 'status', color: 'draft' },
           style: ({ theme: t }) => ({
-            height: 22,
-            borderRadius: radius.pill,
-            fontFamily: FONT_SANS,
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            letterSpacing: 0,
+            // fontSize: '0.75rem',
             backgroundColor: `color-mix(in oklab, ${t.vars.palette.warning.main} 18%, transparent)`,
             color: t.vars.palette.warning.main,
             border: `1px solid color-mix(in oklab, ${t.vars.palette.warning.main} 35%, transparent)`,
-            '& .MuiChip-label': { paddingInline: 8 },
           }),
         },
         {
           props: { variant: 'status', color: 'deleted' },
           style: ({ theme: t }) => ({
-            height: 22,
-            borderRadius: radius.pill,
-            fontFamily: FONT_SANS,
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            letterSpacing: 0,
+            // fontSize: '0.75rem',
             backgroundColor: `color-mix(in oklab, ${t.vars.palette.error.main} 18%, transparent)`,
             color: t.vars.palette.error.main,
             border: `1px solid color-mix(in oklab, ${t.vars.palette.error.main} 35%, transparent)`,
-            '& .MuiChip-label': { paddingInline: 8 },
           }),
         },
       ],
       styleOverrides: {
-        sizeSmall: { height: 22, fontSize: '0.6875rem' },
+        root: {                                  
+          height: 22,
+          letterSpacing: 0.85,
+          borderRadius: radius.pill,
+          fontWeight: 500,
+          '& .MuiChip-label': { paddingInline: 8 },
+        },
+        sizeSmall: { height: 22, 
+          // fontSize: '0.6875rem' 
+        },
         // Neutral (no `color` prop, or color="default"): use our surface ramp.
         // Scoped to colorDefault so color="success"/"primary"/etc. keep their
         // natural MUI styling.
@@ -554,7 +528,9 @@ export const theme = createTheme({
           color: t.vars.palette.text.secondary,
         }),
         outlined: { backgroundColor: 'transparent' },
-        deleteIcon: { fontSize: 14 },
+        deleteIcon: { 
+          // fontSize: 14 
+          },
       },
     },
 
@@ -562,7 +538,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           fontFamily: t.typography.fontFamilyMono,
-          fontSize: '0.65625rem',
+          // fontSize: '0.65625rem',
           letterSpacing: '0.02em',
           color: t.vars.palette.text.disabled,
           marginTop: 4,
@@ -606,7 +582,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           fontFamily: FONT_MONO,
-          fontSize: '0.71875rem',
+          // fontSize: '0.71875rem',
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
           color: t.vars.palette.text.disabled,
@@ -651,7 +627,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           borderRadius: radius.sm,
-          fontSize: '0.84375rem',
+          // fontSize: '0.84375rem',
           paddingBlock: 8,
           paddingInline: 10,
           '&:hover': { backgroundColor: t.vars.palette.background.paper },
@@ -680,7 +656,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           fontFamily: FONT_SANS,
-          fontSize: '16px',
+          // fontSize: '16px',
           fontWeight: 600,
           lineHeight: 1.4,
           paddingTop: 16,
@@ -698,7 +674,7 @@ export const theme = createTheme({
           paddingInline: 20,
           paddingBottom: 20,
           paddingTop: 4,
-          fontSize: '0.875rem',
+          // fontSize: '0.875rem',
           lineHeight: 1.5,
         }),
       },
@@ -723,7 +699,7 @@ export const theme = createTheme({
           color: t.vars.palette.text.primary,
           border: `1px solid ${t.vars.palette.divider}`,
           borderRadius: radius.sm,
-          fontSize: '0.71875rem',
+          // fontSize: '0.71875rem',
           fontFamily: FONT_MONO,
           paddingBlock: 4,
           paddingInline: 8,
@@ -740,7 +716,7 @@ export const theme = createTheme({
           borderRadius: radius.md,
           border: `1px solid ${t.vars.palette.divider}`,
           backgroundColor: t.vars.palette.background.paper,
-          fontSize: '0.84375rem',
+          // fontSize: '0.84375rem',
         }),
         icon: { alignSelf: 'center' },
       },
@@ -760,7 +736,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: ({ theme: t }) => ({
           fontFamily: FONT_SANS,
-          fontSize: '0.8125rem',
+          // fontSize: '0.8125rem',
           fontWeight: 500,
           minWidth: 28,
           height: 28,
@@ -794,6 +770,7 @@ export const theme = createTheme({
           },
           // Sidebar nav rail — see docs/handoff/design_handoff_sidebar
           '.nav-rail &': {
+            marginBottom: 6,
             height: 32,
             paddingInline: 10,
             borderRadius: 6,
@@ -801,7 +778,6 @@ export const theme = createTheme({
             color: t.vars.palette.text.secondary,
             position: 'relative',
             transition: 'background-color 120ms ease, color 120ms ease',
-            fontSize: '24px',
             '& .MuiListItemIcon-root': {
               minWidth: 0,
               color: t.vars.palette.text.disabled,
@@ -862,7 +838,8 @@ export const theme = createTheme({
     MuiList: {
       styleOverrides: {
         root: {
-          '&.nav-rail--nested': {
+
+          '&.nav-rail--nested': { 
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',

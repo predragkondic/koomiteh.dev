@@ -217,7 +217,7 @@ export function AdminPostGeneratePage() {
 
   return (
     <Box sx={{ maxWidth: 1000, mx: "auto", py: 3 }}>
-      <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
+      <Typography variant="h3" component="h1" sx={{ mb: 2 }}>
         {t("generate.title")}
       </Typography>
       {errorMsg && (
@@ -319,8 +319,9 @@ export function AdminPostGeneratePage() {
         spacing={1}
         sx={{
           justifyContent: "space-between",
-          mb: 3
-        }}>
+          mb: 3,
+        }}
+      >
         <Button onClick={handleCancel} disabled={isSaving}>
           {t("editor.cancel")}
         </Button>
@@ -361,7 +362,8 @@ export function AdminPostGeneratePage() {
               handleCloseSuggestMenu();
             }}
           >
-            {topic || t("generate.suggestTopics.menuItemFallback", { index: idx + 1 })}
+            {topic ||
+              t("generate.suggestTopics.menuItemFallback", { index: idx + 1 })}
           </MenuItem>
         ))}
       </Menu>

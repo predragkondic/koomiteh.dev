@@ -95,8 +95,9 @@ function FieldLabel({
         justifyContent: "space-between",
         alignItems: "baseline",
         mb: 2,
-        gap: 2
-      }}>
+        gap: 2,
+      }}
+    >
       <Typography variant="body2" sx={{ fontWeight: 500 }}>
         {label}
         {required ? (
@@ -110,8 +111,9 @@ function FieldLabel({
           variant="overline"
           sx={{
             color: "text.disabled",
-            textAlign: "right"
-          }}>
+            textAlign: "right",
+          }}
+        >
           {hint}
         </Typography>
       ) : null}
@@ -127,8 +129,9 @@ function LoadingLayout() {
         sx={{
           justifyContent: "space-between",
           alignItems: "flex-end",
-          mb: 6
-        }}>
+          mb: 6,
+        }}
+      >
         <Skeleton variant="rounded" width={220} height={44} />
         <Stack direction="row" spacing={1.25}>
           <Skeleton variant="rounded" width={96} height={36} />
@@ -138,7 +141,10 @@ function LoadingLayout() {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1fr) 260px" },
+          gridTemplateColumns: {
+            xs: "minmax(0, 1fr)",
+            md: "minmax(0, 1fr) 260px",
+          },
           gap: 5.5,
           alignItems: "start",
         }}
@@ -340,9 +346,10 @@ export function AdminPostEditorPage({ mode }: Props) {
           justifyContent: "space-between",
           alignItems: "flex-end",
           mb: 6,
-          gap: 2
-        }}>
-        <Typography variant="h2" component="h1">
+          gap: 2,
+        }}
+      >
+        <Typography variant="h3" component="h1">
           {title}
         </Typography>
         <Stack direction="row" spacing={1.25}>
@@ -366,7 +373,10 @@ export function AdminPostEditorPage({ mode }: Props) {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "minmax(0, 1fr)", md: "minmax(0, 1fr) 260px" },
+          gridTemplateColumns: {
+            xs: "minmax(0, 1fr)",
+            md: "minmax(0, 1fr) 260px",
+          },
           gap: 5.5,
           alignItems: "start",
         }}
@@ -385,7 +395,7 @@ export function AdminPostEditorPage({ mode }: Props) {
               fullWidth
               required
               slotProps={{
-                htmlInput: { "aria-label": t("editor.fields.question") }
+                htmlInput: { "aria-label": t("editor.fields.question") },
               }}
             />
           </Box>
@@ -443,7 +453,7 @@ export function AdminPostEditorPage({ mode }: Props) {
                     htmlInput: {
                       ...params.slotProps.htmlInput,
                       "aria-label": t("editor.fields.tags"),
-                    }
+                    },
                   }}
                 />
               )}
@@ -492,7 +502,7 @@ export function AdminPostEditorPage({ mode }: Props) {
                 fullWidth
                 required
                 slotProps={{
-                  htmlInput: { "aria-label": t("editor.fields.slug") }
+                  htmlInput: { "aria-label": t("editor.fields.slug") },
                 }}
               />
             </Box>
@@ -507,7 +517,7 @@ export function AdminPostEditorPage({ mode }: Props) {
                   setForm((prev) => ({ ...prev, language: e.target.value }))
                 }
                 slotProps={{
-                  htmlInput: { "aria-label": t("editor.fields.language") }
+                  htmlInput: { "aria-label": t("editor.fields.language") },
                 }}
               >
                 {LANGUAGES.map((language) => (
@@ -531,7 +541,7 @@ export function AdminPostEditorPage({ mode }: Props) {
                   }))
                 }
                 slotProps={{
-                  htmlInput: { "aria-label": t("editor.fields.level") }
+                  htmlInput: { "aria-label": t("editor.fields.level") },
                 }}
               >
                 {LEVELS.map((level) => (
@@ -545,29 +555,44 @@ export function AdminPostEditorPage({ mode }: Props) {
             <Divider />
 
             <Stack spacing={2.5}>
-              <Stack direction="row" spacing={2} sx={{
-                justifyContent: "space-between"
-              }}>
-                <Typography variant="body2" sx={{
-                  color: "text.secondary"
-                }}>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   {t("editor.status")}
                 </Typography>
                 <Typography
                   variant="body2"
                   sx={{
                     color: "text.primary",
-                    fontWeight: 500
-                  }}>
+                    fontWeight: 500,
+                  }}
+                >
                   {statusLabel}
                 </Typography>
               </Stack>
-              <Stack direction="row" spacing={2} sx={{
-                justifyContent: "space-between"
-              }}>
-                <Typography variant="body2" sx={{
-                  color: "text.secondary"
-                }}>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                  }}
+                >
                   {t("editor.lastEdited")}
                 </Typography>
                 <Typography
@@ -575,8 +600,9 @@ export function AdminPostEditorPage({ mode }: Props) {
                   sx={{
                     color: "text.primary",
                     fontWeight: 500,
-                    textAlign: "right"
-                  }}>
+                    textAlign: "right",
+                  }}
+                >
                   {lastEditedLabel}
                 </Typography>
               </Stack>

@@ -47,12 +47,18 @@ export function MyFavoritesPage() {
 
     if (!isLoggedIn) {
       return (
-        <Stack spacing={2} sx={{
-          alignItems: "flex-start"
-        }}>
-          <Typography variant="body2" sx={{
-            color: "text.secondary"
-          }}>
+        <Stack
+          spacing={2}
+          sx={{
+            alignItems: "flex-start",
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              color: "text.secondary",
+            }}
+          >
             {t("common:favorites.loginPrompt")}
           </Typography>
           <Button variant="contained" component="a" href={loginUrl()}>
@@ -81,9 +87,12 @@ export function MyFavoritesPage() {
 
     if (data.total === 0) {
       return (
-        <Typography variant="body2" sx={{
-          color: "text.secondary"
-        }}>
+        <Typography
+          variant="body1"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
           {t("common:favorites.empty")}
         </Typography>
       );
@@ -100,8 +109,9 @@ export function MyFavoritesPage() {
           <Stack
             sx={{
               alignItems: "center",
-              pt: 4
-            }}>
+              pt: 4,
+            }}
+          >
             <Pagination
               count={data.pageCount}
               page={data.page}
@@ -162,9 +172,14 @@ function FavoriteCard({ post }: { post: PostFrontmatter }) {
             <Typography variant="h6" component="h2">
               {post.question}
             </Typography>
-            <Stack direction="row" spacing={0.5} useFlexGap sx={{
-              flexWrap: "wrap"
-            }}>
+            <Stack
+              direction="row"
+              spacing={0.5}
+              useFlexGap
+              sx={{
+                flexWrap: "wrap",
+              }}
+            >
               {visibleTags.map((tag) => (
                 <Chip key={tag} label={tag} size="small" variant="outlined" />
               ))}

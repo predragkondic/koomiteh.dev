@@ -4,11 +4,8 @@ import { ConfirmProvider } from "@/components/ConfirmProvider";
 import { DevHealthBanner } from "@/components/DevHealthBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { config } from "@/config";
-import { AdminLayout } from "@/pages/AdminLayout";
-import { AdminPostEditorPage } from "@/pages/AdminPostEditorPage";
-import { AdminPostGeneratePage } from "@/pages/AdminPostGeneratePage";
-import { AdminPostsListPage } from "@/pages/AdminPostsListPage";
-import { AdminUsersListPage } from "@/pages/AdminUsersListPage";
+import { AdminLayout } from "@/pages/Admin/AdminLayout";
+
 import { InterviewDetailPage } from "@/pages/InterviewDetailPage";
 import { InterviewHubPage } from "@/pages/InterviewHubPage";
 import { InterviewLayout } from "@/pages/InterviewLayout";
@@ -18,6 +15,10 @@ import { MyProfilePage } from "@/pages/MyProfilePage";
 import { MySettingsPage } from "@/pages/MySettingsPage";
 import { UserProfilePage } from "@/pages/UserProfilePage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import AdminUsersListPage from "./pages/Admin/User/AdminUsersList/index";
+import { AdminPostsListPage } from "./pages/Admin/Post/List";
+import { AdminPostEditorPage } from "./pages/Admin/Post/View/AdminPostEditorPage";
+import { AdminPostGeneratePage } from "./pages/Admin/Post/View/AdminPostGeneratePage";
 
 export function App() {
   return (
@@ -30,7 +31,10 @@ export function App() {
               <Route path="interview" element={<InterviewLayout />}>
                 <Route index element={<InterviewHubPage />} />
                 <Route path=":language" element={<InterviewListingPage />} />
-                <Route path=":language/:slug" element={<InterviewDetailPage />} />
+                <Route
+                  path=":language/:slug"
+                  element={<InterviewDetailPage />}
+                />
               </Route>
               <Route path="me/favorites" element={<MyFavoritesPage />} />
               <Route path="me/settings" element={<MySettingsPage />} />

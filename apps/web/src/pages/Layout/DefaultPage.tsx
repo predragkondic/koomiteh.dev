@@ -26,7 +26,7 @@ export default function DefaultPage({
         },
       }}
     >
-      <Typography variant="h2" component="h1">
+      <Typography variant="h3" component="h1">
         {title}
       </Typography>
       <Box sx={{ mt: 4 }}>{children}</Box>

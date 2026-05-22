@@ -4,20 +4,21 @@ import { ConfirmProvider } from "@/components/ConfirmProvider";
 import { DevHealthBanner } from "@/components/DevHealthBanner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { config } from "@/config";
-import { AdminLayout } from "@/pages/AdminLayout";
-import { AdminPostEditorPage } from "@/pages/AdminPostEditorPage";
-import { AdminPostGeneratePage } from "@/pages/AdminPostGeneratePage";
-import { AdminPostsListPage } from "@/pages/AdminPostsListPage";
-import { AdminUsersListPage } from "@/pages/AdminUsersListPage";
-import { InterviewDetailPage } from "@/pages/InterviewDetailPage";
-import { InterviewHubPage } from "@/pages/InterviewHubPage";
-import { InterviewLayout } from "@/pages/InterviewLayout";
-import { InterviewListingPage } from "@/pages/InterviewListingPage";
-import { MyFavoritesPage } from "@/pages/MyFavoritesPage";
-import { MyProfilePage } from "@/pages/MyProfilePage";
-import { MySettingsPage } from "@/pages/MySettingsPage";
-import { UserProfilePage } from "@/pages/UserProfilePage";
-import { NotFoundPage } from "@/pages/NotFoundPage";
+import { AdminLayout } from "@/pages/Admin";
+
+import { UserFavoritesPage } from "@/pages/User/Favorites";
+import { MyProfilePage } from "@/pages/User/MyProfilePage";
+import { MySettingsPage } from "@/pages/User/UserSettingsPage";
+import { UserProfilePage } from "@/pages/User/UserProfile";
+import { NotFoundPage } from "@/pages/Layout/NotFoundPage";
+import AdminUsersListPage from "./pages/Admin/User/AdminUsersList/index";
+import { AdminPostsListPage } from "./pages/Admin/Post/List";
+import { AdminPostEditorPage } from "./pages/Admin/Post/View/AdminPostEditorPage";
+import { AdminPostGeneratePage } from "./pages/Admin/Post/View/AdminPostGeneratePage";
+import { PostLayout } from "./pages/Post";
+import { PostListingPage } from "./pages/Post/List";
+import { PostHubPage } from "./pages/Post/PostHubPage";
+import { PostDetailPage } from "./pages/Post/View";
 
 export function App() {
   return (
@@ -26,13 +27,13 @@ export function App() {
         <BrowserRouter>
           <Routes>
             <Route element={<AppShell />}>
-              <Route index element={<Navigate to="/interview" replace />} />
-              <Route path="interview" element={<InterviewLayout />}>
-                <Route index element={<InterviewHubPage />} />
-                <Route path=":language" element={<InterviewListingPage />} />
-                <Route path=":language/:slug" element={<InterviewDetailPage />} />
+              <Route index element={<Navigate to="/post" replace />} />
+              <Route path="post" element={<PostLayout />}>
+                <Route index element={<PostHubPage />} />
+                <Route path=":language" element={<PostListingPage />} />
+                <Route path=":language/:slug" element={<PostDetailPage />} />
               </Route>
-              <Route path="me/favorites" element={<MyFavoritesPage />} />
+              <Route path="me/favorites" element={<UserFavoritesPage />} />
               <Route path="me/settings" element={<MySettingsPage />} />
               <Route path="me" element={<MyProfilePage />} />
               <Route path="users/:id" element={<UserProfilePage />} />

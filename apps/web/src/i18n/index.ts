@@ -2,10 +2,10 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import enCommon from './locales/en/common.json';
-import enInterview from './locales/en/interview.json';
+import enPost from './locales/en/post.json';
 import enAdmin from './locales/en/admin.json';
 import deCommon from './locales/de/common.json';
-import deInterview from './locales/de/interview.json';
+import dePost from './locales/de/posts.json';
 import deAdmin from './locales/de/admin.json';
 
 export const SUPPORTED_LOCALES = ['en', 'de'] as const;
@@ -24,11 +24,11 @@ void i18n
     fallbackLng: 'en',
     supportedLngs: SUPPORTED_LOCALES as unknown as string[],
     nonExplicitSupportedLngs: true,
-    ns: ['common', 'interview', 'admin'],
+    ns: ['common', 'post', 'admin'],
     defaultNS: 'common',
     resources: {
-      en: { common: enCommon, interview: enInterview, admin: enAdmin },
-      de: { common: deCommon, interview: deInterview, admin: deAdmin },
+      en: { common: enCommon, post: enPost, admin: enAdmin },
+      de: { common: deCommon, post: dePost, admin: deAdmin },
     },
     detection: {
       order: ['localStorage', 'navigator'],

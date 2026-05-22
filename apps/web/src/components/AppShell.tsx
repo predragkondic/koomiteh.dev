@@ -5,7 +5,7 @@ import Container from "@mui/material/Container";
 import Toolbar from "@mui/material/Toolbar";
 import { Link as RouterLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { CommandPalette } from "@/features/interview/CommandPalette";
+import { CommandPalette } from "@/components/CommandPalette";
 import logoUrl from "@/assets/koomiteh-logo.svg";
 import logoFilledUrl from "@/assets/koomiteh-logo-filled.svg";
 import { AuthMenu } from "./AuthMenu";

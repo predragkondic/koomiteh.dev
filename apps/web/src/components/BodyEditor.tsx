@@ -7,7 +7,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import { useTranslation } from "react-i18next";
-import { MarkdownBody } from "@/features/interview/MarkdownBody";
+import { MarkdownBody } from "@/components/MarkdownBody";
 
 type BodyViewMode = "split" | "editor" | "preview";
 
@@ -34,8 +34,9 @@ export function MdBodyEditor({
           alignItems: "center",
           px: 3.5,
           py: 2.5,
-          gap: 2
-        }}>
+          gap: 2,
+        }}
+      >
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
           {t("editor.body")}
         </Typography>

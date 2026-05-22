@@ -58,7 +58,7 @@ export function AppThemeProvider({ children }: { children: ReactNode }) {
         <GlobalStyles
           styles={{
             "pre.shiki": {
-              fontSize: "0.875rem",
+              fontSize: "1.15rem",
               padding: "1rem",
               borderRadius: 8,
               overflowX: "auto",

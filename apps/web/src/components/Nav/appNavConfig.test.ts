@@ -36,7 +36,7 @@ describe('getAppNavMode', () => {
   });
 
   it('returns frontend elsewhere', () => {
-    expect(getAppNavMode('/interview')).toBe('frontend');
+    expect(getAppNavMode('/post')).toBe('frontend');
     expect(getAppNavMode('/me/favorites')).toBe('frontend');
   });
 });
@@ -80,7 +80,7 @@ describe('buildAdminNavItems', () => {
     expect(items.map((i) => i.key)).toEqual(['exit', 'posts', 'users']);
     const exit = items.find((i) => i.key === 'exit');
     expect(exit?.kind).toBe('link');
-    if (exit?.kind === 'link') expect(exit.to).toBe('/interview');
+    if (exit?.kind === 'link') expect(exit.to).toBe('/post');
   });
 });
 

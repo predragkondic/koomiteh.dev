@@ -3,7 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import {
   useGetTagsQuery,
   useSearchPostsQuery,
-} from '@/api/interviewApi';
+} from '@/api/postApi';
 import type { Level, PostFrontmatter } from '@/types';
 import { DEFAULT_SORT, isSort, type Sort } from '@/utils/sort';
 

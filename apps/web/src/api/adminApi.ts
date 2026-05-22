@@ -10,7 +10,7 @@ import type {
   SuggestTopicsResponse,
 } from '@koomiteh/shared';
 import { config } from '@/config';
-import { interviewApi } from './interviewApi';
+import { postApi } from './postApi';
 
 const publicPostTags = [
   { type: 'Post' as const, id: 'LIST' },
@@ -88,7 +88,7 @@ export const adminApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+          dispatch(postApi.util.invalidateTags(publicPostTags));
         } catch {
           // mutation failed; leave caches as-is
         }
@@ -110,7 +110,7 @@ export const adminApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+          dispatch(postApi.util.invalidateTags(publicPostTags));
         } catch {
           // mutation failed; leave caches as-is
         }
@@ -128,7 +128,7 @@ export const adminApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+          dispatch(postApi.util.invalidateTags(publicPostTags));
         } catch {
           // mutation failed; leave caches as-is
         }
@@ -146,7 +146,7 @@ export const adminApi = createApi({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(interviewApi.util.invalidateTags(publicPostTags));
+          dispatch(postApi.util.invalidateTags(publicPostTags));
         } catch {
           // mutation failed; leave caches as-is
         }

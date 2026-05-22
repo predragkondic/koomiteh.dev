@@ -53,8 +53,8 @@ export function buildFrontendNavItems(user: Me | null | undefined): NavItem[] {
       key: 'posts',
       labelKey: 'nav.posts',
       labelNs: 'common',
-      to: '/interview',
-      isActive: (pathname) => matchPrefix(pathname, '/interview'),
+      to: '/post',
+      isActive: (pathname) => matchPrefix(pathname, '/post'),
     },);
 
   if (user) {
@@ -107,7 +107,7 @@ export function buildAdminNavItems(): NavItem[] {
       key: 'exit',
       labelKey: 'nav.exitToFrontend',
       labelNs: 'admin',
-      to: '/interview',
+      to: '/post',
       isActive: () => false,
     },
     {

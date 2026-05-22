@@ -49,10 +49,7 @@ const ADMIN_ME = {
   },
 };
 
-function renderNav(
-  ui: ReactElement,
-  initialEntries: string[] = ["/interview"],
-) {
+function renderNav(ui: ReactElement, initialEntries: string[] = ["/post"]) {
   return renderWithProviders(
     <AppThemeProvider>
       <Routes>
@@ -73,7 +70,7 @@ describe("AppSidebar", () => {
     expect(profile.className).not.toMatch(/Mui-selected/);
     expect(screen.getByRole("link", { name: /Beiträge/i })).toHaveAttribute(
       "href",
-      "/interview",
+      "/post",
     );
     const settings = screen.getByRole("link", { name: /Einstellungen/i });
     expect(settings).toHaveAttribute("href", "/me/settings");
@@ -89,7 +86,7 @@ describe("AppSidebar", () => {
 
   it("renders Admin link for staff on frontend", async () => {
     mockMe(ADMIN_ME);
-    renderNav(<AppSidebar />, ["/interview"]);
+    renderNav(<AppSidebar />, ["/post"]);
 
     expect(
       await screen.findByRole("link", { name: /^Admin$/i }),
@@ -102,7 +99,7 @@ describe("AppSidebar", () => {
 
     expect(
       await screen.findByRole("link", { name: /Exit Admin/i }),
-    ).toHaveAttribute("href", "/interview");
+    ).toHaveAttribute("href", "/post");
     expect(screen.getByRole("link", { name: /Beiträge/i })).toHaveAttribute(
       "href",
       "/admin",
@@ -126,7 +123,7 @@ describe("AppSidebar", () => {
 
   it("shows the language and theme toggles when expanded", async () => {
     mockMe(USER_ME);
-    renderNav(<AppSidebar />, ["/interview"]);
+    renderNav(<AppSidebar />, ["/post"]);
 
     await screen.findByRole("link", { name: /^Profil$/i });
     expect(screen.getByRole("group", { name: /Sprache/i })).toBeInTheDocument();
@@ -138,7 +135,7 @@ describe("AppSidebar", () => {
   it("hides the language and theme toggles when collapsed and toggles via the menu button", async () => {
     window.localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, "1");
     mockMe(USER_ME);
-    renderNav(<AppSidebar />, ["/interview"]);
+    renderNav(<AppSidebar />, ["/post"]);
 
     await screen.findByRole("button", { name: /Seitenleiste ausklappen/i });
     expect(screen.queryByRole("group", { name: /Sprache/i })).toBeNull();
@@ -159,7 +156,7 @@ describe("AppSidebar", () => {
 describe("AppBottomNav", () => {
   it("renders flat frontend items without submenu links", async () => {
     mockMe(USER_ME);
-    renderNav(<AppBottomNav />, ["/interview"]);
+    renderNav(<AppBottomNav />, ["/post"]);
 
     expect(
       await screen.findByRole("link", { name: /^Profil$/i }),

@@ -100,7 +100,7 @@ const isMain =
 if (isMain) {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const repoRoot = path.resolve(here, '../../..');
-  const contentDir = path.join(repoRoot, 'content', 'interview');
+  const contentDir = path.join(repoRoot, 'content', 'post');
 
   seedFromDir(contentDir)
     .then(async (result) => {

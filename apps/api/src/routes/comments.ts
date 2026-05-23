@@ -148,4 +148,56 @@ postCommentsRoute.post('/', requireAuth, async (c) => {
   );
 });
 
+const idParamSchema = z.string().uuid();
+
+const editBodySchema = z.object({
+  bodyMd: z
+    .string()
+    .min(1)
+    .max(MAX_BODY)
+    .refine((s) => s.trim().length > 0, 'bodyMd must not be blank'),
+});
+
 export const commentsRoute = new Hono();
+
+commentsRoute.patch('/:id', requireAuth, async (c) => {
+  const parsedId = idParamSchema.safeParse(c.req.param('id'));
+  if (!parsedId.success) {
+    return c.json({ error: 'not_found' }, 404);
+  }
+  const commentId = parsedId.data;
+  const rows = await db
+    .select()
+    .from(comments)
+    .where(eq(comments.id, commentId))
+    .limit(1);
+  const row = rows[0];
+  if (!row || row.deletedAt) {
+    return c.json({ error: 'not_found' }, 404);
+  }
+  const user = c.get('user')!;
+  if (row.userId !== user.id) {
+    return c.json({ error: 'forbidden' }, 403);
+  }
+  const rawJson = await c.req.json().catch(() => null);
+  const parsed = editBodySchema.safeParse(rawJson);
+  if (!parsed.success) {
+    return c.json({ error: 'invalid_body', issues: parsed.error.issues }, 400);
+  }
+  const { bodyMd } = parsed.data;
+  const bodyHtmlSafe = sanitizeCommentMd(bodyMd);
+  const updated = await db
+    .update(comments)
+    .set({ bodyMd, bodyHtmlSafe, updatedAt: new Date() })
+    .where(eq(comments.id, commentId))
+    .returning();
+  const out = updated[0]!;
+  return c.json({
+    comment: {
+      id: out.id,
+      bodyHtmlSafe: out.bodyHtmlSafe,
+      createdAt: out.createdAt.toISOString(),
+      updatedAt: out.updatedAt.toISOString(),
+    },
+  });
+});

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { comments, posts, users } from '@koomiteh/shared';
 import { db, pool } from '../db/client.js';
 import { createApp } from '../app.js';
@@ -290,5 +290,100 @@ describe('GET /posts/:id/comments', () => {
     expect(body.items[0]!.bodyHtmlSafe).toBe('[deleted]');
     expect(body.items[0]!.author).toBeNull();
     expect(body.items[0]!.deletedAt).not.toBeNull();
+  });
+});
+
+async function postComment(
+  cookie: string,
+  bodyMd: string,
+  contentId = 'typescript-junior-closures',
+): Promise<string> {
+  const { body } = await call<{ comment: { id: string } }>(
+    `/posts/${contentId}/comments`,
+    { method: 'POST', cookie, body: { bodyMd } },
+  );
+  return body.comment.id;
+}
+
+describe('PATCH /comments/:id', () => {
+  it('lets the owner edit body, re-sanitizes, bumps updated_at', async () => {
+    const userId = await createTestUser('editor');
+    const cookie = await loginAs(userId);
+    const commentId = await postComment(cookie, 'original');
+    const before = await db
+      .select({ updatedAt: comments.updatedAt })
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    await new Promise((r) => setTimeout(r, 5));
+    const { status, body } = await call<{
+      comment: { bodyHtmlSafe: string; updatedAt: string };
+    }>(`/comments/${commentId}`, {
+      method: 'PATCH',
+      cookie,
+      body: { bodyMd: 'edited <script>x</script> text' },
+    });
+    expect(status).toBe(200);
+    expect(body.comment.bodyHtmlSafe).toContain('edited');
+    expect(body.comment.bodyHtmlSafe).not.toMatch(/<script/i);
+    const after = await db
+      .select({ updatedAt: comments.updatedAt, bodyMd: comments.bodyMd })
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    expect(after[0]!.bodyMd).toBe('edited <script>x</script> text');
+    expect(after[0]!.updatedAt.getTime()).toBeGreaterThan(
+      before[0]!.updatedAt.getTime(),
+    );
+  });
+
+  it('rejects non-owner with 403', async () => {
+    const ownerId = await createTestUser('owner');
+    const intruderId = await createTestUser('intruder');
+    const ownerCookie = await loginAs(ownerId);
+    const intruderCookie = await loginAs(intruderId);
+    const commentId = await postComment(ownerCookie, 'mine');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'PATCH',
+      cookie: intruderCookie,
+      body: { bodyMd: 'pwned' },
+    });
+    expect(status).toBe(403);
+    const row = await db
+      .select({ bodyMd: comments.bodyMd })
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    expect(row[0]!.bodyMd).toBe('mine');
+  });
+
+  it('rejects anonymous with 401', async () => {
+    const ownerId = await createTestUser('owner2');
+    const ownerCookie = await loginAs(ownerId);
+    const commentId = await postComment(ownerCookie, 'mine2');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'PATCH',
+      body: { bodyMd: 'anon-edit' },
+    });
+    expect(status).toBe(401);
+  });
+
+  it('404 for missing comment', async () => {
+    const userId = await createTestUser('ghost');
+    const cookie = await loginAs(userId);
+    const { status } = await call(
+      '/comments/00000000-0000-0000-0000-000000000000',
+      { method: 'PATCH', cookie, body: { bodyMd: 'x' } },
+    );
+    expect(status).toBe(404);
+  });
+
+  it('rejects body > 10000 chars with 400', async () => {
+    const userId = await createTestUser('verbose');
+    const cookie = await loginAs(userId);
+    const commentId = await postComment(cookie, 'short');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'PATCH',
+      cookie,
+      body: { bodyMd: 'a'.repeat(10001) },
+    });
+    expect(status).toBe(400);
   });
 });

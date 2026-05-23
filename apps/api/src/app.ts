@@ -16,6 +16,7 @@ import { adminRoute } from './routes/admin.js';
 import { adminGenerateRoute } from './routes/admin-generate.js';
 import { adminSuggestTopicsRoute } from './routes/admin-suggest-topics.js';
 import { adminUsersRoute } from './routes/admin-users.js';
+import { commentsRoute } from './routes/comments.js';
 
 export function createApp() {
   const app = new Hono();
@@ -45,6 +46,7 @@ export function createApp() {
   app.route('/health', healthRoute);
   app.route('/auth', authRoute);
   app.route('/posts', postsRoute);
+  app.route('/comments', commentsRoute);
   app.route('/favorites', favoritesRoute);
   app.route('/me', meRoute);
   app.route('/users', usersRoute);

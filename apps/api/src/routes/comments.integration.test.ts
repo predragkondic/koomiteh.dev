@@ -101,4 +101,25 @@ describe('POST /posts/:id/comments', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]!.bodyMd).toBe('Hello **world**');
   });
+
+  it('strips <script> tags from bodyMd in stored body_html_safe', async () => {
+    const userId = await createTestUser('mallory');
+    const cookie = await loginAs(userId);
+    const xss = 'before\n\n<script>alert("xss")</script>\n\nafter';
+    const { status, body } = await call<{
+      comment: { bodyHtmlSafe: string };
+    }>('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie,
+      body: { bodyMd: xss },
+    });
+    expect(status).toBe(201);
+    expect(body.comment.bodyHtmlSafe).not.toMatch(/<script/i);
+    expect(body.comment.bodyHtmlSafe).not.toContain('alert("xss")');
+    expect(body.comment.bodyHtmlSafe).toContain('before');
+    expect(body.comment.bodyHtmlSafe).toContain('after');
+    const rows = await db.select().from(comments);
+    expect(rows[0]!.bodyMd).toBe(xss);
+    expect(rows[0]!.bodyHtmlSafe).not.toMatch(/<script/i);
+  });
 });

@@ -3,6 +3,7 @@ import { and, eq, isNull } from 'drizzle-orm';
 import { comments, posts } from '@koomiteh/shared';
 import { db } from '../db/client.js';
 import { requireAuth } from '../middleware/auth-context.js';
+import { sanitizeCommentMd } from '../services/comment-sanitize.js';
 
 export const postCommentsRoute = new Hono();
 
@@ -19,13 +20,14 @@ postCommentsRoute.post('/', requireAuth, async (c) => {
   const postId = postRows[0].id;
   const user = c.get('user')!;
   const { bodyMd } = await c.req.json<{ bodyMd: string }>();
+  const bodyHtmlSafe = sanitizeCommentMd(bodyMd);
   const inserted = await db
     .insert(comments)
     .values({
       postId,
       userId: user.id,
       bodyMd,
-      bodyHtmlSafe: bodyMd,
+      bodyHtmlSafe,
     })
     .returning();
   const row = inserted[0]!;

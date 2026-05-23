@@ -249,4 +249,46 @@ describe('GET /posts/:id/comments', () => {
     const { status } = await call('/posts/does-not-exist/comments');
     expect(status).toBe(404);
   });
+
+  it('paginates with page + pageSize', async () => {
+    const userId = await createTestUser('many');
+    const cookie = await loginAs(userId);
+    for (let i = 0; i < 5; i++) {
+      await call('/posts/typescript-junior-closures/comments', {
+        method: 'POST',
+        cookie,
+        body: { bodyMd: `comment-${i}` },
+      });
+    }
+    const { body } = await call<CommentListResponse>(
+      '/posts/typescript-junior-closures/comments?page=2&pageSize=2',
+    );
+    expect(body.page).toBe(2);
+    expect(body.pageSize).toBe(2);
+    expect(body.total).toBe(5);
+    expect(body.pageCount).toBe(3);
+    expect(body.items).toHaveLength(2);
+    expect(body.items[0]!.bodyHtmlSafe).toContain('comment-2');
+    expect(body.items[1]!.bodyHtmlSafe).toContain('comment-3');
+  });
+
+  it('redacts soft-deleted comments to [deleted] with null author', async () => {
+    const userId = await createTestUser('mortal');
+    const cookie = await loginAs(userId);
+    await call('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie,
+      body: { bodyMd: 'about to vanish' },
+    });
+    await db.execute(
+      sql`UPDATE ${comments} SET deleted_at = now() WHERE user_id = ${userId}`,
+    );
+    const { body } = await call<CommentListResponse>(
+      '/posts/typescript-junior-closures/comments',
+    );
+    expect(body.total).toBe(1);
+    expect(body.items[0]!.bodyHtmlSafe).toBe('[deleted]');
+    expect(body.items[0]!.author).toBeNull();
+    expect(body.items[0]!.deletedAt).not.toBeNull();
+  });
 });

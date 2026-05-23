@@ -84,18 +84,23 @@ postCommentsRoute.get('/', async (c) => {
   ]);
 
   const total = totalRows[0]?.total ?? 0;
-  const items = rows.map((r) => ({
-    id: r.id,
-    bodyHtmlSafe: r.bodyHtmlSafe,
-    createdAt: r.createdAt.toISOString(),
-    updatedAt: r.updatedAt.toISOString(),
-    deletedAt: r.deletedAt ? r.deletedAt.toISOString() : null,
-    author: {
-      id: r.authorId,
-      displayName: r.authorDisplayName,
-      avatarUrl: r.authorAvatarUrl,
-    },
-  }));
+  const items = rows.map((r) => {
+    const isDeleted = r.deletedAt !== null;
+    return {
+      id: r.id,
+      bodyHtmlSafe: isDeleted ? '[deleted]' : r.bodyHtmlSafe,
+      createdAt: r.createdAt.toISOString(),
+      updatedAt: r.updatedAt.toISOString(),
+      deletedAt: isDeleted ? r.deletedAt!.toISOString() : null,
+      author: isDeleted
+        ? null
+        : {
+            id: r.authorId,
+            displayName: r.authorDisplayName,
+            avatarUrl: r.authorAvatarUrl,
+          },
+    };
+  });
 
   return c.json({
     items,

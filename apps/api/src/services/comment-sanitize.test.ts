@@ -25,6 +25,22 @@ describe('sanitizeCommentMd whitelist', () => {
     expect(html).toMatch(/<li>/);
   });
 
+  it('forces target="_blank" rel="noopener" on anchors', () => {
+    const html = sanitizeCommentMd('See [docs](https://example.com).');
+    expect(html).toMatch(/<a [^>]*href="https:\/\/example\.com"/);
+    expect(html).toMatch(/<a [^>]*target="_blank"/);
+    expect(html).toMatch(/<a [^>]*rel="[^"]*noopener[^"]*"/);
+  });
+
+  it('strips event-handler attributes from allowed tags', () => {
+    const raw =
+      '<a href="https://example.com" onclick="alert(1)" onmouseover="alert(2)">x</a>';
+    const html = sanitizeCommentMd(raw);
+    expect(html).not.toMatch(/onclick/i);
+    expect(html).not.toMatch(/onmouseover/i);
+    expect(html).toMatch(/href="https:\/\/example\.com"/);
+  });
+
   it('strips <img>, <iframe>, and <style>', () => {
     const md = [
       'Hello',

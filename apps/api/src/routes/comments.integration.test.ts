@@ -85,6 +85,28 @@ afterAll(async () => {
 });
 
 describe('POST /posts/:id/comments', () => {
+  it('rejects unauthenticated requests with 401', async () => {
+    const { status, body } = await call<{ error: string }>(
+      '/posts/typescript-junior-closures/comments',
+      { method: 'POST', body: { bodyMd: 'hello' } },
+    );
+    expect(status).toBe(401);
+    expect(body.error).toBe('unauthorized');
+    const rows = await db.select().from(comments);
+    expect(rows).toHaveLength(0);
+  });
+
+  it('rejects POST on unknown post with 404', async () => {
+    const userId = await createTestUser('lost');
+    const cookie = await loginAs(userId);
+    const { status } = await call('/posts/does-not-exist/comments', {
+      method: 'POST',
+      cookie,
+      body: { bodyMd: 'hi' },
+    });
+    expect(status).toBe(404);
+  });
+
   it('creates a comment for an authenticated user', async () => {
     const userId = await createTestUser('alice');
     const cookie = await loginAs(userId);

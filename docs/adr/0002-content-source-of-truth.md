@@ -5,7 +5,7 @@
 
 ## Context
 
-Inhalte (Posts) lagen ursprünglich als Markdown-Files in `content/interview/*.md`, gepflegt über Git. Build-Time-Pipeline rendete sie zu statischem JSON. Mit der Backend-Einführung (ADR-0001) muss die Frage geklärt werden: wo entstehen Posts in Zukunft?
+Inhalte (Posts) lagen ursprünglich als Markdown-Files in `content/post/*.md`, gepflegt über Git. Build-Time-Pipeline rendete sie zu statischem JSON. Mit der Backend-Einführung (ADR-0001) muss die Frage geklärt werden: wo entstehen Posts in Zukunft?
 
 Drei realistische Modelle:
 
@@ -17,9 +17,9 @@ Drei realistische Modelle:
 
 **Hybrid-Approach mit DB als authoritative Source nach einmaligem Seed.**
 
-- **Phase 1 (einmalig):** Seed-Skript (`apps/api/src/seed.ts`) liest `content/interview/*.md`, validiert via Zod, upsertet in `posts`. Idempotent.
+- **Phase 1 (einmalig):** Seed-Skript (`apps/api/src/seed.ts`) liest `content/post/*.md`, validiert via Zod, upsertet in `posts`. Idempotent.
 - **Phase 2 (laufend):** Admin schreibt und editiert Posts ausschließlich über das Admin-UI (siehe Slice 9 / ADR-0001). Git-MDs werden nicht mehr re-importiert.
-- **`content/interview/`** kann nach erfolgreichem Seed archiviert oder gelöscht werden. Keine Re-Import-Logik im API-Code — der Seed läuft *einmal*, danach nie wieder.
+- **`content/post/`** kann nach erfolgreichem Seed archiviert oder gelöscht werden. Keine Re-Import-Logik im API-Code — der Seed läuft _einmal_, danach nie wieder.
 
 **Begriffe:** `DB authoritative` (nach Seed) wird konsistent in CONTEXT.md, ADRs, Issues und PR-Beschreibungen verwendet.
 

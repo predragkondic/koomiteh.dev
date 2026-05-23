@@ -14,4 +14,4 @@ Single-context layout: one `CONTEXT.md` + `docs/adr/` at the repo root. See `doc
 
 ### Content seed
 
-One-time bootstrap from `content/interview/*.md` into Postgres, idempotent thereafter. See `docs/agents/seed.md`.
+One-time bootstrap from `content/post/*.md` into Postgres, idempotent thereafter. See `docs/agents/seed.md`.

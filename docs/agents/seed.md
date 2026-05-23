@@ -1,6 +1,6 @@
 # Content seed
 
-Single-purpose agent guidance: how to load `content/interview/*.md` into Postgres after the first deploy.
+Single-purpose agent guidance: how to load `content/post/*.md` into Postgres after the first deploy.
 
 ## When to run
 
@@ -11,7 +11,7 @@ Single-purpose agent guidance: how to load `content/interview/*.md` into Postgre
 
 `apps/api/src/seed.ts`:
 
-1. Reads every `*.md` file in `content/interview/` (path resolved relative to repo root).
+1. Reads every `*.md` file in `content/post/` (path resolved relative to repo root).
 2. Parses YAML frontmatter via `gray-matter`.
 3. Validates frontmatter via `seedFrontmatterSchema` from `@koomiteh/shared`. Bad frontmatter → throws.
 4. Per file:
@@ -46,7 +46,7 @@ Verify via:
 curl https://api.koomiteh.dev/posts/manifest
 ```
 
-`totalCount` should equal the file count under `content/interview/`.
+`totalCount` should equal the file count under `content/post/`.
 
 ## Idempotency contract
 
@@ -56,4 +56,4 @@ curl https://api.koomiteh.dev/posts/manifest
 ## After the seed
 
 - Promote your own user to admin (CONTEXT.md → Operations).
-- Archive or delete `content/interview/` once the Admin-UI lands (Slice 7+). The seed script can stay; it's harmless when the directory is missing (returns `{inserted: 0, updated: 0, total: 0}`).
+- Archive or delete `content/post/` once the Admin-UI lands (Slice 7+). The seed script can stay; it's harmless when the directory is missing (returns `{inserted: 0, updated: 0, total: 0}`).

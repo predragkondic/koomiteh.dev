@@ -28,7 +28,7 @@ Web-Plattform für Programmier-Lernende. Kuratierte Frage-Antwort-Beiträge im F
                                            └──────────────────────────┘
 ```
 
-- **Web:** React + Vite + Redux-Toolkit-Query + MUI v6, deployed auf Cloudflare Pages.
+- **Web:** React + Vite + Redux-Toolkit-Query + MUI v9 (oder latest), deployed auf Cloudflare Pages.
 - **API:** Hono auf Node, deployed auf Fly.io. JSON-REST.
 - **DB:** Postgres bei Neon. Single Source of Truth für Inhalte und User-Daten.
 - **Auth:** GitHub-OAuth, Server-Sessions in Postgres, httpOnly-Cookie auf `.koomiteh.dev`.
@@ -58,7 +58,7 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 
 - **Trusted MD.** Markdown von einem Admin-User. Wird **nicht** sanitized. Frontend rendert via `marked` + `shiki/bundle/web`. Nur Posts.
 - **Untrusted MD.** Markdown von Public-Usern. Wird **server-side** sanitized via `marked` + `DOMPurify`. Backend liefert `bodyHtmlSafe`. Frontend macht `dangerouslySetInnerHTML`. Nur Comments.
-- **DB authoritative.** Nach einmaligem MD-Seed aus `content/interview/*.md` ist die Datenbank die einzige Wahrheitsquelle. Kein Re-Import. Edits laufen über das Admin-UI. Siehe ADR-0002.
+- **DB authoritative.** Nach einmaligem MD-Seed aus `content/post/*.md` ist die Datenbank die einzige Wahrheitsquelle. Kein Re-Import. Edits laufen über das Admin-UI. Siehe ADR-0002.
 - **Phased Rollout.** Migration vom statischen JSON-Stack zum DB-Backend in 10 vertical-slice PRs. Jeder PR ist deploy-bar, ein PR-Merge erhöht das Feature-Set inkrementell. Tracked als GitHub-Issues `Slice 1` bis `Slice 10`.
 - **Soft-Delete vs Hard-Delete.** Mixed-Strategie: Posts/Comments/Users → Soft-Delete (Permalink-Stabilität, GDPR). Favorites/Reactions → Hard-Delete (Toggle-Operations, kein Audit-Wert).
 - **User-Lifecycle-Zustände.** Drei orthogonale Timestamp-Spalten auf `users`: `suspendedAt` (admin-imposed, reversibel), `deletedAt` (GDPR-Soft-Delete, anonymisiert). Bewusst **kein** Status-Enum — Zustände sind orthogonal, ein User kann z.B. später sowohl `hiddenAt` als auch `suspendedAt` haben. Weitere Lifecycle-Spalten (`hiddenAt`, `confirmedAt`) kommen lazy, wenn ihre Features gebaut werden.
@@ -78,7 +78,7 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 - **TypeScript everywhere.** `apps/web`, `apps/api`, `packages/shared`. Keine JS-Files für Application-Code.
 - **Schema in `packages/shared`.** Drizzle-Tabellen + drizzle-zod-Validatoren. Frontend importiert Validatoren für Form-Validation, Backend für API-Validation. Single Source of Truth für Types und Schemas.
 - **i18n nur UI, nicht Content.** UI-Labels en/de übersetzt. Beitrag-Inhalte und Code-Blöcke bleiben in Original-Sprache (Englisch). Kein Path-Prefix-i18n.
-- **Permalink-Stabilität.** `/interview/:language/:slug` muss URL-stabil bleiben. Detail-API (`GET /posts/:id`, `GET /posts/by-slug/...`) liefert für soft-deleted Posts **410 Gone** (nicht 404, nicht 200) — Frontend rendert einen "Frage entfernt"-State. URL wird nicht recycled. Public-Listing (`GET /posts`) blendet soft-deleted Posts aus.
+- **Permalink-Stabilität.** `/post/:language/:slug` muss URL-stabil bleiben. Detail-API (`GET /posts/:id`, `GET /posts/by-slug/...`) liefert für soft-deleted Posts **410 Gone** (nicht 404, nicht 200) — Frontend rendert einen "Frage entfernt"-State. URL wird nicht recycled. Public-Listing (`GET /posts`) blendet soft-deleted Posts aus.
 - **CORS und Cookies.** API erlaubt nur Origin `https://koomiteh.dev` (+ Localhost in Dev). Cookies sind `SameSite=Lax; HttpOnly; Secure; Domain=.koomiteh.dev`. Origin-Header-Check für state-changing Requests.
 - **Kein E2E-Vendor-Lock-in.** Web auf Pages, API auf Fly, DB auf Neon — austauschbar (nicht trivial, aber kein Lock-in-Layer wie z.B. Vercel-Edge-Functions oder Supabase-Auth).
 - **Migrations via drizzle-kit.** Generierte SQL-Files committed unter `apps/api/drizzle/`. Migration läuft im CI als separater Step **vor** Deploy. Expand-Contract-Pattern bei Breaking-Changes.
@@ -89,11 +89,9 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 
 - **First admin assignment.** Nach erstem Login muss der eigene User-Row manuell auf `role='admin'` oder `role='superadmin'` gesetzt werden:
   ```sql
-  UPDATE users SET role = 'admin' WHERE github_login = '<your-github-login>';
-  -- Für Superadmin (kann Admins sperren):
-  UPDATE users SET role = 'superadmin' WHERE github_login = '<your-github-login>';
+  UPDATE users SET role = 'superadmin' WHERE github_login = 'predragkondic';
   ```
-- **Initial content seed.** Einmalig nach erstem Deploy: `npm run -w @koomiteh/api db:seed` läuft `content/interview/*.md` durch Zod, upsertet in `posts`. Idempotent. Danach ist die DB authoritativ — `content/`-Verzeichnis kann archiviert oder gelöscht werden.
+- **Initial content seed.** Einmalig nach erstem Deploy: `npm run -w @koomiteh/api db:seed` läuft `content/post/*.md` durch Zod, upsertet in `posts`. Idempotent. Danach ist die DB authoritativ — `content/`-Verzeichnis kann archiviert oder gelöscht werden.
 - **Per-PR Test-DB.** GitHub-Action erstellt Neon-Branch pro PR, läuft Migrations + Tests, teardown bei PR-Close. Production-DB ist die `main`-Branch in Neon.
 
 ---

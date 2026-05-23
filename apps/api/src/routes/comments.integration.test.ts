@@ -102,6 +102,32 @@ describe('POST /posts/:id/comments', () => {
     expect(rows[0]!.bodyMd).toBe('Hello **world**');
   });
 
+  it('rejects empty bodyMd with 400', async () => {
+    const userId = await createTestUser('emptyguy');
+    const cookie = await loginAs(userId);
+    const { status } = await call('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie,
+      body: { bodyMd: '   ' },
+    });
+    expect(status).toBe(400);
+    const rows = await db.select().from(comments);
+    expect(rows).toHaveLength(0);
+  });
+
+  it('rejects bodyMd longer than 10000 chars with 400', async () => {
+    const userId = await createTestUser('longguy');
+    const cookie = await loginAs(userId);
+    const { status } = await call('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie,
+      body: { bodyMd: 'a'.repeat(10001) },
+    });
+    expect(status).toBe(400);
+    const rows = await db.select().from(comments);
+    expect(rows).toHaveLength(0);
+  });
+
   it('strips <script> tags from bodyMd in stored body_html_safe', async () => {
     const userId = await createTestUser('mallory');
     const cookie = await loginAs(userId);

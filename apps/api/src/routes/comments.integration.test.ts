@@ -171,3 +171,82 @@ describe('POST /posts/:id/comments', () => {
     expect(rows[0]!.bodyHtmlSafe).not.toMatch(/<script/i);
   });
 });
+
+type CommentItem = {
+  id: string;
+  bodyHtmlSafe: string;
+  author: { id: string; displayName: string; avatarUrl: string | null } | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+type CommentListResponse = {
+  items: CommentItem[];
+  page: number;
+  pageSize: number;
+  total: number;
+  pageCount: number;
+};
+
+describe('GET /posts/:id/comments', () => {
+  it('returns 200 with empty list when no comments exist', async () => {
+    const { status, body } = await call<CommentListResponse>(
+      '/posts/typescript-junior-closures/comments',
+    );
+    expect(status).toBe(200);
+    expect(body.items).toEqual([]);
+    expect(body.total).toBe(0);
+    expect(body.page).toBe(1);
+    expect(body.pageCount).toBe(0);
+  });
+
+  it('lists comments chronologically ASC with author info', async () => {
+    const aliceId = await createTestUser('alice');
+    const bobId = await createTestUser('bob');
+    const aliceCookie = await loginAs(aliceId);
+    const bobCookie = await loginAs(bobId);
+    await call('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie: aliceCookie,
+      body: { bodyMd: 'first comment' },
+    });
+    await call('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie: bobCookie,
+      body: { bodyMd: 'second comment' },
+    });
+
+    const { status, body } = await call<CommentListResponse>(
+      '/posts/typescript-junior-closures/comments',
+    );
+    expect(status).toBe(200);
+    expect(body.total).toBe(2);
+    expect(body.items).toHaveLength(2);
+    expect(body.items[0]!.bodyHtmlSafe).toContain('first');
+    expect(body.items[1]!.bodyHtmlSafe).toContain('second');
+    expect(body.items[0]!.author?.displayName).toBe('alice');
+    expect(body.items[1]!.author?.displayName).toBe('bob');
+    expect(body.items[0]!.deletedAt).toBeNull();
+  });
+
+  it('does not include body_md in response (only body_html_safe)', async () => {
+    const userId = await createTestUser('keep_md_private');
+    const cookie = await loginAs(userId);
+    await call('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie,
+      body: { bodyMd: '<script>x</script>plain' },
+    });
+    const { body } = await call<CommentListResponse & { items: Array<CommentItem & { bodyMd?: string }> }>(
+      '/posts/typescript-junior-closures/comments',
+    );
+    expect(body.items[0]!.bodyHtmlSafe).toContain('plain');
+    expect(body.items[0]!.bodyHtmlSafe).not.toMatch(/<script/i);
+    expect(body.items[0]!.bodyMd).toBeUndefined();
+  });
+
+  it('returns 404 for unknown post', async () => {
+    const { status } = await call('/posts/does-not-exist/comments');
+    expect(status).toBe(404);
+  });
+});

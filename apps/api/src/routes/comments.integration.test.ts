@@ -387,3 +387,120 @@ describe('PATCH /comments/:id', () => {
     expect(status).toBe(400);
   });
 });
+
+describe('DELETE /comments/:id', () => {
+  it('owner soft-deletes (deleted_at set, row stays)', async () => {
+    const ownerId = await createTestUser('soft');
+    const cookie = await loginAs(ownerId);
+    const commentId = await postComment(cookie, 'goodbye');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'DELETE',
+      cookie,
+    });
+    expect(status).toBe(200);
+    const rows = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.deletedAt).not.toBeNull();
+  });
+
+  it('admin hard-deletes any comment (row vanishes)', async () => {
+    const ownerId = await createTestUser('victim');
+    const adminId = await createTestUser('janitor', 'admin');
+    const ownerCookie = await loginAs(ownerId);
+    const adminCookie = await loginAs(adminId);
+    const commentId = await postComment(ownerCookie, 'spam');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'DELETE',
+      cookie: adminCookie,
+    });
+    expect(status).toBe(200);
+    const rows = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    expect(rows).toHaveLength(0);
+  });
+
+  it('superadmin hard-deletes any comment', async () => {
+    const ownerId = await createTestUser('victim2');
+    const supId = await createTestUser('overlord', 'superadmin');
+    const ownerCookie = await loginAs(ownerId);
+    const supCookie = await loginAs(supId);
+    const commentId = await postComment(ownerCookie, 'oops');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'DELETE',
+      cookie: supCookie,
+    });
+    expect(status).toBe(200);
+    const rows = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    expect(rows).toHaveLength(0);
+  });
+
+  it('non-owner non-admin gets 403, comment intact', async () => {
+    const ownerId = await createTestUser('owner3');
+    const intruderId = await createTestUser('intruder3');
+    const ownerCookie = await loginAs(ownerId);
+    const intruderCookie = await loginAs(intruderId);
+    const commentId = await postComment(ownerCookie, 'safe');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'DELETE',
+      cookie: intruderCookie,
+    });
+    expect(status).toBe(403);
+    const rows = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    expect(rows[0]!.deletedAt).toBeNull();
+  });
+
+  it('anonymous gets 401', async () => {
+    const ownerId = await createTestUser('owner4');
+    const ownerCookie = await loginAs(ownerId);
+    const commentId = await postComment(ownerCookie, 'mine4');
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'DELETE',
+    });
+    expect(status).toBe(401);
+  });
+
+  it('404 for missing comment', async () => {
+    const userId = await createTestUser('ghost2');
+    const cookie = await loginAs(userId);
+    const { status } = await call(
+      '/comments/00000000-0000-0000-0000-000000000000',
+      { method: 'DELETE', cookie },
+    );
+    expect(status).toBe(404);
+  });
+
+  it('soft-delete is idempotent (second DELETE by owner returns 200, no change)', async () => {
+    const userId = await createTestUser('twice');
+    const cookie = await loginAs(userId);
+    const commentId = await postComment(cookie, 'temp');
+    await call(`/comments/${commentId}`, { method: 'DELETE', cookie });
+    const beforeRows = await db
+      .select({ deletedAt: comments.deletedAt })
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    const firstDeletedAt = beforeRows[0]!.deletedAt;
+    const { status } = await call(`/comments/${commentId}`, {
+      method: 'DELETE',
+      cookie,
+    });
+    expect(status).toBe(200);
+    const afterRows = await db
+      .select({ deletedAt: comments.deletedAt })
+      .from(comments)
+      .where(eq(comments.id, commentId));
+    expect(afterRows[0]!.deletedAt!.toISOString()).toBe(
+      firstDeletedAt!.toISOString(),
+    );
+  });
+});

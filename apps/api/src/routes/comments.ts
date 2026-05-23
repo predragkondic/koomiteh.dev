@@ -160,6 +160,41 @@ const editBodySchema = z.object({
 
 export const commentsRoute = new Hono();
 
+commentsRoute.delete('/:id', requireAuth, async (c) => {
+  const parsedId = idParamSchema.safeParse(c.req.param('id'));
+  if (!parsedId.success) {
+    return c.json({ error: 'not_found' }, 404);
+  }
+  const commentId = parsedId.data;
+  const rows = await db
+    .select()
+    .from(comments)
+    .where(eq(comments.id, commentId))
+    .limit(1);
+  const row = rows[0];
+  if (!row) {
+    return c.json({ error: 'not_found' }, 404);
+  }
+  const user = c.get('user')!;
+  const isAdmin = user.role === 'admin' || user.role === 'superadmin';
+  const isOwner = row.userId === user.id;
+  if (!isOwner && !isAdmin) {
+    return c.json({ error: 'forbidden' }, 403);
+  }
+  if (isAdmin && !isOwner) {
+    await db.delete(comments).where(eq(comments.id, commentId));
+    return c.json({ ok: true, deleted: 'hard' });
+  }
+  if (row.deletedAt) {
+    return c.json({ ok: true, deleted: 'soft' });
+  }
+  await db
+    .update(comments)
+    .set({ deletedAt: new Date() })
+    .where(eq(comments.id, commentId));
+  return c.json({ ok: true, deleted: 'soft' });
+});
+
 commentsRoute.patch('/:id', requireAuth, async (c) => {
   const parsedId = idParamSchema.safeParse(c.req.param('id'));
   if (!parsedId.success) {

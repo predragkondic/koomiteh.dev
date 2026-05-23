@@ -87,6 +87,31 @@ export const favorites = pgTable(
   ],
 );
 
+export const comments = pgTable(
+  'comments',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    postId: uuid('post_id')
+      .notNull()
+      .references(() => posts.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    bodyMd: text('body_md').notNull(),
+    bodyHtmlSafe: text('body_html_safe').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
+  },
+  (table) => [
+    index('comments_post_created_idx').on(table.postId, table.createdAt),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -95,6 +120,8 @@ export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
 export type Favorite = typeof favorites.$inferSelect;
 export type NewFavorite = typeof favorites.$inferInsert;
+export type Comment = typeof comments.$inferSelect;
+export type NewComment = typeof comments.$inferInsert;
 
 export const insertUserSchema = createInsertSchema(users);
 export const selectUserSchema = createSelectSchema(users);
@@ -104,3 +131,5 @@ export const insertPostSchema = createInsertSchema(posts);
 export const selectPostSchema = createSelectSchema(posts);
 export const insertFavoriteSchema = createInsertSchema(favorites);
 export const selectFavoriteSchema = createSelectSchema(favorites);
+export const insertCommentSchema = createInsertSchema(comments);
+export const selectCommentSchema = createSelectSchema(comments);

@@ -1,11 +1,20 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { CommentListResponse } from '@koomiteh/shared';
+import type {
+  CommentCreateInput,
+  CommentDetail,
+  CommentListResponse,
+} from '@koomiteh/shared';
 import { config } from '@/config';
 
 export interface CommentListArgs {
   postId: string;
   page?: number;
   pageSize?: number;
+}
+
+export interface CreateCommentArgs {
+  postId: string;
+  input: CommentCreateInput;
 }
 
 export const commentsApi = createApi({
@@ -29,7 +38,17 @@ export const commentsApi = createApi({
         { type: 'CommentList' as const, id: postId },
       ],
     }),
+    createComment: build.mutation<CommentDetail, CreateCommentArgs>({
+      query: ({ postId, input }) => ({
+        url: `/posts/${encodeURIComponent(postId)}/comments`,
+        method: 'POST',
+        body: input,
+      }),
+      invalidatesTags: (_result, _err, { postId }) => [
+        { type: 'CommentList' as const, id: postId },
+      ],
+    }),
   }),
 });
 
-export const { useGetCommentsQuery } = commentsApi;
+export const { useGetCommentsQuery, useCreateCommentMutation } = commentsApi;

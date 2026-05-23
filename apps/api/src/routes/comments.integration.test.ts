@@ -386,6 +386,25 @@ describe('PATCH /comments/:id', () => {
     });
     expect(status).toBe(400);
   });
+
+  it('rate-limit: 31st PATCH in window returns 429', async () => {
+    const userId = await createTestUser('patcher');
+    const cookie = await loginAs(userId);
+    const commentId = await postComment(cookie, 'first');
+    let lastStatus = 0;
+    for (let i = 0; i < 31; i++) {
+      const { status } = await call(`/comments/${commentId}`, {
+        method: 'PATCH',
+        cookie,
+        body: { bodyMd: `edit-${i}` },
+      });
+      lastStatus = status;
+      if (i < 30) {
+        expect(status).toBe(200);
+      }
+    }
+    expect(lastStatus).toBe(429);
+  });
 });
 
 describe('DELETE /comments/:id', () => {
@@ -478,6 +497,23 @@ describe('DELETE /comments/:id', () => {
       { method: 'DELETE', cookie },
     );
     expect(status).toBe(404);
+  });
+
+  it('rate-limit: returns 429 after 11th POST in the window', async () => {
+    const userId = await createTestUser('flooder');
+    const cookie = await loginAs(userId);
+    let lastStatus = 0;
+    for (let i = 0; i < 11; i++) {
+      const { status } = await call(
+        '/posts/typescript-junior-closures/comments',
+        { method: 'POST', cookie, body: { bodyMd: `msg-${i}` } },
+      );
+      lastStatus = status;
+      if (i < 10) {
+        expect(status).toBe(201);
+      }
+    }
+    expect(lastStatus).toBe(429);
   });
 
   it('soft-delete is idempotent (second DELETE by owner returns 200, no change)', async () => {

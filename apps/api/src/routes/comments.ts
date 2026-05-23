@@ -4,7 +4,20 @@ import { and, asc, eq, isNull, sql } from 'drizzle-orm';
 import { comments, posts, users } from '@koomiteh/shared';
 import { db } from '../db/client.js';
 import { requireAuth } from '../middleware/auth-context.js';
+import { perUserKey, rateLimit } from '../middleware/rate-limit.js';
 import { sanitizeCommentMd } from '../services/comment-sanitize.js';
+
+const postRateLimit = rateLimit({
+  limit: 10,
+  windowMs: 60_000,
+  keyFn: perUserKey,
+});
+
+const patchRateLimit = rateLimit({
+  limit: 30,
+  windowMs: 60_000,
+  keyFn: perUserKey,
+});
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 20;
@@ -111,7 +124,7 @@ postCommentsRoute.get('/', async (c) => {
   });
 });
 
-postCommentsRoute.post('/', requireAuth, async (c) => {
+postCommentsRoute.post('/', requireAuth, postRateLimit, async (c) => {
   const contentId = c.req.param('id');
   const postId = await resolveLivePostId(contentId);
   if (!postId) {
@@ -195,7 +208,7 @@ commentsRoute.delete('/:id', requireAuth, async (c) => {
   return c.json({ ok: true, deleted: 'soft' });
 });
 
-commentsRoute.patch('/:id', requireAuth, async (c) => {
+commentsRoute.patch('/:id', requireAuth, patchRateLimit, async (c) => {
   const parsedId = idParamSchema.safeParse(c.req.param('id'));
   if (!parsedId.success) {
     return c.json({ error: 'not_found' }, 404);

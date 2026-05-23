@@ -30,7 +30,7 @@ async function call<T = unknown>(
 ): Promise<{ status: number; body: T }> {
   const headers: Record<string, string> = { Origin: ORIGIN };
   if (opts.cookie) headers.Cookie = opts.cookie;
-  let bodyInit: BodyInit | undefined;
+  let bodyInit: string | undefined;
   if (opts.body !== undefined) {
     headers['Content-Type'] = 'application/json';
     bodyInit = JSON.stringify(opts.body);

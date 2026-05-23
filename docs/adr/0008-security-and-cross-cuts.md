@@ -16,7 +16,7 @@ Außerdem die übergreifende Frage: Hard-Delete vs Soft-Delete pro Entity-Type.
 | Entity | Strategie | Begründung |
 |---|---|---|
 | **Post** | Soft-Delete (`deleted_at`) | Permalink-Stabilität (SEO + Bookmarks). Frontend zeigt 410 Gone mit "Diese Frage wurde entfernt". Comments/Favorites bleiben referenziell intakt. Admin-Restore möglich. |
-| **Comment** | Soft-Delete (`deleted_at`) | Discussion-Anker stabil. Body wird "[deleted]", Author null. Reactions verlieren keinen Anker. Standard-UX (HN/Reddit/GitHub). |
+| **Comment** | Owner→Soft-Delete; Admin/Superadmin (auf fremde)→Hard-Delete | Owner-Delete: Discussion-Anker stabil, Body "[deleted]", Author null. Moderation-Delete: Row weg, weil die Existenz selbst problematisch war. Siehe ADR-0004. |
 | **User** | Soft-Delete + Anonymisierung | GDPR-Right-to-be-forgotten: `displayName='[deleted]'`, `githubId=NULL`, `avatarUrl=NULL`, `deleted_at` gesetzt. Sessions gelöscht. Kommentare und Posts (für Admin-User) bleiben mit anonymisiertem Author. Echtes Hard-Delete optional bei explizitem User-Wunsch. |
 | **Favorite** | Hard-Delete | Toggle-Operation, kein Audit-Wert. Composite-PK macht Soft-Delete umständlich. |
 | **Reaction** | Hard-Delete | Wie Favorite — Toggle, kein Wert in Audit. |

@@ -51,7 +51,7 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 - **Superadmin.** User mit `role='superadmin'`. Ausschließlich per SQL gesetzt (analog zum First-Admin-Pattern). Kein UI-Promotion-Flow. Zweck: Admins sperren/freischalten können, Notfall-Eingriff bei Kompromittierung.
 - **Session.** Server-side Authentifizierungs-Anker. Lebt in `sessions`-Tabelle, `id` im httpOnly-Cookie. Ablauf via `expiresAt`. Logout = Hard-Delete der Row.
 - **Favorite.** Many-to-Many zwischen User und Post. Composite-PK `(userId, postId)`. Hard-Delete (Toggle-Operation).
-- **Comment.** Public-User-Antwort auf einen Post. Markdown-Body (`untrusted MD` — server-sanitized). Speichert `bodyMd` (raw Input) und `bodyHtmlSafe` (sanitized HTML, ohne Code-Highlighting). Soft-Delete (`deleted_at`, Body wird "[deleted]"). Flat structure — kein Threading.
+- **Comment.** Public-User-Antwort auf einen Post. Markdown-Body (`untrusted MD` — server-sanitized). Speichert `bodyMd` (raw Input) und `bodyHtmlSafe` (sanitized HTML, ohne Code-Highlighting). Delete asymmetrisch: Owner-Delete = Soft-Delete (`deleted_at`, Body wird "[deleted]", Author null); Admin/Superadmin-Delete auf fremde Comments = Hard-Delete (Row weg). Flat structure — kein Threading.
 - **Reaction.** Emoji-Reaktion eines Users auf einen Comment. Fixes Set: `❤️ 😄 🦄 ☕ 👍 🐢` (Postgres-Enum `reaction_emoji`). Composite-PK `(commentId, userId, emoji)`. Hard-Delete (Toggle).
 
 ### Concepts

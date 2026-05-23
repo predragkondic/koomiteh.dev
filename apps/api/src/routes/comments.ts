@@ -54,7 +54,7 @@ async function resolveLivePostId(contentId: string): Promise<string | null> {
 }
 
 postCommentsRoute.get('/', async (c) => {
-  const contentId = c.req.param('id');
+  const contentId = c.req.param('id') ?? '';
   const postId = await resolveLivePostId(contentId);
   if (!postId) {
     return c.json({ error: 'not_found' }, 404);
@@ -125,7 +125,7 @@ postCommentsRoute.get('/', async (c) => {
 });
 
 postCommentsRoute.post('/', requireAuth, postRateLimit, async (c) => {
-  const contentId = c.req.param('id');
+  const contentId = c.req.param('id') ?? '';
   const postId = await resolveLivePostId(contentId);
   if (!postId) {
     return c.json({ error: 'not_found' }, 404);

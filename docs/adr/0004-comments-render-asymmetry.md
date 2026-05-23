@@ -20,9 +20,11 @@ Zwei zentrale Design-Fragen:
 
 - **Flat list, kein Threading.** Eine Reihe von Comments pro Post, chronologisch sortiert. Kein `parent_id`, kein Tree.
 - **Reactions auf Comments.** Fixes Set: `❤️ 😄 🦄 ☕ 👍 🐢` als Postgres-Enum `reaction_emoji`. Toggle-Operation pro `(commentId, userId, emoji)`.
-- **Soft-Delete.** Comments setzen `deleted_at`, Body wird "[deleted]", Author null.
+- **Delete-Strategie (asymmetrisch nach Actor):**
+  - **Owner löscht eigenen Comment → Soft-Delete.** `deleted_at` wird gesetzt, Body wird "[deleted]", Author null. Discussion-Anker bleibt stabil, Reactions verlieren keinen Anker.
+  - **Admin/Superadmin löscht fremden Comment → Hard-Delete.** Row wird vollständig entfernt. Moderation-Aktion, nicht User-Action. Keine "[deleted]"-Marke nötig — die Existenz selbst war problematisch.
+  - **Admin/Superadmin löscht eigenen Comment → Soft-Delete** (wie Owner). Die Asymmetrie greift nur, wenn die Rolle den Owner überstimmt.
 - **Edit erlaubt** für Owner. `updated_at` getracked, im UI zeigen "edited"-Indikator wenn `updated_at > created_at`.
-- **Admin** kann jeden Comment löschen.
 
 ### Render-Asymmetrie: Trusted vs. Untrusted Markdown
 

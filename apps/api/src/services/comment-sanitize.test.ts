@@ -41,6 +41,15 @@ describe('sanitizeCommentMd whitelist', () => {
     expect(html).toMatch(/href="https:\/\/example\.com"/);
   });
 
+  it('preserves fenced code blocks with language class, unhighlighted', () => {
+    const md = ['```ts', 'const x: number = 1;', '```'].join('\n');
+    const html = sanitizeCommentMd(md);
+    expect(html).toMatch(/<pre>/);
+    expect(html).toMatch(/<code [^>]*class="language-ts"/);
+    expect(html).toContain('const x: number = 1;');
+    expect(html).not.toMatch(/<span/);
+  });
+
   it('strips <img>, <iframe>, and <style>', () => {
     const md = [
       'Hello',

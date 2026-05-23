@@ -5,7 +5,7 @@ import enCommon from './locales/en/common.json';
 import enPost from './locales/en/post.json';
 import enAdmin from './locales/en/admin.json';
 import deCommon from './locales/de/common.json';
-import dePost from './locales/de/posts.json';
+import dePost from './locales/de/post.json';
 import deAdmin from './locales/de/admin.json';
 
 export const SUPPORTED_LOCALES = ['en', 'de'] as const;

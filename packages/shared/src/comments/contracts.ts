@@ -10,6 +10,7 @@ export type CommentAuthor = z.infer<typeof commentAuthorSchema>;
 export const commentItemSchema = z.object({
   id: z.string().uuid(),
   bodyHtmlSafe: z.string(),
+  bodyMd: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   deletedAt: z.string().nullable(),

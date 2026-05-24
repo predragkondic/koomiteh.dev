@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { and, asc, eq, isNull, sql } from 'drizzle-orm';
 import { comments, posts, renderCommentBody, users } from '@koomiteh/shared';
 import { db } from '../db/client.js';
-import { requireAuth } from '../middleware/auth-context.js';
+import { authContext, requireAuth } from '../middleware/auth-context.js';
 import { perUserKey, rateLimit } from '../middleware/rate-limit.js';
 
 const postRateLimit = rateLimit({
@@ -52,7 +52,7 @@ async function resolveLivePostId(contentId: string): Promise<string | null> {
   return rows[0]?.id ?? null;
 }
 
-postCommentsRoute.get('/', async (c) => {
+postCommentsRoute.get('/', authContext, async (c) => {
   const contentId = c.req.param('id') ?? '';
   const postId = await resolveLivePostId(contentId);
   if (!postId) {
@@ -68,6 +68,7 @@ postCommentsRoute.get('/', async (c) => {
   }
   const { page, pageSize } = parsed.data;
   const offset = (page - 1) * pageSize;
+  const viewer = c.get('user');
 
   const where = eq(comments.postId, postId);
 
@@ -75,6 +76,7 @@ postCommentsRoute.get('/', async (c) => {
     db
       .select({
         id: comments.id,
+        bodyMd: comments.bodyMd,
         bodyHtmlSafe: comments.bodyHtmlSafe,
         createdAt: comments.createdAt,
         updatedAt: comments.updatedAt,
@@ -98,8 +100,10 @@ postCommentsRoute.get('/', async (c) => {
   const total = totalRows[0]?.total ?? 0;
   const items = rows.map((r) => {
     const isDeleted = r.deletedAt !== null;
+    const isOwner = !isDeleted && viewer !== null && r.authorId === viewer.id;
     return {
       id: r.id,
+      ...(isOwner ? { bodyMd: r.bodyMd } : {}),
       bodyHtmlSafe: isDeleted ? '[deleted]' : r.bodyHtmlSafe,
       createdAt: r.createdAt.toISOString(),
       updatedAt: r.updatedAt.toISOString(),

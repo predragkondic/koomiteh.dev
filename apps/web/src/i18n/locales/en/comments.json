@@ -6,6 +6,15 @@
   "submit": "Post comment",
   "maxChars": "Max {{max}} characters",
   "action": {
-    "edit": "Edit"
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "edit": {
+    "tab": {
+      "edit": "Edit",
+      "preview": "Preview"
+    },
+    "hint": "Plain text & code · ⌘ Enter to save"
   }
 }

@@ -17,6 +17,12 @@ export interface CreateCommentArgs {
   input: CommentCreateInput;
 }
 
+export interface UpdateCommentArgs {
+  postId: string;
+  commentId: string;
+  input: CommentCreateInput;
+}
+
 export const commentsApi = createApi({
   reducerPath: 'commentsApi',
   baseQuery: fetchBaseQuery({
@@ -48,7 +54,21 @@ export const commentsApi = createApi({
         { type: 'CommentList' as const, id: postId },
       ],
     }),
+    updateComment: build.mutation<CommentDetail, UpdateCommentArgs>({
+      query: ({ commentId, input }) => ({
+        url: `/comments/${encodeURIComponent(commentId)}`,
+        method: 'PATCH',
+        body: input,
+      }),
+      invalidatesTags: (_result, _err, { postId }) => [
+        { type: 'CommentList' as const, id: postId },
+      ],
+    }),
   }),
 });
 
-export const { useGetCommentsQuery, useCreateCommentMutation } = commentsApi;
+export const {
+  useGetCommentsQuery,
+  useCreateCommentMutation,
+  useUpdateCommentMutation,
+} = commentsApi;

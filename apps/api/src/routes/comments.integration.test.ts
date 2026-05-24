@@ -230,20 +230,46 @@ describe('GET /posts/:id/comments', () => {
     expect(body.items[0]!.deletedAt).toBeNull();
   });
 
-  it('does not include body_md in response (only body_html_safe)', async () => {
-    const userId = await createTestUser('keep_md_private');
-    const cookie = await loginAs(userId);
+  it('omits body_md for non-owners and anon viewers', async () => {
+    const authorId = await createTestUser('author');
+    const viewerId = await createTestUser('viewer');
+    const authorCookie = await loginAs(authorId);
     await call('/posts/typescript-junior-closures/comments', {
       method: 'POST',
-      cookie,
+      cookie: authorCookie,
       body: { bodyMd: '<script>x</script>plain' },
     });
-    const { body } = await call<CommentListResponse & { items: Array<CommentItem & { bodyMd?: string }> }>(
-      '/posts/typescript-junior-closures/comments',
-    );
-    expect(body.items[0]!.bodyHtmlSafe).toContain('plain');
-    expect(body.items[0]!.bodyHtmlSafe).not.toMatch(/<script/i);
-    expect(body.items[0]!.bodyMd).toBeUndefined();
+    const viewerCookie = await loginAs(viewerId);
+    const { body: viewerBody } = await call<
+      CommentListResponse & { items: Array<CommentItem & { bodyMd?: string }> }
+    >('/posts/typescript-junior-closures/comments', {
+      cookie: viewerCookie,
+    });
+    expect(viewerBody.items[0]!.bodyHtmlSafe).toContain('plain');
+    expect(viewerBody.items[0]!.bodyHtmlSafe).not.toMatch(/<script/i);
+    expect(viewerBody.items[0]!.bodyMd).toBeUndefined();
+
+    const { body: anonBody } = await call<
+      CommentListResponse & { items: Array<CommentItem & { bodyMd?: string }> }
+    >('/posts/typescript-junior-closures/comments');
+    expect(anonBody.items[0]!.bodyMd).toBeUndefined();
+  });
+
+  it('includes body_md only for the owner of the comment', async () => {
+    const authorId = await createTestUser('owner');
+    const authorCookie = await loginAs(authorId);
+    const raw = 'My **draft** text\n\n```ts\nconst x = 1;\n```';
+    await call('/posts/typescript-junior-closures/comments', {
+      method: 'POST',
+      cookie: authorCookie,
+      body: { bodyMd: raw },
+    });
+    const { body } = await call<
+      CommentListResponse & { items: Array<CommentItem & { bodyMd?: string }> }
+    >('/posts/typescript-junior-closures/comments', {
+      cookie: authorCookie,
+    });
+    expect(body.items[0]!.bodyMd).toBe(raw);
   });
 
   it('returns 404 for unknown post', async () => {

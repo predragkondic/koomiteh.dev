@@ -6,6 +6,15 @@
   "submit": "Kommentar posten",
   "maxChars": "Maximal {{max}} Zeichen",
   "action": {
-    "edit": "Bearbeiten"
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
+  "edit": {
+    "tab": {
+      "edit": "Bearbeiten",
+      "preview": "Vorschau"
+    },
+    "hint": "Plain-Text & Code · ⌘ Enter zum Speichern"
   }
 }

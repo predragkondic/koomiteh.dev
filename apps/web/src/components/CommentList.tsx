@@ -41,6 +41,7 @@ export function CommentList({ postId, pageSize }: Props) {
       {data.items.map((c) => (
         <CommentItem
           key={c.id}
+          postId={postId}
           comment={c}
           currentUserId={currentUserId}
           isStaff={isStaff}

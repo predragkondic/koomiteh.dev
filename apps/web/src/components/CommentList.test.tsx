@@ -84,7 +84,7 @@ describe("CommentList", () => {
     );
     renderWithProviders(<CommentList postId={POST_ID} />);
     expect(
-      await screen.findByText(/no comments yet/i),
+      await screen.findByText(/noch keine kommentare/i),
     ).toBeInTheDocument();
   });
 });

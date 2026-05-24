@@ -25,6 +25,7 @@ import { useGetPostQuery } from "@/api/postApi";
 import { useConfirm } from "@/components/ConfirmProvider";
 import { DetailPrevNext } from "@/pages/User/Favorites/components/DetailPrevNext";
 import { FavoriteButton } from "@/pages/User/Favorites/components/FavoriteButton";
+import { CommentSection } from "@/components/CommentSection";
 import { MarkdownBody } from "@/components/MarkdownBody";
 import { RelatedQuestions } from "@/components/RelatedQuestions";
 import { NotFoundPage } from "../../Layout/NotFoundPage";
@@ -283,6 +284,7 @@ export function PostDetailPage() {
       {!isDeletedAdminView ? (
         <>
           <Divider />
+          <CommentSection postId={frontmatter.id} />
           <DetailPrevNext
             currentId={frontmatter.id}
             language={frontmatter.language}

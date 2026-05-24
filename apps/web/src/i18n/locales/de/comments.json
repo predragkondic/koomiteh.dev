@@ -1,0 +1,8 @@
+{
+  "heading": "Kommentare ({{count}})",
+  "empty": "Noch keine Kommentare.",
+  "signInLink": "Anmelden, um zu kommentieren",
+  "placeholder": "Schreibe einen Kommentar…",
+  "submit": "Kommentar posten",
+  "maxChars": "Maximal {{max}} Zeichen"
+}

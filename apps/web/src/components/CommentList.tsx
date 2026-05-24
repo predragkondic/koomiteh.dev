@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { useTranslation } from "react-i18next";
 import type { CommentItem } from "@koomiteh/shared";
 import { useGetCommentsQuery } from "@/api/commentsApi";
 
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function CommentList({ postId, pageSize }: Props) {
+  const { t } = useTranslation("comments");
   const { data, isLoading } = useGetCommentsQuery({ postId, pageSize });
 
   if (isLoading || !data) {
@@ -26,7 +28,7 @@ export function CommentList({ postId, pageSize }: Props) {
   if (data.items.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary">
-        No comments yet.
+        {t("empty")}
       </Typography>
     );
   }

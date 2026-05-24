@@ -324,6 +324,32 @@ describe("PostDetailPage", () => {
     );
   });
 
+  it("mounts a comments section with a heading and the comment form under an active post", async () => {
+    setupActiveAdminHandlers();
+    server.use(
+      http.get(
+        "http://localhost:3000/posts/typescript-junior-closures/comments",
+        () =>
+          HttpResponse.json({
+            items: [],
+            page: 1,
+            pageSize: 20,
+            total: 0,
+            pageCount: 0,
+          }),
+      ),
+    );
+
+    renderPage();
+
+    expect(
+      await screen.findByRole("heading", { name: /Kommentare \(0\)/i }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole("textbox", { name: /Comment body/i }),
+    ).toBeInTheDocument();
+  });
+
   it("keeps non-admin users on the removed-post state when the public permalink returns 410", async () => {
     server.use(
       http.get("http://localhost:3000/auth/me", () =>

@@ -29,7 +29,7 @@ describe("CommentForm", () => {
     mockMe(ANON_ME);
     renderWithProviders(<CommentForm postId={POST_ID} />);
     expect(
-      await screen.findByRole("link", { name: /sign in to comment/i }),
+      await screen.findByRole("link", { name: /anmelden, um zu kommentieren/i }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
@@ -39,7 +39,7 @@ describe("CommentForm", () => {
     renderWithProviders(<CommentForm postId={POST_ID} />);
     expect(await screen.findByRole("textbox")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /post comment/i }),
+      screen.getByRole("button", { name: /kommentar posten/i }),
     ).toBeInTheDocument();
   });
 
@@ -68,7 +68,7 @@ describe("CommentForm", () => {
     renderWithProviders(<CommentForm postId={POST_ID} />);
     const textarea = await screen.findByRole("textbox");
     fireEvent.change(textarea, { target: { value: "hi there" } });
-    fireEvent.click(screen.getByRole("button", { name: /post comment/i }));
+    fireEvent.click(screen.getByRole("button", { name: /kommentar posten/i }));
     await waitFor(() => {
       expect(received).not.toBeNull();
     });
@@ -81,7 +81,7 @@ describe("CommentForm", () => {
   it("disables submit while body is empty or whitespace", async () => {
     mockMe(USER_ME);
     renderWithProviders(<CommentForm postId={POST_ID} />);
-    const button = await screen.findByRole("button", { name: /post comment/i });
+    const button = await screen.findByRole("button", { name: /kommentar posten/i });
     expect(button).toBeDisabled();
     const textarea = screen.getByRole("textbox");
     fireEvent.change(textarea, { target: { value: "   " } });

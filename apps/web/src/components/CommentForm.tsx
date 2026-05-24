@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { useTranslation } from "react-i18next";
 import { useGetMeQuery, loginUrl } from "@/api/authApi";
 import { useCreateCommentMutation } from "@/api/commentsApi";
 
@@ -14,6 +15,7 @@ interface Props {
 }
 
 export function CommentForm({ postId }: Props) {
+  const { t } = useTranslation("comments");
   const { data: meData, isLoading: meLoading } = useGetMeQuery();
   const [createComment, { isLoading: submitting }] = useCreateCommentMutation();
   const [bodyMd, setBodyMd] = useState("");
@@ -27,7 +29,7 @@ export function CommentForm({ postId }: Props) {
       <Box sx={{ py: 2 }}>
         <Typography variant="body2" color="text.secondary">
           <Link href={loginUrl()} underline="hover">
-            Sign in to comment
+            {t("signInLink")}
           </Link>
         </Typography>
       </Box>
@@ -56,16 +58,16 @@ export function CommentForm({ postId }: Props) {
         multiline
         minRows={3}
         fullWidth
-        placeholder="Write a comment in Markdown..."
+        placeholder={t("placeholder")}
         value={bodyMd}
         onChange={(e) => setBodyMd(e.target.value)}
         error={tooLong}
-        helperText={tooLong ? `Max ${MAX_BODY} characters` : undefined}
+        helperText={tooLong ? t("maxChars", { max: MAX_BODY }) : undefined}
         slotProps={{ htmlInput: { "aria-label": "Comment body" } }}
       />
       <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
         <Button type="submit" variant="contained" disabled={!canSubmit}>
-          Post comment
+          {t("submit")}
         </Button>
       </Box>
     </Box>

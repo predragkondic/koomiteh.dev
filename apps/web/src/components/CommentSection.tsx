@@ -16,9 +16,29 @@ export function CommentSection({ postId }: Props) {
 
   return (
     <Stack spacing={3} component="section" aria-label="comments">
-      <Typography variant="h5" component="h2">
-        {t("heading", { count })}
-      </Typography>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: "baseline",
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography variant="h5" component="h2">
+          {t("heading", { count })}
+        </Typography>
+        {count > 0 ? (
+          <Typography
+            variant="caption"
+            sx={{
+              color: "text.secondary",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            {t("oldestFirst")}
+          </Typography>
+        ) : null}
+      </Stack>
       <CommentList postId={postId} />
       <CommentForm postId={postId} />
     </Stack>

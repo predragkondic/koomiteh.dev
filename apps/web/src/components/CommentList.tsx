@@ -1,3 +1,5 @@
+import { useState } from "react";
+import Button from "@mui/material/Button";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -12,8 +14,11 @@ interface Props {
   pageSize?: number;
 }
 
-export function CommentList({ postId, pageSize }: Props) {
+const PAGE_STEP = 20;
+
+export function CommentList({ postId, pageSize: initialPageSize }: Props) {
   const { t } = useTranslation("comments");
+  const [pageSize, setPageSize] = useState(initialPageSize ?? PAGE_STEP);
   const { data, isLoading } = useGetCommentsQuery({ postId, pageSize });
   const { data: meData } = useGetMeQuery();
   const currentUserId = meData?.user?.id ?? null;
@@ -36,17 +41,35 @@ export function CommentList({ postId, pageSize }: Props) {
     );
   }
 
+  const remaining = data.total - data.items.length;
+  const hasMore = remaining > 0;
+
   return (
-    <Stack spacing={2} component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
-      {data.items.map((c) => (
-        <CommentItem
-          key={c.id}
-          postId={postId}
-          comment={c}
-          currentUserId={currentUserId}
-          isStaff={isStaff}
-        />
-      ))}
+    <Stack spacing={2}>
+      <Stack
+        spacing={2}
+        component="ul"
+        sx={{ listStyle: "none", p: 0, m: 0 }}
+      >
+        {data.items.map((c) => (
+          <CommentItem
+            key={c.id}
+            postId={postId}
+            comment={c}
+            currentUserId={currentUserId}
+            isStaff={isStaff}
+          />
+        ))}
+      </Stack>
+      {hasMore ? (
+        <Button
+          variant="outlined"
+          fullWidth
+          onClick={() => setPageSize(pageSize + PAGE_STEP)}
+        >
+          {t("loadMore", { remaining, total: data.total })}
+        </Button>
+      ) : null}
     </Stack>
   );
 }

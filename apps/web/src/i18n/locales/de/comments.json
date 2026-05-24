@@ -1,5 +1,7 @@
 {
   "heading": "Kommentare ({{count}})",
+  "oldestFirst": "Älteste zuerst",
+  "loadMore": "Weitere laden ({{remaining}} von {{total}})",
   "empty": "Noch keine Kommentare.",
   "signInLink": "Anmelden, um zu kommentieren",
   "placeholder": "Schreibe einen Kommentar…",

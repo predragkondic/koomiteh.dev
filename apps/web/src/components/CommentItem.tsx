@@ -1,4 +1,4 @@
-import { useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
 import { formatRelativeTime } from "@/lib/formatRelativeTime";
+import { useShikiHighlight } from "@/lib/useShikiHighlight";
 import {
   renderCommentBody,
   type CommentItem as CommentData,
@@ -60,6 +61,12 @@ export function CommentItem({
       new Date(comment.createdAt).getTime() >
       1_000;
   const locale = i18n.resolvedLanguage ?? i18n.language;
+  const bodyRef = useRef<HTMLDivElement>(null);
+  useShikiHighlight(bodyRef, [
+    comment.bodyHtmlSafe,
+    comment.updatedAt,
+    isEditing,
+  ]);
 
   const trimmed = draft.trim();
   const canSave =
@@ -242,6 +249,7 @@ export function CommentItem({
         <Typography color="text.disabled">{comment.bodyHtmlSafe}</Typography>
       ) : (
         <Box
+          ref={bodyRef}
           sx={{ "& p:last-child": { mb: 0 } }}
           dangerouslySetInnerHTML={{ __html: comment.bodyHtmlSafe }}
         />

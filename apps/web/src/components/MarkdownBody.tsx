@@ -2,37 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import { Marked } from "marked";
-import {
-  createHighlighter,
-  type HighlighterGeneric,
-  type BundledLanguage,
-  type BundledTheme,
-} from "shiki/bundle/web";
-import { LANGUAGES } from "@koomiteh/shared";
-
-type WebHighlighter = HighlighterGeneric<BundledLanguage, BundledTheme>;
-
-const SHIKI_LANGS = Array.from(
-  new Set<string>([
-    ...LANGUAGES.map((l) => l.shikiLang),
-    "ts",
-    "js",
-    "tsx",
-    "jsx",
-  ]),
-);
-
-let highlighterPromise: Promise<WebHighlighter> | null = null;
-
-function getHighlighter(): Promise<WebHighlighter> {
-  if (!highlighterPromise) {
-    highlighterPromise = createHighlighter({
-      themes: ["github-light", "github-dark"],
-      langs: SHIKI_LANGS,
-    });
-  }
-  return highlighterPromise;
-}
+import { type BundledLanguage } from "shiki/bundle/web";
+import { getHighlighter, type WebHighlighter } from "@/lib/shiki";
 
 function buildMarked(
   highlighter: WebHighlighter,

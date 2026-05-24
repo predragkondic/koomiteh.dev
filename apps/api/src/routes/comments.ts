@@ -1,11 +1,10 @@
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { and, asc, eq, isNull, sql } from 'drizzle-orm';
-import { comments, posts, users } from '@koomiteh/shared';
+import { comments, posts, renderCommentBody, users } from '@koomiteh/shared';
 import { db } from '../db/client.js';
 import { requireAuth } from '../middleware/auth-context.js';
 import { perUserKey, rateLimit } from '../middleware/rate-limit.js';
-import { sanitizeCommentMd } from '../services/comment-sanitize.js';
 
 const postRateLimit = rateLimit({
   limit: 10,
@@ -137,7 +136,7 @@ postCommentsRoute.post('/', requireAuth, postRateLimit, async (c) => {
     return c.json({ error: 'invalid_body', issues: parsed.error.issues }, 400);
   }
   const { bodyMd } = parsed.data;
-  const bodyHtmlSafe = sanitizeCommentMd(bodyMd);
+  const bodyHtmlSafe = renderCommentBody(bodyMd);
   const inserted = await db
     .insert(comments)
     .values({
@@ -233,7 +232,7 @@ commentsRoute.patch('/:id', requireAuth, patchRateLimit, async (c) => {
     return c.json({ error: 'invalid_body', issues: parsed.error.issues }, 400);
   }
   const { bodyMd } = parsed.data;
-  const bodyHtmlSafe = sanitizeCommentMd(bodyMd);
+  const bodyHtmlSafe = renderCommentBody(bodyMd);
   const updated = await db
     .update(comments)
     .set({ bodyMd, bodyHtmlSafe, updatedAt: new Date() })

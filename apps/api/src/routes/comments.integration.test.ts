@@ -150,7 +150,7 @@ describe('POST /posts/:id/comments', () => {
     expect(rows).toHaveLength(0);
   });
 
-  it('strips <script> tags from bodyMd in stored body_html_safe', async () => {
+  it('HTML-escapes raw <script> tags in stored body_html_safe', async () => {
     const userId = await createTestUser('mallory');
     const cookie = await loginAs(userId);
     const xss = 'before\n\n<script>alert("xss")</script>\n\nafter';
@@ -164,6 +164,7 @@ describe('POST /posts/:id/comments', () => {
     expect(status).toBe(201);
     expect(body.comment.bodyHtmlSafe).not.toMatch(/<script/i);
     expect(body.comment.bodyHtmlSafe).not.toContain('alert("xss")');
+    expect(body.comment.bodyHtmlSafe).toContain('&lt;script&gt;');
     expect(body.comment.bodyHtmlSafe).toContain('before');
     expect(body.comment.bodyHtmlSafe).toContain('after');
     const rows = await db.select().from(comments);

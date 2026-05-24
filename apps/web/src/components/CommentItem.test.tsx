@@ -286,6 +286,60 @@ describe("CommentItem", () => {
     expect(dialog).toHaveTextContent(/dauerhaft entfernt/i);
   });
 
+  it("shows a DU badge next to the owner's own display name", () => {
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment()}
+        currentUserId="u1"
+        isStaff={false}
+      />,
+    );
+    expect(screen.getByText(/^DU$/)).toBeInTheDocument();
+  });
+
+  it("does not show DU badge on someone else's comment", () => {
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment()}
+        currentUserId="u2"
+        isStaff={false}
+      />,
+    );
+    expect(screen.queryByText(/^DU$/)).not.toBeInTheDocument();
+  });
+
+  it("shows 'bearbeitet' when updatedAt is meaningfully after createdAt", () => {
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment({
+          createdAt: "2026-05-23T10:00:00.000Z",
+          updatedAt: "2026-05-23T10:05:00.000Z",
+        })}
+        currentUserId="u1"
+        isStaff={false}
+      />,
+    );
+    expect(screen.getByText(/bearbeitet/i)).toBeInTheDocument();
+  });
+
+  it("hides 'bearbeitet' when updatedAt is within the 1-second epsilon of createdAt", () => {
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment({
+          createdAt: "2026-05-23T10:00:00.000Z",
+          updatedAt: "2026-05-23T10:00:00.500Z",
+        })}
+        currentUserId="u1"
+        isStaff={false}
+      />,
+    );
+    expect(screen.queryByText(/bearbeitet/i)).not.toBeInTheDocument();
+  });
+
   it("triggers Save when the user hits Cmd/Ctrl+Enter in the textarea", async () => {
     let calls = 0;
     server.use(

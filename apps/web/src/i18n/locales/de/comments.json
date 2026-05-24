@@ -23,6 +23,10 @@
       "confirm": "Entfernen"
     }
   },
+  "meta": {
+    "you": "DU",
+    "edited": "bearbeitet"
+  },
   "edit": {
     "tab": {
       "edit": "Bearbeiten",

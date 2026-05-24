@@ -2,6 +2,7 @@ import { useState, type KeyboardEvent } from "react";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
@@ -11,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
+import { formatRelativeTime } from "@/lib/formatRelativeTime";
 import {
   renderCommentBody,
   type CommentItem as CommentData,
@@ -36,7 +38,7 @@ export function CommentItem({
   currentUserId,
   isStaff,
 }: Props) {
-  const { t } = useTranslation("comments");
+  const { t, i18n } = useTranslation("comments");
   const confirm = useConfirm();
   const [isEditing, setIsEditing] = useState(false);
   const [mode, setMode] = useState<"edit" | "preview">("edit");
@@ -52,6 +54,12 @@ export function CommentItem({
   const canEdit = isOwner && !isDeleted;
   const canDelete = !isDeleted && (isOwner || isStaff);
   const deleteIsHard = !isOwner && isStaff;
+  const wasEdited =
+    !isDeleted &&
+    new Date(comment.updatedAt).getTime() -
+      new Date(comment.createdAt).getTime() >
+      1_000;
+  const locale = i18n.resolvedLanguage ?? i18n.language;
 
   const trimmed = draft.trim();
   const canSave =
@@ -114,9 +122,34 @@ export function CommentItem({
               alt={comment.author.displayName}
               sx={{ width: 24, height: 24 }}
             />
-            <Typography variant="body2" sx={{ flex: 1 }}>
-              {comment.author.displayName}
-            </Typography>
+            <Stack
+              direction="row"
+              sx={{ flex: 1, gap: 1, alignItems: "center" }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                {comment.author.displayName}
+              </Typography>
+              {isOwner ? (
+                <Chip
+                  label={t("meta.you")}
+                  size="small"
+                  variant="tag"
+                  sx={{ height: 18 }}
+                />
+              ) : null}
+              <Typography variant="caption" color="text.secondary">
+                · {formatRelativeTime(comment.createdAt, locale)}
+              </Typography>
+              {wasEdited ? (
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ fontStyle: "italic" }}
+                >
+                  · {t("meta.edited")}
+                </Typography>
+              ) : null}
+            </Stack>
           </>
         ) : (
           <Typography

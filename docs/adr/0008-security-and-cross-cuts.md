@@ -52,14 +52,10 @@ Außerdem die übergreifende Frage: Hard-Delete vs Soft-Delete pro Entity-Type.
 
 **Comments (User-untrusted Content):**
 
-- **Server-side Sanitize-Pipeline:** `marked.parse(bodyMd)` → `DOMPurify.sanitize(html, config)` → gespeichert als `body_html_safe`.
-- **Whitelist:** `<p>`, `<a target="_blank" rel="noopener">`, `<strong>`, `<em>`, `<code>`, `<pre>`, `<ul>`/`<ol>`/`<li>`, `<blockquote>`.
-- **Stripped:** `<script>`, `<iframe>`, `<img>`, `<style>`, alle Event-Handler-Attributes.
-- **DOMPurify mit jsdom** für Server-DOM-Provider. Keine Browser-Dependency.
-- **Frontend rendert** `body_html_safe` via `dangerouslySetInnerHTML`, danach hookt shiki an die `<pre><code>`-Blöcke für Highlighting.
-- **Defense-in-depth (optional):** Frontend könnte zusätzlich `DOMPurify` clientseitig laufen lassen, vor Render. Nicht zwingend, weil Server-Sanitize bereits Wahrheits-Quelle ist.
-
-**Wichtig:** Sanitization läuft **immer** server-side, nicht nur frontend. Falls je ein zweiter Client (Mobile, andere Web-App) gegen die API spricht, wäre Frontend-only-Sanitize XSS-Lücke.
+- **Server-side Custom-Renderer (`renderCommentBody`, shared in `@koomiteh/shared`):** Eigene Mini-Grammatik (siehe ADR-0004 Revision 2026-05-24) — `bodyMd` → `bodyHtmlSafe`. Emittiertes Tag-Subset: `<p>`, `<br>`, `<pre>`, `<code class="language-X">`, `<code>`. Alle User-Inhalte HTML-escaped. **Keine** Sanitize-Library mehr im Pfad.
+- **Strukturell unmöglich:** `<script>`, `<iframe>`, `<img>`, `<style>`, Event-Handler-Attributes, `<a>`-Tags. Der Renderer emittiert sie schlicht nicht; rohes HTML im Input wird wörtlich angezeigt (HTML-escaped).
+- **Frontend rendert** `body_html_safe` via `dangerouslySetInnerHTML`, danach hookt ein Post-Render-Shiki-Hook in die `<pre><code class="language-X">`-Blöcke für Highlighting.
+- **Wichtig:** Renderer läuft **immer** server-side bei Persistierung. Frontend nutzt dieselbe geteilte Funktion nur für Edit-Mode-Preview (kein Persistenz-Pfad).
 
 ### GDPR-Konformität
 
@@ -90,7 +86,7 @@ Außerdem die übergreifende Frage: Hard-Delete vs Soft-Delete pro Entity-Type.
 
 - **Manueller GDPR-Hard-Delete-Process.** Self-Service-Hard-Delete wäre nutzerfreundlicher, aber implementiert sich aufwändig (CASCADE-Logik, Audit). Akzeptabel solange manuell selten anfällt.
 - **Rate-Limit verliert Counter bei Restart.** Ein Restart ist effektiv eine Limit-Reset-Lücke. Akzeptabel (Restart ist seltenes Event).
-- **DOMPurify-Library-Updates** sind security-kritisch. Renovate/Dependabot-Auto-Update für Security-Patches einrichten.
+- **Custom-Renderer für Comments** muss security-bewusst gepflegt werden. `renderCommentBody` ist ein eigener Mini-Parser — Änderungen am Tag-Output-Subset oder am HTML-Escape-Pfad sind security-relevant und brauchen explizite Test-Coverage für XSS-Payloads.
 - **`notDeleted()`-Helper-Vergessen** könnte Soft-Deleted-Daten in Listing-Endpoints leaken. Linter-Rule oder Code-Review-Praxis nötig.
 
 ## Alternatives Considered
@@ -102,6 +98,6 @@ Außerdem die übergreifende Frage: Hard-Delete vs Soft-Delete pro Entity-Type.
 - **`SameSite=Strict`:** Verworfen — bricht GitHub-OAuth-Redirect (siehe ADR-0003).
 - **Postgres-backed Rate-Limit:** Verworfen. Persistent, aber DB-Last pro Request. Overkill.
 - **Redis/Upstash für Rate-Limit:** Verworfen. Extra Vendor (vierter), kein klarer Mehrwert über In-Memory bei aktueller Skala.
-- **Frontend-only Sanitize für Comments:** Verworfen. Niemals nur Frontend-Sanitize bei UGC. Server-Sanitize schützt alle Konsumenten.
-- **Plain-Text-Comments (kein Markdown):** Verworfen, siehe ADR-0004 — Code-Fences sind essentiell für die Zielgruppe.
+- **Frontend-only Render für Comments:** Verworfen. Niemals nur Frontend-Rendering bei UGC — Render läuft immer server-side bei Persistierung; Frontend nutzt denselben Renderer nur für Edit-Preview.
+- **Full Markdown via `marked` + `DOMPurify`:** Initial gewählt, mit der Revision 2026-05-24 zugunsten einer Mini-Grammatik (Plain-Text + Inline-Code + Fenced-Code) verworfen. Siehe ADR-0004 §Alternatives.
 - **Cookie-Consent-Banner:** Aktuell nicht nötig (nur Functional-Cookies). Falls je Tracking-Cookies (z.B. Analytics) dazukommen, nachrüsten.

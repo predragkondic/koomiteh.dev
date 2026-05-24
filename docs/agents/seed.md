@@ -62,7 +62,7 @@ curl https://api.koomiteh.dev/posts/manifest
 
 A separate script in `apps/api/src/seed-comments.ts` populates a handful of demo comments under each seeded post. **Dev/demo only** — in production comments arrive through the API from real users, never from a seed.
 
-- Creates / upserts five `seed-*` authors (Lena, Peko, Marek, Sara, Tom) and writes ~9 comments across the three demo posts, including one soft-deleted row and two with `updatedAt > createdAt` so the "bearbeitet" indicator can be smoke-tested.
+- Creates / upserts five `seed-*` authors (Lena, Peko, Marek, Sara, Tom) and writes **100 comments** across the three demo posts (50 / 30 / 20). Mix of plain text, inline-`code`, fenced code blocks (`ts`/`js`), edited rows (every 7th — `updatedAt > createdAt`), and soft-deleted rows (every 13th). A small set of hand-curated "anchor" comments match the design mockup.
 - Idempotent: each run wipes all comments authored by the `seed-*` users first, then re-inserts. Real user-authored comments are untouched.
 - Requires `db:seed` to have run first; comments referencing missing posts are skipped with a warn-level log line.
 

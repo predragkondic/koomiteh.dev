@@ -51,18 +51,18 @@ Use these terms consistently in code, issues, ADRs, commit messages, and docs. D
 - **Superadmin.** User mit `role='superadmin'`. Ausschließlich per SQL gesetzt (analog zum First-Admin-Pattern). Kein UI-Promotion-Flow. Zweck: Admins sperren/freischalten können, Notfall-Eingriff bei Kompromittierung.
 - **Session.** Server-side Authentifizierungs-Anker. Lebt in `sessions`-Tabelle, `id` im httpOnly-Cookie. Ablauf via `expiresAt`. Logout = Hard-Delete der Row.
 - **Favorite.** Many-to-Many zwischen User und Post. Composite-PK `(userId, postId)`. Hard-Delete (Toggle-Operation).
-- **Comment.** Public-User-Antwort auf einen Post. Markdown-Body (`untrusted MD` — server-sanitized). Speichert `bodyMd` (raw Input) und `bodyHtmlSafe` (sanitized HTML, ohne Code-Highlighting). Soft-Delete (`deleted_at`, Body wird "[deleted]"). Flat structure — kein Threading.
+- **Comment.** Public-User-Antwort auf einen Post. Body folgt einer eigenen Mini-Grammatik (`untrusted CMNT`): Plain-Text-Absätze, Inline-Code, Fenced-Code; **kein** Bold/Italic/Lists/Blockquote/Links/Headings. Speichert `bodyMd` (raw Input) und `bodyHtmlSafe` (gerendert durch `renderCommentBody` aus `@koomiteh/shared`, ohne Code-Highlighting). Delete asymmetrisch: Owner-Delete = Soft-Delete (`deleted_at`, Body wird "[deleted]", Author null); Admin/Superadmin-Delete auf fremde Comments = Hard-Delete (Row weg). Flat structure — kein Threading.
 - **Reaction.** Emoji-Reaktion eines Users auf einen Comment. Fixes Set: `❤️ 😄 🦄 ☕ 👍 🐢` (Postgres-Enum `reaction_emoji`). Composite-PK `(commentId, userId, emoji)`. Hard-Delete (Toggle).
 
 ### Concepts
 
 - **Trusted MD.** Markdown von einem Admin-User. Wird **nicht** sanitized. Frontend rendert via `marked` + `shiki/bundle/web`. Nur Posts.
-- **Untrusted MD.** Markdown von Public-Usern. Wird **server-side** sanitized via `marked` + `DOMPurify`. Backend liefert `bodyHtmlSafe`. Frontend macht `dangerouslySetInnerHTML`. Nur Comments.
+- **Untrusted CMNT.** Comment-Body-Format von Public-Usern — eigene Mini-Grammatik (Plain-Text + Inline-Code + Fenced-Code, kein Markdown). Wird **server-side** durch `renderCommentBody` aus `@koomiteh/shared` zu HTML mit geschlossenem Tag-Subset (`<p>, <br>, <pre>, <code>`); alle User-Inhalte HTML-escaped. Frontend macht `dangerouslySetInnerHTML` + Post-Render-Shiki-Hook. Siehe ADR-0004 Revision 2026-05-24.
 - **DB authoritative.** Nach einmaligem MD-Seed aus `content/post/*.md` ist die Datenbank die einzige Wahrheitsquelle. Kein Re-Import. Edits laufen über das Admin-UI. Siehe ADR-0002.
 - **Phased Rollout.** Migration vom statischen JSON-Stack zum DB-Backend in 10 vertical-slice PRs. Jeder PR ist deploy-bar, ein PR-Merge erhöht das Feature-Set inkrementell. Tracked als GitHub-Issues `Slice 1` bis `Slice 10`.
 - **Soft-Delete vs Hard-Delete.** Mixed-Strategie: Posts/Comments/Users → Soft-Delete (Permalink-Stabilität, GDPR). Favorites/Reactions → Hard-Delete (Toggle-Operations, kein Audit-Wert).
 - **User-Lifecycle-Zustände.** Drei orthogonale Timestamp-Spalten auf `users`: `suspendedAt` (admin-imposed, reversibel), `deletedAt` (GDPR-Soft-Delete, anonymisiert). Bewusst **kein** Status-Enum — Zustände sind orthogonal, ein User kann z.B. später sowohl `hiddenAt` als auch `suspendedAt` haben. Weitere Lifecycle-Spalten (`hiddenAt`, `confirmedAt`) kommen lazy, wenn ihre Features gebaut werden.
-- **Render-Asymmetrie.** Posts werden frontend-seitig mit shiki gerendert (trusted Source). Comments werden backend-seitig sanitized und gerendert (XSS-Mitigation), Code-Highlighting aber trotzdem frontend-seitig (Konsistenz mit Posts). Siehe ADR-0004.
+- **Render-Asymmetrie.** Posts werden frontend-seitig mit `marked` + shiki ab `body_md` gerendert (trusted Source). Comments werden backend-seitig durch `renderCommentBody` zu HTML, frontend-seitig per `dangerouslySetInnerHTML` + Post-Render-Shiki-Hook ausgegeben — strukturell andere Pipeline, visuell konsistent (gleicher Theme-Stack). Siehe ADR-0004.
 
 ### Frontend-State-Aufteilung
 

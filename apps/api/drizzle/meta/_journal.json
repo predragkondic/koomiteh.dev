@@ -29,6 +29,13 @@
       "when": 1779372072474,
       "tag": "0003_productive_wrecker",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1779568133693,
+      "tag": "0004_yummy_night_thrasher",
+      "breakpoints": true
     }
   ]
 }

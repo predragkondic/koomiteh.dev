@@ -9,6 +9,7 @@ import {
 } from '@koomiteh/shared';
 import { db } from '../db/client.js';
 import { env } from '../env.js';
+import { postCommentsRoute } from './comments.js';
 
 const MAX_PAGE_SIZE = 100;
 const DEFAULT_PAGE_SIZE = 20;
@@ -59,6 +60,8 @@ const listQuerySchema = z.object({
 });
 
 export const postsRoute = new Hono();
+
+postsRoute.route('/:id/comments', postCommentsRoute);
 
 postsRoute.get('/tags', async (c) => {
   const language = c.req.query('language');

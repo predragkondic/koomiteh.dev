@@ -1,0 +1,39 @@
+{
+  "heading": "Kommentare ({{count}})",
+  "oldestFirst": "Älteste zuerst",
+  "loadMore": "Weitere laden ({{remaining}} von {{total}})",
+  "empty": "Noch keine Kommentare.",
+  "signInLink": "Anmelden, um zu kommentieren",
+  "placeholder": "Schreibe einen Kommentar…",
+  "submit": "Kommentar posten",
+  "maxChars": "Maximal {{max}} Zeichen",
+  "action": {
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen"
+  },
+  "delete": {
+    "soft": {
+      "title": "Deinen Kommentar löschen?",
+      "body": "Er wird als gelöscht markiert; der Inhalt wird entfernt.",
+      "confirm": "Löschen"
+    },
+    "hard": {
+      "title": "Diesen Kommentar entfernen?",
+      "body": "Dieser Kommentar wird dauerhaft entfernt.",
+      "confirm": "Entfernen"
+    }
+  },
+  "meta": {
+    "you": "DU",
+    "edited": "bearbeitet"
+  },
+  "edit": {
+    "tab": {
+      "edit": "Bearbeiten",
+      "preview": "Vorschau"
+    },
+    "hint": "Plain-Text & Code · ⌘ Enter zum Speichern"
+  }
+}

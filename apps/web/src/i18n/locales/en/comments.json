@@ -1,0 +1,39 @@
+{
+  "heading": "Comments ({{count}})",
+  "oldestFirst": "Oldest first",
+  "loadMore": "Load more ({{remaining}} of {{total}})",
+  "empty": "No comments yet.",
+  "signInLink": "Sign in to comment",
+  "placeholder": "Write a comment…",
+  "submit": "Post comment",
+  "maxChars": "Max {{max}} characters",
+  "action": {
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "delete": {
+    "soft": {
+      "title": "Delete your comment?",
+      "body": "It will be marked as deleted; the body is removed.",
+      "confirm": "Delete"
+    },
+    "hard": {
+      "title": "Remove this comment?",
+      "body": "This comment will be permanently removed.",
+      "confirm": "Remove"
+    }
+  },
+  "meta": {
+    "you": "YOU",
+    "edited": "edited"
+  },
+  "edit": {
+    "tab": {
+      "edit": "Edit",
+      "preview": "Preview"
+    },
+    "hint": "Plain text & code · ⌘ Enter to save"
+  }
+}

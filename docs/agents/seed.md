@@ -57,3 +57,17 @@ curl https://api.koomiteh.dev/posts/manifest
 
 - Promote your own user to admin (CONTEXT.md → Operations).
 - Archive or delete `content/post/` once the Admin-UI lands (Slice 7+). The seed script can stay; it's harmless when the directory is missing (returns `{inserted: 0, updated: 0, total: 0}`).
+
+## Comments seed (dev/demo only)
+
+A separate script in `apps/api/src/seed-comments.ts` populates a handful of demo comments under each seeded post. **Dev/demo only** — in production comments arrive through the API from real users, never from a seed.
+
+- Creates / upserts five `seed-*` authors (Lena, Peko, Marek, Sara, Tom) and writes **100 comments** across the three demo posts (50 / 30 / 20). Mix of plain text, inline-`code`, fenced code blocks (`ts`/`js`), edited rows (every 7th — `updatedAt > createdAt`), and soft-deleted rows (every 13th). A small set of hand-curated "anchor" comments match the design mockup.
+- Idempotent: each run wipes all comments authored by the `seed-*` users first, then re-inserts. Real user-authored comments are untouched.
+- Requires `db:seed` to have run first; comments referencing missing posts are skipped with a warn-level log line.
+
+```bash
+DATABASE_URL=postgres://... pnpm -F @koomiteh/api db:seed-comments
+```
+
+Do **not** run this against prod.

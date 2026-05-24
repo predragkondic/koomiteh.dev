@@ -11,7 +11,8 @@
     "test": "vitest run --passWithNoTests",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --env-file-if-exists=.env src/db/migrate.ts",
-    "db:seed": "tsx --env-file-if-exists=.env src/seed.ts"
+    "db:seed": "tsx --env-file-if-exists=.env src/seed.ts",
+    "db:seed-comments": "tsx --env-file-if-exists=.env src/seed-comments.ts"
   },
   "dependencies": {
     "@google/genai": "^2.2.0",

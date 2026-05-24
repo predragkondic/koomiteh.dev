@@ -23,6 +23,11 @@ export interface UpdateCommentArgs {
   input: CommentCreateInput;
 }
 
+export interface DeleteCommentArgs {
+  postId: string;
+  commentId: string;
+}
+
 export const commentsApi = createApi({
   reducerPath: 'commentsApi',
   baseQuery: fetchBaseQuery({
@@ -64,6 +69,15 @@ export const commentsApi = createApi({
         { type: 'CommentList' as const, id: postId },
       ],
     }),
+    deleteComment: build.mutation<void, DeleteCommentArgs>({
+      query: ({ commentId }) => ({
+        url: `/comments/${encodeURIComponent(commentId)}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _err, { postId }) => [
+        { type: 'CommentList' as const, id: postId },
+      ],
+    }),
   }),
 });
 
@@ -71,4 +85,5 @@ export const {
   useGetCommentsQuery,
   useCreateCommentMutation,
   useUpdateCommentMutation,
+  useDeleteCommentMutation,
 } = commentsApi;

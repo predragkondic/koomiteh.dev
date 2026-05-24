@@ -166,6 +166,126 @@ describe("CommentItem", () => {
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
 
+  it("shows a Löschen button for the owner", () => {
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment()}
+        currentUserId="u1"
+        isStaff={false}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: /löschen/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides the Löschen button for non-owner regular users", () => {
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment()}
+        currentUserId="u2"
+        isStaff={false}
+      />,
+    );
+    expect(
+      screen.queryByRole("button", { name: /löschen/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the Löschen button to an admin on someone else's comment (but no edit)", () => {
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment()}
+        currentUserId="admin"
+        isStaff={true}
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: /löschen/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /bearbeiten/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("opens a soft-delete confirm dialog for the owner and calls DELETE on confirm", async () => {
+    let calls = 0;
+    server.use(
+      http.delete(
+        "http://localhost:3000/comments/11111111-1111-1111-1111-111111111111",
+        () => {
+          calls += 1;
+          return new HttpResponse(null, { status: 204 });
+        },
+      ),
+      http.get(
+        `http://localhost:3000/posts/${POST_ID}/comments`,
+        () =>
+          HttpResponse.json({
+            items: [],
+            page: 1,
+            pageSize: 20,
+            total: 0,
+            pageCount: 0,
+          }),
+      ),
+    );
+
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment()}
+        currentUserId="u1"
+        isStaff={false}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /löschen/i }));
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveTextContent(/deinen kommentar löschen/i);
+    fireEvent.click(
+      screen.getByRole("button", { name: /^löschen$/i }),
+    );
+    await waitFor(() => {
+      expect(calls).toBe(1);
+    });
+  });
+
+  it("opens a hard-delete confirm dialog for an admin moderating someone else's comment", async () => {
+    server.use(
+      http.delete(
+        "http://localhost:3000/comments/11111111-1111-1111-1111-111111111111",
+        () => new HttpResponse(null, { status: 204 }),
+      ),
+      http.get(
+        `http://localhost:3000/posts/${POST_ID}/comments`,
+        () =>
+          HttpResponse.json({
+            items: [],
+            page: 1,
+            pageSize: 20,
+            total: 0,
+            pageCount: 0,
+          }),
+      ),
+    );
+
+    renderWithProviders(
+      <CommentItem
+        postId={POST_ID}
+        comment={makeComment()}
+        currentUserId="admin"
+        isStaff={true}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /löschen/i }));
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toHaveTextContent(/diesen kommentar entfernen/i);
+    expect(dialog).toHaveTextContent(/dauerhaft entfernt/i);
+  });
+
   it("triggers Save when the user hits Cmd/Ctrl+Enter in the textarea", async () => {
     let calls = 0;
     server.use(

@@ -8,7 +8,20 @@
   "action": {
     "edit": "Bearbeiten",
     "save": "Speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "delete": "Löschen"
+  },
+  "delete": {
+    "soft": {
+      "title": "Deinen Kommentar löschen?",
+      "body": "Er wird als gelöscht markiert; der Inhalt wird entfernt.",
+      "confirm": "Löschen"
+    },
+    "hard": {
+      "title": "Diesen Kommentar entfernen?",
+      "body": "Dieser Kommentar wird dauerhaft entfernt.",
+      "confirm": "Entfernen"
+    }
   },
   "edit": {
     "tab": {

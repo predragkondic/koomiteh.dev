@@ -8,13 +8,18 @@ import TextField from "@mui/material/TextField";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
+import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useTranslation } from "react-i18next";
 import {
   renderCommentBody,
   type CommentItem as CommentData,
 } from "@koomiteh/shared";
-import { useUpdateCommentMutation } from "@/api/commentsApi";
+import {
+  useDeleteCommentMutation,
+  useUpdateCommentMutation,
+} from "@/api/commentsApi";
+import { useConfirm } from "./ConfirmProvider";
 
 const MAX_BODY = 10000;
 
@@ -25,12 +30,19 @@ interface Props {
   isStaff: boolean;
 }
 
-export function CommentItem({ postId, comment, currentUserId }: Props) {
+export function CommentItem({
+  postId,
+  comment,
+  currentUserId,
+  isStaff,
+}: Props) {
   const { t } = useTranslation("comments");
+  const confirm = useConfirm();
   const [isEditing, setIsEditing] = useState(false);
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [draft, setDraft] = useState(comment.bodyMd ?? "");
   const [updateComment, { isLoading: saving }] = useUpdateCommentMutation();
+  const [deleteComment, { isLoading: deleting }] = useDeleteCommentMutation();
 
   const isDeleted = comment.deletedAt !== null;
   const isOwner =
@@ -38,6 +50,8 @@ export function CommentItem({ postId, comment, currentUserId }: Props) {
     comment.author !== null &&
     comment.author.id === currentUserId;
   const canEdit = isOwner && !isDeleted;
+  const canDelete = !isDeleted && (isOwner || isStaff);
+  const deleteIsHard = !isOwner && isStaff;
 
   const trimmed = draft.trim();
   const canSave =
@@ -74,6 +88,22 @@ export function CommentItem({ postId, comment, currentUserId }: Props) {
     }
   }
 
+  async function handleDelete() {
+    const variant = deleteIsHard ? "hard" : "soft";
+    const ok = await confirm({
+      title: t(`delete.${variant}.title`),
+      content: t(`delete.${variant}.body`),
+      confirmLabel: t(`delete.${variant}.confirm`),
+      variant: "destructive",
+    });
+    if (!ok) return;
+    try {
+      await deleteComment({ postId, commentId: comment.id }).unwrap();
+    } catch {
+      // surface via mutation state
+    }
+  }
+
   return (
     <Box component="li">
       <Stack direction="row" sx={{ mb: 1, gap: 1, alignItems: "center" }}>
@@ -104,6 +134,16 @@ export function CommentItem({ postId, comment, currentUserId }: Props) {
             onClick={openEdit}
           >
             <EditIcon fontSize="small" />
+          </IconButton>
+        ) : null}
+        {canDelete && !isEditing ? (
+          <IconButton
+            size="small"
+            aria-label={t("action.delete")}
+            onClick={() => void handleDelete()}
+            disabled={deleting}
+          >
+            <DeleteIcon fontSize="small" />
           </IconButton>
         ) : null}
       </Stack>

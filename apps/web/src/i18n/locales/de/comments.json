@@ -4,5 +4,8 @@
   "signInLink": "Anmelden, um zu kommentieren",
   "placeholder": "Schreibe einen Kommentar…",
   "submit": "Kommentar posten",
-  "maxChars": "Maximal {{max}} Zeichen"
+  "maxChars": "Maximal {{max}} Zeichen",
+  "action": {
+    "edit": "Bearbeiten"
+  }
 }

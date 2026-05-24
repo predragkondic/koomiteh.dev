@@ -4,5 +4,8 @@
   "signInLink": "Sign in to comment",
   "placeholder": "Write a comment…",
   "submit": "Post comment",
-  "maxChars": "Max {{max}} characters"
+  "maxChars": "Max {{max}} characters",
+  "action": {
+    "edit": "Edit"
+  }
 }
